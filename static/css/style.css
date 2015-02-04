@@ -1,0 +1,62 @@
+body {
+  font-family: sans-serif;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+core-header-panel {
+  background: white;
+}
+core-toolbar#mainheader {
+  background-color: #3f51b5;
+  color: white;
+}
+
+core-toolbar#maincircuit {
+  background-color: #536dfe;
+}
+
+#core_scroll_header_panel {
+        width: 100%;
+        height: 100%;
+        left: 0px;
+        top: 0px;
+        position: absolute;
+}
+
+#navheader {
+  background-color: #3f51b5;
+}
+
+#title {
+	text-align: center;
+}
+.content {
+  padding: 20px;
+}
+
+.tall {
+
+}
+
+#start-btn {
+	background: #ff5722;
+    color: white;
+    margin: 0 auto;
+    border-radius: 30px;
+    width: 230px;
+    text-transform: none;
+}
+
+#section {
+        height: 5000px;
+        background: linear-gradient(rgb(214, 227, 231), rgb(173, 216, 230));
+}
+/* drawer is always visible on a wide screen
+   so menu button isn't required */
+core-drawer-panel:not([narrow]) #navicon {
+  display: none;
+}
