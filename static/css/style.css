@@ -1,5 +1,9 @@
 body {
-  font-family: sans-serif;
+  font-family: roboto, sans-serif;
+    -webkit-user-select: none;
+     -moz-user-select: -moz-none;
+      -ms-user-select: none;
+          user-select: none;
 }
 
 html, body {
@@ -39,7 +43,7 @@ core-toolbar#maincircuit {
 }
 
 .tall {
-
+  height: 300px;
 }
 
 #start-btn {
@@ -60,3 +64,18 @@ core-toolbar#maincircuit {
 core-drawer-panel:not([narrow]) #navicon {
   display: none;
 }
+
+
+core-animated-pages {
+  height: 100%;
+  width: 100%;
+  position: initial;
+      
+}
+
+section > div {
+  height: 100%;
+  color: white;
+}
+
+

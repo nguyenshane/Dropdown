@@ -1,96 +1,375 @@
-{{left_sidebar_enabled,right_sidebar_enabled=False,('message' in globals())}}
-{{extend 'layout.html'}}
+<?left_sidebar_enabled,right_sidebar_enabled=False,('message' in globals())?>
+<?extend 'layout.html'?>
 
-<link rel="import" href="{{=URL('static','bower_components/core-toolbar/core-toolbar.html')}}">
-<link rel="import" href="{{=URL('static','bower_components/core-menu/core-menu.html')}}">
-<link rel="import" href="{{=URL('static','bower_components/core-item/core-item.html')}}">
-<link rel="import" href="{{=URL('static','bower_components/core-header-panel/core-header-panel.html')}}">
-<link rel="import" href="{{=URL('static','bower_components/core-drawer-panel/core-drawer-panel.html')}}">
-<link rel="import" href="{{=URL('static','bower_components/core-scroll-header-panel/core-scroll-header-panel.html')}}">
-<link rel="import" href="{{=URL('static','bower_components/core-icons/core-icons.html')}}">
-<link rel="import" href="{{=URL('static','bower_components/core-icons/image-icons.html')}}">
-<link rel="import" href="{{=URL('static','bower_components/paper-icon-button/paper-icon-button.html')}}">
-<link rel="import" href="{{=URL('static','bower_components/paper-button/paper-button.html')}}">
+<link rel="import" href="<?=URL('static','bower_components/core-toolbar/core-toolbar.html')?>">
+<link rel="import" href="<?=URL('static','bower_components/core-menu/core-menu.html')?>">
+<link rel="import" href="<?=URL('static','bower_components/core-item/core-item.html')?>">
+<link rel="import" href="<?=URL('static','bower_components/core-header-panel/core-header-panel.html')?>">
+<link rel="import" href="<?=URL('static','bower_components/core-drawer-panel/core-drawer-panel.html')?>">
+<link rel="import" href="<?=URL('static','bower_components/core-scroll-header-panel/core-scroll-header-panel.html')?>">
+<link rel="import" href="<?=URL('static','bower_components/core-icons/core-icons.html')?>">
+<link rel="import" href="<?=URL('static','bower_components/core-icons/image-icons.html')?>">
+<link rel="import" href="<?=URL('static','bower_components/core-icons/av-icons.html')?>">
+<link rel="import" href="<?=URL('static','bower_components/paper-icon-button/paper-icon-button.html')?>">
+<link rel="import" href="<?=URL('static','bower_components/paper-button/paper-button.html')?>">
+<link rel="import" href="<?=URL('static','bower_components/core-animated-pages/core-animated-pages.html')?>">
+<link rel="import" href="<?=URL('static','bower_components/core-animated-pages/transitions/slide-up.html')?>">
+<link rel="import" href="<?=URL('static','bower_components/core-animated-pages/transitions/slide-down.html')?>">
+<link rel="import" href="<?=URL('static','bower_components/core-animated-pages/transitions/cross-fade.html')?>">
+<link rel="import" href="<?=URL('static','bower_components/core-animated-pages/transitions/list-cascade.html')?>">
 
+<polymer-element name="quiz-demo">
+<template>
+<style>
+core-animated-pages {
+  height: 100%;
+  width: 100%;
+  position: initial;
+      
+}
 
+.greeting {
+  text-align: center;
+  text-transform: uppercase;
+  color: white;
+  margin: 20px 0;
+}
 
+core-header-panel {
+  background: white;
+}
+core-toolbar#mainheader {
+  background-color: #0b8f77;
+  color: #fff3ef;
+}
 
-<core-drawer-panel id="drawerPanel" rightDrawer>
+.maincircuit {
+  background-color: #15b8a3;
+  padding: 10px;
+}
+
+#navheader {
+  background-color: #15b8a3;
+}
+
+#title {
+  text-align: center;
+}
+.content {
   
-  <core-header-panel drawer>
-    <core-toolbar id="navheader">
-      <span>Menu</span>
-    </core-toolbar>
-    <core-menu>
-      <core-item label="One"></core-item>
-      <core-item label="Two"></core-item>
-    </core-menu>
-   </core-header-panel>
+}
 
-  <core-header-panel main>
-    <core-toolbar id="mainheader">
-      <paper-icon-button id="useravatar" icon="account-circle"></paper-icon-button>
-      <span flex id="title">Dropdown</span>
-      <paper-icon-button id="navicon" icon="image:flash-on"></paper-icon-button>
-    </core-toolbar>
+.tall {
 
-    <div class="content">
-      <core-scroll-header-panel headermargin="128" condenses headerheight="192" id="core_scroll_header_panel">
-        <core-toolbar id="maincircuit" class="tall">
-          <!-- <core-icon-button icon="arrow-back" id="core_icon_button"></core-icon-button>
-          <div id="div" flex></div>
-          <core-icon-button icon="search" id="core_icon_button1"></core-icon-button>
-          <core-icon-button icon="more-vert" id="core_icon_button2"></core-icon-button>
-          <div class="top indent">Test</div> -->
-          <div class="middle indent">
-          Cassie, your circuit for today
-            <div class="row" style="padding: 0;">
-              <div class="col col-left">
-                <div class="button button-dark button-small points"><strong>50</strong> pts</div>
-                <div class="row">
-                  <div class="col col-center">
-                    <span class="bignumber">12</span><span class="denom"> sets</span>
-                    <div class="detail">2 Burpees<br>1 Squat<br>2 High Kness</div>
+}
+
+.middle {
+
+}
+
+#start-btn {
+  background: #f56b4e;
+  color: white;
+  margin: 0 auto;
+  border-radius: 30px;
+  width: 230px;
+  text-transform: none;
+  margin: 10px auto;
+}
+
+#section {
+  height: 5000px;
+  background: linear-gradient(rgb(214, 227, 231), rgb(173, 216, 230));
+}
+
+core-drawer-panel:not([narrow]) #navicon {
+  display: none;
+}
+
+
+.chip-container-main {
+  text-align: center;
+  position: relative;
+  
+}
+
+.chip-container-top {
+  text-align: center;
+  position: relative;
+  
+}
+
+.chip-container-bottom {
+  text-align: center;
+  position: relative;
+  
+}
+
+.chip {
+  display: inline-block;
+  position: relative;
+  border-radius: 3px;
+  margin: 4px;
+  overflow: hidden;
+  text-align: start;
+  background-color: #00a186;
+  box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.16);
+  height: 100%;
+  color: white;
+}
+
+.chip-top {
+
+}
+
+.point {
+  background: #e7d67a;
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-size: 0.7em;
+  text-transform: lowercase;
+  float: right;
+  margin: 10px;
+  /*box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.19);*/
+  color: #4d4542;
+  opacity: 50%;
+}
+
+.chip-middle {
+  padding: 8px;
+}
+
+.number {
+  font-size: 3em;
+}
+
+.chip-bottom {
+  padding: 8px;
+  font-size: 1em;
+
+
+}
+
+.chip-title {
+  font-weight: bold;
+}
+#details {
+  padding: 0px;
+  /*background: #15b8a3;*/
+}
+
+.card {
+  height: 100%;
+  border-radius: 0px;
+  text-align: start;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  text-align: center;
+}
+
+.card-top {
+  padding: 20px;
+  color: white;
+  font-size: 2em;
+  text-align: center;
+  background: #0b8f77;
+}
+
+.card-top-sub {
+  padding: 20px;
+  color: white;
+  font-size: 2em;
+  text-align: center;
+  background: #15b8a3;
+}
+
+.card-bottom {
+  height: 100%;
+}
+
+.play-icon {
+  border-radius: 60%;
+  width: 60px;
+  height: 60px;
+  margin-right: 16px;
+  color: #15b8a3;
+}
+
+.play-icon /deep/ core-icon[role=img] {
+    height: 100%;
+    width: 100%;
+    padding: 1px;
+    margin: 1px;
+  }
+
+.card-album-title {
+  font-size: 2em;
+}
+</style>
+<core-animated-pages selected="{{toppingsListOrDetails}}" transitions="hero-transition slide-up slide-down cross-fade list-cascade" on-core-animated-pages-transition-end="{{complete}}">     
+<section>
+  <core-drawer-panel id="drawerPanel" rightDrawer>
+    
+    <core-header-panel drawer>
+      <core-toolbar id="navheader" cross-fade>
+        <span>Menu</span>
+      </core-toolbar>
+      <core-menu>
+        <core-item label="One"></core-item>
+        <core-item label="Two"></core-item>
+      </core-menu>
+     </core-header-panel>
+
+    <core-header-panel main>
+      <core-toolbar id="mainheader">
+        <paper-icon-button id="useravatar" icon="account-circle"></paper-icon-button>
+        <span flex id="title">Dropdown</span>
+        <paper-icon-button id="navicon" icon="image:flash-on"></paper-icon-button>
+      </core-toolbar>
+
+      <div class="content">
+
+          <div id="maincircuit" class="maincircuit">
+            <!-- <core-icon-button icon="arrow-back" id="core_icon_button"></core-icon-button> -
+            <div id="div" flex></div>
+            <core-icon-button icon="search" id="core_icon_button1"></core-icon-button>
+            <core-icon-button icon="more-vert" id="core_icon_button2"></core-icon-button>
+            <div class="top indent">Test</div>  -->
+            <div class="greeting">Cassie, your circuit for today</div>
+            <div class="middle">
+            
+           
+              <div horizontal layout>
+              
+                <div class="chip-container-main" hero on-tap="{{transitionTopping}}" flex one style="position:relative;">
+                  <div class="chip" id="main_chip" hero-id="first" hero style="position:absolute; width:97%; height:97%; background:#0b8f77" vertical layout>
+                    <div class="chip-top" style=""  ><span class="point"><strong>50</strong> pts</span></div>
+                    <div class="chip-middle" style="position: relative;margin: auto 0; left: 5%;" hero-id="second" hero><span class="number">12</span> sets</div>
+                    <div class="chip-bottom" style="position: relative;bottom: 10px; left: 5%;" hero-id="third" hero>2 Burpees<br>1 Squat<br>2 High Knees</div>
+                    <paper-ripple fit></paper-ripple>
                   </div>
-               </div>
+                </div>
+                
+
+
+                <div flex one>
+                <div vertical layout>
+                  <div class="chip-container-top" hero on-tap="{{transitionTopping}}" flex one>
+                    <div class="chip" id="top_chip" hero-id="top_chip" hero?="{{selectedTopping == 'top_chip'}}" vertical layout>
+                      <div class="chip-top" style="" flex one><span class="point"><strong>30</strong> pts</span></div>
+                      <div class="chip-middle" style="text-align:center;" flex two><span class="number">1</span> min</div>
+                      <div class="chip-bottom" style="text-align:center;" flex one>Push Ups</div>
+                      <paper-ripple fit></paper-ripple>
+                    </div>
+                  </div>
+
+
+                  <div class="chip-container-bottom" hero on-tap="{{transitionTopping}}" flex one>
+                    <div class="chip" id="bottom_chip" hero-id="bottom_chip" hero?="{{selectedTopping == 'bottom_chip'}}" vertical layout>
+                      <div class="chip-top" style="" flex one><span class="point"><strong>15</strong> pts</span></div>
+                      <div class="chip-middle" style="text-align:center;" flex two><span class="number">6</span> </div>
+                      <div class="chip-bottom" style="text-align:center;" flex one>Jumping Jacks</div>
+                      <paper-ripple fit></paper-ripple>
+                    </div>
+                  </div>
+
+                </div>
               </div>
-              <div class="col col-right">
-                <div class="row" style="padding: 0;">
-                  <div class="col col-right-1">
-                    <div class="button button-dark button-small points"><strong>30</strong> pts</div>
-                    <span class="bignumber">1</span><span class="denom"> min</span>
-                    <div class="detail">Push Ups</div>
-                  </div>
-                </div>
-                <div class="row" style="padding: 0;">
-                  <div class="col col-right-2">
-                    <div class="button button-dark button-small points"><strong>15</strong> pts</div>
-                    <span class="bignumber">6</span>
-                    <div class="detail">Jumping Jacks</div>
-                  </div>
-                </div>
+
+                
               </div>
             </div>
+            <div style="text-align:center;">
+            <paper-button class="start-btn" id="start-btn" raised cross-fade>Start Circuit <core-icon icon="chevron-right"></core-icon></paper-button>
+            </div>
+          </core-toolbar>
+         
 
-          </div>
-          <paper-button class="bottom indent" id="start-btn" raised>Start Circuit <core-icon icon="chevron-right"></core-icon></paper-button>
-        </core-toolbar>
-        <section id="section" content></section>
-      </core-scroll-header-panel>
+      </div>
     </div>
-  </core-header-panel>
 
-</core-drawer-panel>
+  </core-drawer-panel>
+</section>
 
+<!-- Detail circuit -->
+<section id="details">
+  <div class="card" layout vertical hero-id="" hero>
+    <div class="card-top" style="background:{{}};" hero-id="first" hero>
+    <paper-icon-button id="arrow-back" on-tap="{{transitionTopping}}" icon="arrow-back" style="margin: -4px -10px 0px -10px; padding: 0; float: left;"></paper-icon-button>
+    Remaining: 12 Sets</div>
+    <div class="card-top-sub" style="background:{{}};" hero-id="second" hero>2 Burpees</div>
+    <div class="card-bottom" layout vertical hero-id="third" hero>
+      <div flex><img style="margin:50px 0" src="<?=URL('static','images/burpees.png')?>"></div>
 
+        <div>
+          <paper-icon-button id="fast-rewind" icon="av:fast-rewind" class="play-icon"></paper-icon-button>
+          <paper-icon-button id="play-arrow" icon="av:play-arrow" class="play-icon"></paper-icon-button>
+          <paper-icon-button id="fast-forward" icon="av:fast-forward" class="play-icon"></paper-icon-button>
+        </div>
+
+    </div>
+  </div>
+</section>
+
+</core-animated-pages>
+
+</template>
 
 
 <script>
-document.addEventListener('polymer-ready', function() {
-  var navicon = document.getElementById('navicon');
-  var drawerPanel = document.getElementById('drawerPanel');
-  navicon.addEventListener('click', function() {
-    drawerPanel.togglePanel();
-  });
-});
-</script>
+    Polymer('quiz-demo', {
+      page: 0,
+      transition: function(e) {
+        if (this.page === 2) {
+          this.page = 0;
+        } else {
+          this.page += 1;
+        }
+      },
+      
+      domReady: function() {
+          var navicon = this.$.navicon;
+          var drawerPanel = this.$.drawerPanel
+          navicon.onclick = function() {
+            drawerPanel.togglePanel();
+          };
+      },
+
+      toppingsListOrDetails: 0,
+      selectedTopping: null,
+
+      transitionTopping: function(e) {
+        var clicked_on = e.path[1].id;
+
+        console.log(clicked_on);
+        
+        if (clicked_on == 'main_chip'){
+          this.toppingsListOrDetails = 1;
+        }
+        if (clicked_on == 'top_chip'){
+          this.toppingsListOrDetails = 1;
+        }
+        if (clicked_on == 'bottom_chip'){
+          this.toppingsListOrDetails = 1;
+        }
+        else if (clicked_on == ""){
+          this.toppingsListOrDetails = 0;
+        }
+      },
+
+      complete: function(e){
+        console.log('complete',e);
+      },
+      
+    });
+
+  </script>
+
+
+</polymer-element>
+
+
+
+<quiz-demo></quiz-demo>
+
