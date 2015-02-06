@@ -18,7 +18,7 @@
 <link rel="import" href="<?=URL('static','bower_components/core-animated-pages/transitions/cross-fade.html')?>">
 <link rel="import" href="<?=URL('static','bower_components/core-animated-pages/transitions/list-cascade.html')?>">
 
-<polymer-element name="quiz-demo">
+<polymer-element name="drop-down">
 <template>
 <style>
 core-animated-pages {
@@ -242,11 +242,11 @@ core-drawer-panel:not([narrow]) #navicon {
            
               <div horizontal layout>
               
-                <div class="chip-container-main" hero on-tap="{{transitionTopping}}" flex one style="position:relative;">
-                  <div class="chip" id="main_chip" hero-id="first" hero style="position:absolute; width:97%; height:97%; background:#0b8f77" vertical layout>
+                <div class="chip-container-main" hero?="{{selected=='main_chip'}}" on-tap="{{transitionTopping}}" flex one style="position:relative;">
+                  <div class="chip" id="main_chip" hero-id="first-{{selected}}" hero?="{{selected=='main_chip'}}" style="position:absolute; width:97%; height:97%; background:#0b8f77" vertical layout>
                     <div class="chip-top" style=""  ><span class="point"><strong>50</strong> pts</span></div>
-                    <div class="chip-middle" style="position: relative;margin: auto 0; left: 5%;" hero-id="second" hero><span class="number">12</span> sets</div>
-                    <div class="chip-bottom" style="position: relative;bottom: 10px; left: 5%;" hero-id="third" hero>2 Burpees<br>1 Squat<br>2 High Knees</div>
+                    <div class="chip-middle" style="position: relative;margin: auto 0; left: 5%;" hero-id="second-{{selected}}" hero?="{{selected=='main_chip'}}" ><span class="number">12</span> sets</div>
+                    <div class="chip-bottom" style="position: relative;bottom: 10px; left: 5%;" hero-id="third-{{selected}}" hero?="{{selected=='main_chip'}}">2 Burpees<br>1 Squat<br>2 High Knees</div>
                     <paper-ripple fit></paper-ripple>
                   </div>
                 </div>
@@ -255,21 +255,21 @@ core-drawer-panel:not([narrow]) #navicon {
 
                 <div flex one>
                 <div vertical layout>
-                  <div class="chip-container-top" hero on-tap="{{transitionTopping}}" flex one>
-                    <div class="chip" id="top_chip" hero-id="top_chip" hero?="{{selectedTopping == 'top_chip'}}" vertical layout>
+                  <div class="chip-container-top" hero?="{{selected=='top_chip'}}"  on-tap="{{transitionTopping}}" flex one>
+                    <div class="chip" id="top_chip" hero-id="first-{{selected}}" hero?="{{selected=='top_chip'}}" vertical layout>
                       <div class="chip-top" style="" flex one><span class="point"><strong>30</strong> pts</span></div>
-                      <div class="chip-middle" style="text-align:center;" flex two><span class="number">1</span> min</div>
-                      <div class="chip-bottom" style="text-align:center;" flex one>Push Ups</div>
+                      <div class="chip-middle" style="text-align:center;" flex two hero-id="second-{{selected}}" hero?="{{selected=='top_chip'}}" ><span class="number">1</span> min</div>
+                      <div class="chip-bottom" style="text-align:center;" flex one hero-id="third-{{selected}}" hero?="{{selected=='top_chip'}}" >Push Ups</div>
                       <paper-ripple fit></paper-ripple>
                     </div>
                   </div>
 
 
-                  <div class="chip-container-bottom" hero on-tap="{{transitionTopping}}" flex one>
-                    <div class="chip" id="bottom_chip" hero-id="bottom_chip" hero?="{{selectedTopping == 'bottom_chip'}}" vertical layout>
+                  <div class="chip-container-bottom" hero?="{{selected=='bottom_chip'}}" on-tap="{{transitionTopping}}" flex one>
+                    <div class="chip" id="bottom_chip" hero-id="first-{{selected}}" hero?="{{selected=='bottom_chip'}}" vertical layout>
                       <div class="chip-top" style="" flex one><span class="point"><strong>15</strong> pts</span></div>
-                      <div class="chip-middle" style="text-align:center;" flex two><span class="number">6</span> </div>
-                      <div class="chip-bottom" style="text-align:center;" flex one>Jumping Jacks</div>
+                      <div class="chip-middle" style="text-align:center;" flex two hero-id="second-{{selected}}" hero?="{{selected=='bottom_chip'}}" ><span class="number">6</span> </div>
+                      <div class="chip-bottom" style="text-align:center;" flex one hero-id="third-{{selected}}" hero?="{{selected=='bottom_chip'}}" >Jumping Jacks</div>
                       <paper-ripple fit></paper-ripple>
                     </div>
                   </div>
@@ -281,7 +281,7 @@ core-drawer-panel:not([narrow]) #navicon {
               </div>
             </div>
             <div style="text-align:center;">
-            <paper-button class="start-btn" id="start-btn" raised cross-fade>Start Circuit <core-icon icon="chevron-right"></core-icon></paper-button>
+            <paper-button class="start-btn" id="start-btn" on-tap="{{transitionTopping}}" raised cross-fade>Start Circuit <core-icon icon="chevron-right"></core-icon></paper-button>
             </div>
           </core-toolbar>
          
@@ -294,12 +294,11 @@ core-drawer-panel:not([narrow]) #navicon {
 
 <!-- Detail circuit -->
 <section id="details">
-  <div class="card" layout vertical hero-id="" hero>
-    <div class="card-top" style="background:{{}};" hero-id="first" hero>
-    <paper-icon-button id="arrow-back" on-tap="{{transitionTopping}}" icon="arrow-back" style="margin: -4px -10px 0px -10px; padding: 0; float: left;"></paper-icon-button>
-    Remaining: 12 Sets</div>
-    <div class="card-top-sub" style="background:{{}};" hero-id="second" hero>2 Burpees</div>
-    <div class="card-bottom" layout vertical hero-id="third" hero>
+  <div class="card" layout vertical hero>
+    <div class="card-top" style="background:{{}};" hero-id="first-{{selected}}" hero>
+    <paper-icon-button id="arrow-back" on-tap="{{transitionTopping}}" icon="arrow-back" style="margin: -4px -10px 0px -10px; padding: 0; float: left;"></paper-icon-button>Remaining: 12 Sets</div>
+    <div class="card-top-sub" style="background:{{}};" hero-id="second-{{selected}}" hero>2 Burpees</div>
+    <div class="card-bottom" layout vertical hero-id="third-{{selected}}" hero>
       <div flex><img style="margin:50px 0" src="<?=URL('static','images/burpees.png')?>"></div>
 
         <div>
@@ -318,7 +317,7 @@ core-drawer-panel:not([narrow]) #navicon {
 
 
 <script>
-    Polymer('quiz-demo', {
+    Polymer('drop-down', {
       page: 0,
       transition: function(e) {
         if (this.page === 2) {
@@ -337,29 +336,42 @@ core-drawer-panel:not([narrow]) #navicon {
       },
 
       toppingsListOrDetails: 0,
-      selectedTopping: null,
+      selected: null,
 
       transitionTopping: function(e) {
-        var clicked_on = e.path[1].id;
+        //console.log(e.path);
+        var chip_name = e.path[1].id;
 
-        console.log(clicked_on);
         
-        if (clicked_on == 'main_chip'){
+        for(var i = 0; ;i++){
+          chip_name = e.path[i].id;
+          if (chip_name != undefined && chip_name != "") {
+            if (chip_name == 'start-btn')
+              chip_name = 'main_chip';
+            if (chip_name != 'arrow-back')
+              this.selected = chip_name;
+            break;
+          }
+        }
+
+        console.log(this.selected);
+        
+        if (chip_name == 'main_chip'){
           this.toppingsListOrDetails = 1;
         }
-        if (clicked_on == 'top_chip'){
+        if (chip_name == 'top_chip'){
           this.toppingsListOrDetails = 1;
         }
-        if (clicked_on == 'bottom_chip'){
+        if (chip_name == 'bottom_chip'){
           this.toppingsListOrDetails = 1;
         }
-        else if (clicked_on == ""){
+        else if (chip_name == 'arrow-back'){
           this.toppingsListOrDetails = 0;
         }
       },
 
       complete: function(e){
-        console.log('complete',e);
+        //console.log('complete',e);
       },
       
     });
@@ -369,7 +381,5 @@ core-drawer-panel:not([narrow]) #navicon {
 
 </polymer-element>
 
-
-
-<quiz-demo></quiz-demo>
+<drop-down></drop-down>
 
