@@ -9,6 +9,9 @@
 ## - api is an example of Hypermedia API support and access control
 #########################################################################
 
+def login():
+    return dict()
+
 def index():
     """
     example action using the internationalization operator T and flash
@@ -59,14 +62,70 @@ def call():
     return service()
 
 
-@auth.requires_login() 
+def create_account(first_name, last_name, email, password):
+    user = db.auth_user.insert( 
+            first_name = first_name, 
+            last_name = last_name, 
+            password = password, 
+            )
+    return user
+    
+
+
+
+
+
+@request.restful()
 def api():
-    """
-    this is example of API with access control
-    WEB2PY provides Hypermedia API (Collection+JSON) Experimental
-    """
-    from gluon.contrib.hypermedia import Collection
-    rules = {
-        '<tablename>': {'GET':{},'POST':{},'PUT':{},'DELETE':{}},
-        }
-    return Collection(db).process(request,response,rules)
+    response.view = 'generic.json' #+request.extension
+    logger.info(response.headers)
+    def GET(*args,**vars):
+        if args[0] == 'create_account':
+            password = "1234"
+            hash1 = CRYPT()(password)[0]
+            hash2 = "pbkdf2(1000,20,sha512)$b8b81ddbe94cc94a$868e06702f532f89bda910f7ca3593ffba4c189b"
+
+            #user = create_account("first_name", "last_name", "email@email.com", "password")
+            logger.info(hash1)
+            logger.info(hash2)
+            logger.info("result")
+            logger.info(hash1==hash2)
+            #logger.info(user)
+
+            return dict(content=args[0])
+
+        else:
+            patterns = 'auto'
+            parser = db.parse_as_rest(patterns,args,vars)
+
+
+            if parser.status == 200:
+                return dict(content=parser.response)
+            else:
+                raise HTTP(parser.status,parser.error)
+    
+    auth.settings.allow_basic_login = True
+    @auth.requires_login()
+    def POST(table_name,**vars):
+        return db[table_name].validate_and_insert(**vars)
+    def PUT(table_name,record_id,**vars):
+        return db(db[table_name]._id==record_id).update(**vars)
+    def DELETE(table_name,record_id):
+        return db(db[table_name]._id==record_id).delete()
+    def OPTIONS(*args,**vars):
+        print "OPTION called"
+        return True
+    return dict(GET=GET, POST=POST, PUT=PUT, DELETE=DELETE, OPTIONS=OPTIONS)
+
+
+# @auth.requires_login() 
+# def api():
+#     """
+#     this is example of API with access control
+#     WEB2PY provides Hypermedia API (Collection+JSON) Experimental
+#     """
+#     from gluon.contrib.hypermedia import Collection
+#     rules = {
+#         '<tablename>': {'GET':{},'POST':{},'PUT':{},'DELETE':{}},
+#         }
+#     return Collection(db).process(request,response,rules)

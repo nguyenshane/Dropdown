@@ -1,0 +1,334 @@
+<?left_sidebar_enabled,right_sidebar_enabled=False,('message' in globals())?>
+<?extend 'layout.html'?>
+
+<link rel="import" href="<?=URL('static','bower_components/core-toolbar/core-toolbar.html')?>">
+<link rel="import" href="<?=URL('static','bower_components/core-menu/core-menu.html')?>">
+<link rel="import" href="<?=URL('static','bower_components/core-item/core-item.html')?>">
+<link rel="import" href="<?=URL('static','bower_components/core-header-panel/core-header-panel.html')?>">
+<link rel="import" href="<?=URL('static','bower_components/core-drawer-panel/core-drawer-panel.html')?>">
+<link rel="import" href="<?=URL('static','bower_components/core-scroll-header-panel/core-scroll-header-panel.html')?>">
+<link rel="import" href="<?=URL('static','bower_components/core-icons/core-icons.html')?>">
+<link rel="import" href="<?=URL('static','bower_components/core-icons/image-icons.html')?>">
+<link rel="import" href="<?=URL('static','bower_components/core-icons/av-icons.html')?>">
+<link rel="import" href="<?=URL('static','bower_components/paper-icon-button/paper-icon-button.html')?>">
+<link rel="import" href="<?=URL('static','bower_components/paper-button/paper-button.html')?>">
+<link rel="import" href="<?=URL('static','bower_components/paper-input/paper-input.html')?>">
+<link rel="import" href="<?=URL('static','bower_components/paper-tabs/paper-tabs.html')?>">
+<link rel="import" href="<?=URL('static','bower_components/paper-checkbox/paper-checkbox.html')?>">
+<link rel="import" href="<?=URL('static','bower_components/core-animated-pages/core-animated-pages.html')?>">
+<link rel="import" href="<?=URL('static','bower_components/core-animated-pages/transitions/slide-up.html')?>">
+<link rel="import" href="<?=URL('static','bower_components/core-animated-pages/transitions/slide-down.html')?>">
+<link rel="import" href="<?=URL('static','bower_components/core-animated-pages/transitions/cross-fade.html')?>">
+<link rel="import" href="<?=URL('static','bower_components/core-animated-pages/transitions/list-cascade.html')?>">
+
+<polymer-element name="drop-down-login">
+<template>
+<style>
+body {
+  margin: 0;
+  padding 0;
+  background: #313d46;
+  font-family:'Helvetica Neue', Helvetica, Arial;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  -webkit-touch-callout: none;
+}
+main {
+  margin: 0;
+  height: 100%;
+  background: #313d46;
+}
+
+/**Tab**/
+paper-tabs.transparent-blue {
+  background-color: transparent;
+  color: white;
+  box-shadow: none;
+  cursor: pointer
+}
+paper-tabs.transparent-blue::shadow #selectionBar {
+  background-color: #455663;
+  height: 3px
+}
+paper-tabs.transparent-blue paper-tab::shadow #ink {
+  color: #455663;
+}
+/*Input*/
+paper-input {
+  color: rgba(255, 255, 255, 0.72);
+  padding: 0;
+}
+
+paper-input /deep/ .focused-underline {
+    /* line color when the input is focused */
+    background-color: #f26b4f;
+}
+
+
+/* Button */
+.button {
+  margin: 20px 0;
+  width: 100%;
+  font-size: 1.2em;
+  text-align: center;
+  background-color: #455663;
+  color: #fff;
+  cursor: pointer;
+}
+
+/**checkbox**/
+paper-checkbox {
+  color: #575757
+}
+paper-checkbox.blue::shadow #ink[checked] {
+  color: #00b6e3;
+}
+paper-checkbox.blue::shadow #checkbox.checked {
+  border-color: #00b6e3;
+}
+.container {
+  width: 80%;
+  margin: 0 auto;
+  /*padding-top: 180px*/
+}
+
+h1 {
+  width: 300px;
+  text-align: center;
+  display: none;
+  position: absolute;
+  left:50%;
+  top:60%;
+  font-weight: 200;
+  font-size: 3.2em;
+  color: #fff
+}
+h2 {
+  color: #555;
+  text-align: center
+}
+#logo {
+  margin: 20px auto 0 auto;
+  display: block;
+  width: 40%
+}
+.centerBlock paper-input {
+  margin: 0 auto;
+  display: block;
+  max-width: 400px;
+}
+.key {
+  margin: 15px
+}
+.ball {
+  -webkit-animation-name: dribbbling;
+  -webkit-animation-duration: .6s;
+  -webkit-animation-iteration-count: infinite;
+  -webkit-animation-direction: alternate;
+  -webkit-animation-delay: 0;
+  -webkit-animation-timing-function: ease-out;
+  animation-name: dribbbling;
+  animation-duration: .6s;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+  animation-delay: 0;
+  animation-timing-function: ease-out;
+  animation-play-state: running;
+  animation-fill-mode: none;
+}
+@-webkit-keyframes dribbbling {
+  from {
+    height: 70px;
+    -webkit-transform: translateY(50px)
+  }
+  10% {
+    height: 100px
+  }
+  to {
+    height: 110px;
+    -webkit-transform: translateY(-10px)
+  }
+}
+@keyframes dribbbling {
+  from {
+    height: 70px;
+    transform: translateY(50px)
+  }
+  10% {
+    height: 100px
+  }
+  to {
+    height: 110px;
+    transform: translateY(-10px)
+  }
+}
+.animated {
+  -webkit-animation-duration: 1s;
+  animation-duration: 1s;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+}
+@-webkit-keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+.fadeIn {
+  -webkit-animation-duration: 3s;
+  animation-duration: 3s;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+  display: block;
+  -webkit-animation-name: fadeIn;
+  animation-name: fadeIn;
+  -webkit-animation-delay: 4s;
+  animation-delay: 4s;
+}
+@-webkit-keyframes zoomInDown {
+  0% {
+    opacity: 0;
+    -webkit-transform: scale3d(.1, .1, .1) translate3d(0, -1000px, 0);
+    transform: scale3d(.1, .1, .1) translate3d(0, -1000px, 0);
+    -webkit-animation-timing-function: cubic-bezier(0.550, 0.055, 0.675, 0.190);
+    animation-timing-function: cubic-bezier(0.550, 0.055, 0.675, 0.190);
+  }
+  60% {
+    opacity: 1;
+    -webkit-transform: scale3d(.475, .475, .475) translate3d(0, 60px, 0);
+    transform: scale3d(.475, .475, .475) translate3d(0, 60px, 0);
+    -webkit-animation-timing-function: cubic-bezier(0.175, 0.885, 0.320, 1);
+    animation-timing-function: cubic-bezier(0.175, 0.885, 0.320, 1);
+  }
+}
+@keyframes zoomInDown {
+  0% {
+    opacity: 0;
+    -webkit-transform: scale3d(.1, .1, .1) translate3d(0, -1000px, 0);
+    -ms-transform: scale3d(.1, .1, .1) translate3d(0, -1000px, 0);
+    transform: scale3d(.1, .1, .1) translate3d(0, -1000px, 0);
+    -webkit-animation-timing-function: cubic-bezier(0.550, 0.055, 0.675, 0.190);
+    animation-timing-function: cubic-bezier(0.550, 0.055, 0.675, 0.190);
+  }
+  60% {
+    opacity: 1;
+    -webkit-transform: scale3d(.475, .475, .475) translate3d(0, 60px, 0);
+    -ms-transform: scale3d(.475, .475, .475) translate3d(0, 60px, 0);
+    transform: scale3d(.475, .475, .475) translate3d(0, 60px, 0);
+    -webkit-animation-timing-function: cubic-bezier(0.175, 0.885, 0.320, 1);
+    animation-timing-function: cubic-bezier(0.175, 0.885, 0.320, 1);
+  }
+}
+.zoomInDown {
+  -webkit-animation-name: zoomInDown;
+  animation-name: zoomInDown;
+}
+.zoomOutUp {
+  -webkit-animation-duration: 1s;
+  animation-duration: 1s;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+  -webkit-animation-delay: 3s;
+  animation-delay: 3s;
+  -webkit-animation-name: zoomOutUp;
+  animation-name: zoomOutUp;
+}
+@-webkit-keyframes zoomOutUp {
+  40% {
+    opacity: 1;
+    -webkit-transform: scale3d(.475, .475, .475) translate3d(0, 60px, 0);
+    transform: scale3d(.475, .475, .475) translate3d(0, 60px, 0);
+    -webkit-animation-timing-function: cubic-bezier(0.550, 0.055, 0.675, 0.190);
+    animation-timing-function: cubic-bezier(0.550, 0.055, 0.675, 0.190);
+  }
+  100% {
+    opacity: 0;
+    -webkit-transform: scale3d(.1, .1, .1) translate3d(0, -2000px, 0);
+    transform: scale3d(.1, .1, .1) translate3d(0, -2000px, 0);
+    -webkit-transform-origin: center bottom;
+    transform-origin: center bottom;
+    -webkit-animation-timing-function: cubic-bezier(0.175, 0.885, 0.320, 1);
+    animation-timing-function: cubic-bezier(0.175, 0.885, 0.320, 1);
+  }
+}
+@keyframes zoomOutUp {
+  40% {
+    opacity: 1;
+    -webkit-transform: scale3d(.475, .475, .475) translate3d(0, 60px, 0);
+    -ms-transform: scale3d(.475, .475, .475) translate3d(0, 60px, 0);
+    transform: scale3d(.475, .475, .475) translate3d(0, 60px, 0);
+    -webkit-animation-timing-function: cubic-bezier(0.550, 0.055, 0.675, 0.190);
+    animation-timing-function: cubic-bezier(0.550, 0.055, 0.675, 0.190);
+  }
+  100% {
+    opacity: 0;
+    -webkit-transform: scale3d(.1, .1, .1) translate3d(0, -2000px, 0);
+    -ms-transform: scale3d(.1, .1, .1) translate3d(0, -2000px, 0);
+    transform: scale3d(.1, .1, .1) translate3d(0, -2000px, 0);
+    -webkit-transform-origin: center bottom;
+    -ms-transform-origin: center bottom;
+    transform-origin: center bottom;
+    -webkit-animation-timing-function: cubic-bezier(0.175, 0.885, 0.320, 1);
+    animation-timing-function: cubic-bezier(0.175, 0.885, 0.320, 1);
+  }
+}
+
+</style>
+<main fit>
+        <paper-tabs selected="{{selected}}" class="transparent-blue">
+          <paper-tab>Create Account</paper-tab>
+          <paper-tab>Login</paper-tab>
+        </paper-tabs>
+
+        <core-pages class="container" selected="{{selected}}">
+          <section>
+            <img id="logo" class="logo" src="<?=URL('static','images/logo300px.png')?>">
+            <div class="centerBlock">
+              <paper-input label="First Name"></paper-input>
+              <paper-input label="Last Name"></paper-input>
+              <paper-input label="Email"></paper-input>
+              <paper-input label="Password" type="password"></paper-input>
+              <paper-button class="button" id="start-btn" on-tap="{{}}" raised cross-fade>Sign Up</paper-button>
+            </div>
+            
+          </section>
+
+          <section>
+            <h2 style="color:#f26b4f;margin-top:30px;">Welcome back<br>Dropdowner!</h2>
+            <div class="centerBlock">
+                <paper-input label="Email"></paper-input>
+                <paper-input label="Password" type="password"></paper-input>
+                <paper-button class="button" id="start-btn" on-tap="{{}}" raised cross-fade>Login<core-icon icon="chevron-right"></core-icon></paper-button>
+            </div>
+          </section>
+        </core-pages>
+</main>
+</template>
+
+
+<script>
+    Polymer('drop-down-login', {
+      selected : 0,
+
+    });
+
+  </script>
+
+
+</polymer-element>
+
+<drop-down-login></drop-down-login>
+

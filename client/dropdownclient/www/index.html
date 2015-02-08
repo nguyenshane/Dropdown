@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<head>
+  <title>Drop Down</title>
+  <meta charset="utf8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  <link rel="stylesheet" href="/components/supersonic/css/supersonic.css">
+  <link rel="stylesheet" href="/stylesheets/application.css">
+  <link rel="import" href="/components/supersonic/components/import.html">
+
+  <script src="http://localhost/cordova.js"></script>
+  <script src="/components/steroids-js/steroids.js"></script>
+  <script src="/components/angular/angular.js"></script>
+  <script src="/components/supersonic/supersonic.js"></script>
+
+    <!-- Import Polymer -->
+  <script src="/components/webcomponentsjs/webcomponents.js"></script>
+  <link rel="import" href="/components/core-elements/core-elements.html">
+  <link rel="import" href="/components/core-toolbar/core-toolbar.html">
+  <link rel="import" href="/components/core-menu/core-menu.html">
+  <link rel="import" href="/components/core-item/core-item.html">
+  <link rel="import" href="/components/core-header-panel/core-header-panel.html">
+  <link rel="import" href="/components/core-drawer-panel/core-drawer-panel.html">
+  <link rel="import" href="/components/core-scroll-header-panel/core-scroll-header-panel.html">
+  <link rel="import" href="/components/core-icons/core-icons.html">
+  <link rel="import" href="/components/core-icons/image-icons.html">
+  <link rel="import" href="/components/core-icons/av-icons.html">
+  <link rel="import" href="/components/paper-icon-button/paper-icon-button.html">
+  <link rel="import" href="/components/paper-button/paper-button.html">
+  <link rel="import" href="/components/core-animated-pages/core-animated-pages.html">
+  <link rel="import" href="/components/core-animated-pages/transitions/slide-up.html">
+  <link rel="import" href="/components/core-animated-pages/transitions/slide-down.html">
+  <link rel="import" href="/components/core-animated-pages/transitions/cross-fade.html">
+  <link rel="import" href="/components/core-animated-pages/transitions/list-cascade.html">
+</head>
+
+<body fullbleed layout vertical>
+<polymer-element name="drop-down">
+<template>
+<style>
+core-animated-pages {
+  height: 100%;
+  width: 100%;
+  position: initial;
+      
+}
+
+.greeting {
+  text-align: center;
+  text-transform: uppercase;
+  color: white;
+  margin: 20px 0;
+}
+
+core-header-panel {
+  background: white;
+}
+core-toolbar#mainheader {
+  background-color: #0b8f77;
+  color: #fff3ef;
+}
+
+.maincircuit {
+  background-color: #15b8a3;
+  padding: 10px;
+}
+
+#navheader {
+  background-color: #15b8a3;
+}
+
+#title {
+  text-align: center;
+}
+.content {
+  
+}
+
+.tall {
+
+}
+
+.middle {
+
+}
+
+#start-btn {
+  background: #f56b4e;
+  color: white;
+  margin: 0 auto;
+  border-radius: 30px;
+  width: 230px;
+  text-transform: none;
+  margin: 10px auto;
+}
+
+#section {
+  height: 5000px;
+  background: linear-gradient(rgb(214, 227, 231), rgb(173, 216, 230));
+}
+
+core-drawer-panel:not([narrow]) #navicon {
+  display: none;
+}
+
+
+.chip-container-main {
+  text-align: center;
+  position: relative;
+  
+}
+
+.chip-container-top {
+  text-align: center;
+  position: relative;
+  
+}
+
+.chip-container-bottom {
+  text-align: center;
+  position: relative;
+  
+}
+
+.chip {
+  display: inline-block;
+  position: relative;
+  border-radius: 3px;
+  margin: 4px;
+  overflow: hidden;
+  text-align: start;
+  background-color: #00a186;
+  box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.16);
+  height: 100%;
+  color: white;
+}
+
+.chip-top {
+
+}
+
+.point {
+  background: #e7d67a;
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-size: 0.7em;
+  text-transform: lowercase;
+  float: right;
+  margin: 10px;
+  /*box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.19);*/
+  color: #4d4542;
+  opacity: 50%;
+}
+
+.chip-middle {
+  padding: 8px;
+}
+
+.number {
+  font-size: 3em;
+}
+
+.chip-bottom {
+  padding: 8px;
+  font-size: 1em;
+
+
+}
+
+.chip-title {
+  font-weight: bold;
+}
+#details {
+  padding: 0px;
+  /*background: #15b8a3;*/
+}
+
+.card {
+  height: 100%;
+  margin: 0;
+  border-radius: 0px;
+  text-align: start;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  text-align: center;
+}
+
+.card-top {
+  padding: 20px;
+  color: white;
+  font-size: 2em;
+  text-align: center;
+  background: #0b8f77;
+}
+
+.card-top-sub {
+  padding: 20px;
+  color: white;
+  font-size: 2em;
+  text-align: center;
+  background: #15b8a3;
+}
+
+.card-bottom {
+  height: 100%;
+}
+
+.play-icon {
+  border-radius: 60%;
+  width: 60px;
+  height: 60px;
+  margin-right: 16px;
+  color: #15b8a3;
+}
+
+.play-icon /deep/ core-icon[role=img] {
+    height: 100%;
+    width: 100%;
+    padding: 1px;
+    margin: 1px;
+  }
+
+.card-album-title {
+  font-size: 2em;
+}
+</style>
+<core-animated-pages selected="{{toppingsListOrDetails}}" transitions="hero-transition slide-up slide-down cross-fade list-cascade" on-core-animated-pages-transition-end="{{complete}}">     
+<section>
+  <core-drawer-panel id="drawerPanel" rightDrawer>
+    
+    <core-header-panel drawer>
+      <core-toolbar id="navheader" cross-fade>
+        <span>Menu</span>
+      </core-toolbar>
+      <core-menu>
+        <core-item label="One"></core-item>
+        <core-item label="Log out"></core-item>
+      </core-menu>
+     </core-header-panel>
+
+    <core-header-panel main>
+      <core-toolbar id="mainheader">
+        <paper-icon-button id="useravatar" icon="account-circle"></paper-icon-button>
+        <span flex id="title">Dropdown</span>
+        <paper-icon-button id="navicon" icon="image:flash-on"></paper-icon-button>
+      </core-toolbar>
+
+      <div class="content">
+
+          <div id="maincircuit" class="maincircuit">
+            <!-- <core-icon-button icon="arrow-back" id="core_icon_button"></core-icon-button> -
+            <div id="div" flex></div>
+            <core-icon-button icon="search" id="core_icon_button1"></core-icon-button>
+            <core-icon-button icon="more-vert" id="core_icon_button2"></core-icon-button>
+            <div class="top indent">Test</div>  -->
+            <div class="greeting">Cassie, your circuit for today</div>
+            <div class="middle">
+            
+           
+              <div horizontal layout>
+              
+                <div class="chip-container-main" hero?="{{selected=='main_chip'}}" on-tap="{{transitionTopping}}" flex one style="position:relative;">
+                  <div class="chip" id="main_chip" hero-id="first-{{selected}}" hero?="{{selected=='main_chip'}}" style="position:absolute; width:97%; height:97%; background:#0b8f77" vertical layout>
+                    <div class="chip-top" style=""  ><span class="point"><strong>50</strong> pts</span></div>
+                    <div class="chip-middle" style="position: relative;margin: auto 0; left: 5%;" hero-id="second-{{selected}}" hero?="{{selected=='main_chip'}}" ><span class="number">12</span> sets</div>
+                    <div class="chip-bottom" style="position: relative;bottom: 10px; left: 5%;" hero-id="third-{{selected}}" hero?="{{selected=='main_chip'}}">2 Burpees<br>1 Squat<br>2 High Knees</div>
+                    <paper-ripple fit></paper-ripple>
+                  </div>
+                </div>
+                
+
+
+                <div flex one>
+                <div vertical layout>
+                  <div class="chip-container-top" hero?="{{selected=='top_chip'}}"  on-tap="{{transitionTopping}}" flex one>
+                    <div class="chip" id="top_chip" hero-id="first-{{selected}}" hero?="{{selected=='top_chip'}}" vertical layout>
+                      <div class="chip-top" style="" flex one><span class="point"><strong>30</strong> pts</span></div>
+                      <div class="chip-middle" style="text-align:center;" flex two hero-id="second-{{selected}}" hero?="{{selected=='top_chip'}}" ><span class="number">1</span> min</div>
+                      <div class="chip-bottom" style="text-align:center;" flex one hero-id="third-{{selected}}" hero?="{{selected=='top_chip'}}" >Push Ups</div>
+                      <paper-ripple fit></paper-ripple>
+                    </div>
+                  </div>
+
+
+                  <div class="chip-container-bottom" hero?="{{selected=='bottom_chip'}}" on-tap="{{transitionTopping}}" flex one>
+                    <div class="chip" id="bottom_chip" hero-id="first-{{selected}}" hero?="{{selected=='bottom_chip'}}" vertical layout>
+                      <div class="chip-top" style="" flex one><span class="point"><strong>15</strong> pts</span></div>
+                      <div class="chip-middle" style="text-align:center;" flex two hero-id="second-{{selected}}" hero?="{{selected=='bottom_chip'}}" ><span class="number">6</span> </div>
+                      <div class="chip-bottom" style="text-align:center;" flex one hero-id="third-{{selected}}" hero?="{{selected=='bottom_chip'}}" >Jumping Jacks</div>
+                      <paper-ripple fit></paper-ripple>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+                
+              </div>
+            </div>
+            <div style="text-align:center;">
+            <paper-button class="start-btn" id="start-btn" on-tap="{{transitionTopping}}" raised cross-fade>Start Circuit <core-icon icon="chevron-right"></core-icon></paper-button>
+            </div>
+          </core-toolbar>
+         
+
+      </div>
+    </div>
+
+  </core-drawer-panel>
+</section>
+
+<!-- Detail circuit -->
+<section id="details">
+  <div class="card" layout vertical hero>
+    <div class="card-top" style="background:{{}};" hero-id="first-{{selected}}" hero>
+    <paper-icon-button id="arrow-back" on-tap="{{transitionTopping}}" icon="arrow-back" style="margin: -4px -10px 0px -10px; padding: 0; float: left;"></paper-icon-button>Remaining: 12 Sets</div>
+    <div class="card-top-sub" style="background:{{}};" hero-id="second-{{selected}}" hero>2 Burpees</div>
+    <div class="card-bottom" layout vertical hero-id="third-{{selected}}" hero>
+      <div flex><img style="margin:50px 0" src="/images/burpees.png"></div>
+
+        <div>
+          <paper-icon-button id="fast-rewind" icon="av:fast-rewind" class="play-icon"></paper-icon-button>
+          <paper-icon-button id="play-arrow" icon="av:play-arrow" class="play-icon"></paper-icon-button>
+          <paper-icon-button id="fast-forward" icon="av:fast-forward" class="play-icon"></paper-icon-button>
+        </div>
+
+    </div>
+  </div>
+</section>
+
+
+
+</core-animated-pages>
+
+</template>
+
+
+<script>
+    Polymer('drop-down', {
+      page: 0,
+      transition: function(e) {
+        if (this.page === 2) {
+          this.page = 0;
+        } else {
+          this.page += 1;
+        }
+      },
+      
+      domReady: function() {
+          var navicon = this.$.navicon;
+          var drawerPanel = this.$.drawerPanel
+          navicon.onclick = function() {
+            drawerPanel.togglePanel();
+          };
+      },
+
+      toppingsListOrDetails: 0,
+      selected: null,
+
+      transitionTopping: function(e) {
+        //console.log(e.path);
+        var chip_name = e.path[1].id;
+
+        
+        for(var i = 0; ;i++){
+          chip_name = e.path[i].id;
+          if (chip_name != undefined && chip_name != "") {
+            if (chip_name == 'start-btn')
+              chip_name = 'main_chip';
+            if (chip_name != 'arrow-back')
+              this.selected = chip_name;
+            break;
+          }
+        }
+
+        console.log(this.selected);
+        
+        if (chip_name == 'main_chip'){
+          this.toppingsListOrDetails = 1;
+        }
+        if (chip_name == 'top_chip'){
+          this.toppingsListOrDetails = 1;
+        }
+        if (chip_name == 'bottom_chip'){
+          this.toppingsListOrDetails = 1;
+        }
+        else if (chip_name == 'arrow-back'){
+          this.toppingsListOrDetails = 0;
+        }
+      },
+
+      complete: function(e){
+        //console.log('complete',e);
+      },
+      
+    });
+
+  </script>
+
+
+</polymer-element>
+
+<drop-down></drop-down>
+
+</body>
+</html>
