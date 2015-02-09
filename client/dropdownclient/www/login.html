@@ -2,7 +2,7 @@
 <head>
   <title>Drop Down</title>
   <meta charset="utf8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
 
   <link rel="stylesheet" href="/components/supersonic/css/supersonic.css">
   <link rel="stylesheet" href="/stylesheets/application.css">
@@ -27,10 +27,9 @@
   <link rel="import" href="/components/paper-input/paper-input.html">
   <link rel="import" href="/components/paper-tabs/paper-tabs.html">
   <link rel="import" href="/components/paper-checkbox/paper-checkbox.html">
-  <link rel="import" href="components/core-ajax/core-ajax.html">
 </head>
 
-<body fullbleed layout vertical>
+<body fullbleed layout vertical style="background: #313d46;">
 
 <polymer-element name="drop-down-login">
 <template>
@@ -77,7 +76,20 @@ paper-input /deep/ .focused-underline {
     /* line color when the input is focused */
     background-color: #f26b4f;
 }
+paper-input-decorator {
+  color: rgba(255, 255, 255, 0.72);
+}
 
+paper-input-decorator /deep/ .focused-underline {
+    /* line color when the input is focused */
+    background-color: #f26b4f;
+}
+
+#password {
+  color: rgba(255, 255, 255, 0.72);
+  margin:0;
+  padding: inherit;
+}
 
 /* Button */
 .button {
@@ -103,6 +115,7 @@ paper-checkbox.blue::shadow #checkbox.checked {
 .container {
   width: 80%;
   margin: 0 auto;
+  background: #313d46;
   /*padding-top: 180px*/
 }
 
@@ -130,6 +143,12 @@ h2 {
   margin: 0 auto;
   display: block;
   max-width: 400px;
+}
+
+.error {
+  color: red;
+  font-style: bold;
+  text-align: center;
 }
 .key {
   margin: 15px
@@ -308,10 +327,28 @@ h2 {
           <section>
             <img id="logo" class="logo" src="/images/logo300px.png">
             <div class="centerBlock">
-              <paper-input id="firstname" label="First Name" value="{{firstname}}"></paper-input>
-              <paper-input id="lastname" label="Last Name" value="{{lasttname}}"></paper-input>
-              <paper-input id="email" label="Email" value="{{email}}"></paper-input>
-              <paper-input id="password" label="Password" type="password" value="{{password}}"></paper-input>
+
+              <paper-input-decorator id="firstname_decorator" label="First Name" error="Please enter your first name">
+              <input id="firstname" is="core-input" value="{{firstname}}" pattern="^[a-zA-Z]+(([\'\,\.\-][a-zA-Z])?[a-zA-Z]*)*$" required>
+              <core-localstorage name="firstname" value="{{firstname}}"></core-localstorage>
+              </paper-input-decorator>
+
+              <paper-input-decorator id="lastname_decorator" label="Last Name" error="Please enter your last name">
+              <input id="lastname" is="core-input" value="{{lastname}}" pattern="^[a-zA-Z]+(([\'\,\.\-][a-zA-Z])?[a-zA-Z]*)*$" required>
+              <core-localstorage name="lastname" value="{{lastname}}"></core-localstorage>
+              </paper-input-decorator>
+
+              <paper-input-decorator id="email_decorator" label="Email" error="Please enter your valid email address">
+              <input id="email" is="core-input" value="{{email}}" pattern="^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$" required>
+              <core-localstorage name="email" value="{{email}}"></core-localstorage>
+              </paper-input-decorator>
+              <p id="error_signup" class="error" hidden?="{{hide_error_signup}}">This email is already existed</p>
+
+              <paper-input-decorator id="password_decorator" label="Password" error="Password has to be 4 to 15 characters">
+              <input id="password" is="core-input" value="{{password}}" type="password" pattern="^.{4,15}$" required>
+              <core-localstorage name="password" value="{{password}}"></core-localstorage>
+              </paper-input-decorator>
+              
               <paper-button class="button" id="signup-btn" on-tap="{{submit_signup}}" raised cross-fade>Sign Up</paper-button>
             </div>
             
@@ -320,54 +357,114 @@ h2 {
           <section>
             <h2 style="color:#f26b4f;margin-top:30px;">Welcome back<br>Dropdowner!</h2>
             <div class="centerBlock">
-                <paper-input label="Email"></paper-input>
-                <paper-input label="Password" type="password"></paper-input>
-                <paper-button class="button" id="start-btn" on-tap="{{submit_signin}}" raised cross-fade>Login<core-icon icon="chevron-right"></core-icon></paper-button>
+                <p id="error_login" class="error" hidden?="{{hide_error_login}}">Incorrect email and/or password!</p>
+                <paper-input-decorator id="email_decorator" label="Email" error="Please enter your registerd email address">
+                <input id="email" is="core-input" value="{{email}}" pattern="^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$" required>
+                <core-localstorage name="email" value="{{email}}"></core-localstorage>
+                </paper-input-decorator>
+
+                <paper-input-decorator id="password_decorator" label="Password" error="Password has to be 4 to 15 characters">
+                <input id="password" is="core-input" value="{{password}}" type="password" pattern="^.{4,15}$" required>
+                <core-localstorage name="password" value="{{password}}"></core-localstorage>
+                </paper-input-decorator>
+
+                <paper-button class="button" id="signin-btn" on-tap="{{submit_signin}}" raised cross-fade>Login<core-icon icon="chevron-right"></core-icon></paper-button>
             </div>
           </section>
         </core-pages>
 </main>
 
 <core-ajax
-    id="ajax"
-    auto
+    id="signup_ajax"
     url="http://10.0.1.23:8000/dropdown/default/api/create_account.json"
-    
     method="GET"
     handleAs="json"
-    on-core-response="{{handleResponse}}"></core-ajax>
+    on-core-response="{{handleResponseSignup}}"></core-ajax>
+
+<core-ajax
+    id="signin_ajax"
+    url="http://10.0.1.23:8000/dropdown/default/api/signin.json"
+    method="GET"
+    handleAs="json"
+    on-core-response="{{handleResponseSignin}}"></core-ajax>
+
 </template>
 
 
 <script>
     Polymer('drop-down-login', {
       selected : 0,
-      email : null,
-      password : null,
-      handleResponse: function(e){
-        console.log(e);
+      hide_error_login: true,
+      hide_error_signup: true,
+
+      handleResponseSignup: function(e){
+        
+        var success = e.detail.response.success;
+        console.log(success);
+
+        if (success) {
+          selected = 1;
+          this.submit_signin();
+        }
+        else {
+          console.log("This email is already existed")
+          this.hide_error_signup = false;
+        }
       },
 
       submit_signup: function(){
-        this.email = this.$.email.value;
-        this.password = this.$.password.value;
+        this.$.firstname_decorator.isInvalid = !this.$.firstname.validity.valid;
+        this.$.lastname_decorator.isInvalid = !this.$.lastname.validity.valid;
+        this.$.email_decorator.isInvalid = !this.$.email.validity.valid;
+        this.$.password_decorator.isInvalid = !this.$.password.validity.valid;
 
-        var params = '{"account":'+ '"' + btoa(this.email + ':' + this.password) + '"}';
-        console.log(params);
-        this.$.ajax.params = params;
-        this.$.ajax.go();
+        if(this.$.firstname.validity.valid 
+          && this.$.lastname.validity.valid
+          && this.$.email.validity.valid
+          && this.$.password.validity.valid) {
 
-      }
+          var params = '{"epas":"' + btoa(this.email + ':' + this.password) + '",';
+          params += '"firstname":"'+ this.firstname + '",';
+          params += '"lastname":"'+ this.lastname + '"';
+          params += '}';
+          console.log(params);
+          this.$.signup_ajax.params = params;
+          this.$.signup_ajax.go();
+        }
+      },
+
+      handleResponseSignin: function(e){
+        auth = e.detail.response.success;
+        console.log(auth);
+        
+        if (!auth){
+          this.hide_error_login = false;
+        } 
+        else {
+          this.hide_error_login = true;
+          window.location.replace("index.html");
+        } 
+
+      },
+
+      submit_signin: function(){
+        this.$.email_decorator.isInvalid = !this.$.email.validity.valid;
+        this.$.password_decorator.isInvalid = !this.$.password.validity.valid;
+
+        if(this.$.email.validity.valid && this.$.password.validity.valid) {
+          this.$.signin_ajax.headers = '{"X-Requested-With": "XMLHttpRequest"' 
+              + ', "Authorization": "Basic ' + btoa(this.email + ":" + this.password) + '"}';
+
+          var params = '{"epas":"' + btoa(this.email + ':' + this.password) + '"';
+          params += '}';
+          console.log(params);
+          this.$.signin_ajax.params = params;
+          this.$.signin_ajax.go();
+        }
+      },
 
 
 
-
-
-      // ready: function(){
-      //  this.$.ajax.headers = '{"X-Requested-With": "XMLHttpRequest"' + 
-      //                     ', "Authorization": "Basic ' + btoa(this.username 
-      //                     + ":" + this.password) + '"}';
-      //  });
     });
 
   </script>

@@ -235,7 +235,7 @@ core-drawer-panel:not([narrow]) #navicon {
       </core-toolbar>
       <core-menu>
         <core-item label="One"></core-item>
-        <core-item label="Log out"></core-item>
+        <core-item label="Log out" on-click="{{logout}}"></core-item>
       </core-menu>
      </core-header-panel>
 
@@ -333,6 +333,18 @@ core-drawer-panel:not([narrow]) #navicon {
 
 </core-animated-pages>
 
+
+<core-localstorage name="firstname" value="{{firstname}}"></core-localstorage>
+<core-localstorage name="lastname" value="{{lastname}}"></core-localstorage>
+<core-localstorage name="email" value="{{email}}"></core-localstorage>
+<core-localstorage name="password" value="{{password}}"></core-localstorage>
+<core-ajax
+    id="logout_ajax"
+    url="http://10.0.1.23:8000/dropdown/default/api/logout.json"
+    method="GET"
+    handleAs="json"
+    on-core-response="{{handleResponseLogout}}"></core-ajax>
+
 </template>
 
 
@@ -353,6 +365,30 @@ core-drawer-panel:not([narrow]) #navicon {
           navicon.onclick = function() {
             drawerPanel.togglePanel();
           };
+      },
+
+      logout: function() {
+        this.$.logout_ajax.headers = '{"X-Requested-With": "XMLHttpRequest"' 
+              + ', "Authorization": "Basic ' + btoa(this.email + ":" + this.password) + '"}';
+        this.$.logout_ajax.go();
+      
+      },
+
+      handleResponseLogout: function(e){
+        auth = (e.detail.response.success === 'true');
+        console.log(auth);
+        
+        if (!auth){
+          this.firstname = null;
+          this.lastname = null;
+          this.email = null;
+          this.password = null;
+          window.location.replace("login.html");
+        } 
+        else {
+          console.log("Failed logout");
+        } 
+
       },
 
       toppingsListOrDetails: 0,

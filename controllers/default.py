@@ -63,36 +63,59 @@ def call():
 
 
 def create_account(first_name, last_name, email, password):
-    user = db.auth_user.insert( 
-            first_name = first_name, 
-            last_name = last_name, 
-            password = password, 
-            )
+    user = None
+    if(not db(db.auth_user.email == email).select().first()):
+        user = db.auth_user.insert( 
+                first_name = first_name, 
+                last_name = last_name, 
+                password = password, 
+                email  = email,
+                )
     return user
+
+
+def check_access():
+    return True if auth.is_logged_in() else False
     
-
-
-
-
 
 @request.restful()
 def api():
     response.view = 'generic.json' #+request.extension
-    logger.info(response.headers)
     def GET(*args,**vars):
         if args[0] == 'create_account':
-            password = "1234"
-            hash1 = CRYPT()(password)[0]
-            hash2 = "pbkdf2(1000,20,sha512)$b8b81ddbe94cc94a$868e06702f532f89bda910f7ca3593ffba4c189b"
+            logger.info(vars)
+            epas = vars['epas']
+            epasdecode = epas.decode('base64').split(':')
+            email = epasdecode[0]
+            password = CRYPT()(epasdecode[1])[0]
+            firstname = vars['firstname']
+            lastname = vars['lastname']
+            user = create_account(firstname, lastname, email, password)
 
-            #user = create_account("first_name", "last_name", "email@email.com", "password")
-            logger.info(hash1)
-            logger.info(hash2)
-            logger.info("result")
-            logger.info(hash1==hash2)
-            #logger.info(user)
+            if (user != None):
+                success=True
+            else: 
+                success=False
+            return dict(success=success)
 
-            return dict(content=args[0])
+        if args[0] == 'signin':
+            auth.basic()
+            logger.info(request.env.http_authorization)
+            logger.info(auth.user)
+            success=check_access()
+            return dict(success=success)
+
+        if args[0] == 'logout':
+            logger.info('Logging out')
+            #logger.info(request.env.http_authorization)
+            #auth.basic()
+
+            #logger.info(auth.user)
+            if auth.user:
+                auth.logout()
+            
+            success=check_access()
+            return dict(success=success)
 
         else:
             patterns = 'auto'
