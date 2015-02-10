@@ -14,7 +14,9 @@ if not request.env.web2py_runtime_gae:
     db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
 else:
     ## connect to Google BigTable (optional 'google:datastore://namespace')
-    db = DAL('google:datastore+ndb')
+    #db = DAL('google:datastore+ndb')
+    db = DAL('google:sql://future-aurora-851:dropdown/dropdown')
+    #migration='false'
     ## store sessions and tickets there
     session.connect(request, response, db=db)
     ## or store session in Memcache, Redis, etc.

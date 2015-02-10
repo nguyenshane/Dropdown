@@ -340,7 +340,7 @@ core-drawer-panel:not([narrow]) #navicon {
 <core-localstorage name="password" value="{{password}}"></core-localstorage>
 <core-ajax
     id="logout_ajax"
-    url="http://10.0.1.23:8000/dropdown/default/api/logout.json"
+    url="{{server}}/dropdown/default/api/logout.json"
     method="GET"
     handleAs="json"
     on-core-response="{{handleResponseLogout}}"></core-ajax>
@@ -350,6 +350,7 @@ core-drawer-panel:not([narrow]) #navicon {
 
 <script>
     Polymer('drop-down', {
+      server: 'http://future-aurora-851.appspot.com',
       page: 0,
       transition: function(e) {
         if (this.page === 2) {
