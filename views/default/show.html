@@ -1,0 +1,8 @@
+{{extend 'layout.html'}}
+
+<h1>Exercise: {{=exercise.name}}</h1>
+<h2>Point: {{=point}}</h2>
+<div style="text-align:center">
+<img width="200px"
+     src="{{=URL('download', args=exercise.demopic)}}" />
+</div>

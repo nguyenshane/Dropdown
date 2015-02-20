@@ -1,0 +1,16 @@
+{{extend 'layout.html'}}
+<h1>Current User</h1>
+<p>
+    First Name: {{=userrev.first_name}} <br>
+    Last Name: {{=userrev.last_name}} <br>
+    Email: {{=userrev.email}} <br>
+    Point: {{=userrev.point}} <br>
+    
+</p>
+<h1>List of completed exercise</h1>
+<ul>{{for linktable_ref in linktable_ref:}}
+     {{=LI(A(linktable_ref.exercise_name, _href=URL('show', args=linktable_ref.exercise_id)))}}
+{{pass}}
+</ul>
+{{=A('Back to Home', _class='btn', _href=URL('default', 'index'))}}
+{{=A('Reset Point', _class='btn', _href=URL('default', 'reset'))}}

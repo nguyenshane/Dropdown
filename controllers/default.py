@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # this file is released under public domain and you can use without limitations
-
+import random
 #########################################################################
 ## This is a sample controller
 ## - index is the default action of any application
@@ -13,16 +13,108 @@ def login():
     return dict()
 
 def index():
-    """
-    example action using the internationalization operator T and flash
-    rendered by views/default/index.html or views/generic.html
-
-    if you need a simple wiki simply replace the two lines below with:
-    return auth.wiki()
-    """
-    response.flash = T("Welcome to web2py!")
+    #exercise = db().select(db.exercise.ALL, orderby=db.exercise.name)
+    #exercise = db.exercise
+    #exercise = db((db.exercise.id ==3) & (db.exercise.id==2)).select()
+    lastExercise = db().select(db.exercise.ALL).last()
+    maxNum = lastExercise.id;
     
-    return dict(message=T('Hello World'))
+    num1 = random.randint(1, maxNum)
+    num2 = random.randint(1, maxNum)
+    num3 = random.randint(1, maxNum)
+    while(num2 == num1 or num2 == num3):
+        num2 = random.randint(1, maxNum)
+    while(num3 == num1 or num3 == num2):
+        num3 = random.randint(1, maxNum)
+        
+    exercise = (db.exercise.id ==num1 ) | (db.exercise.id ==num2) | (db.exercise.id ==num3)
+    def generate_complete_button(row):
+        b = A('Complete', _class='btn', _href=URL('default', 'complete', args=[row.id]))
+        return b
+    
+    links = [
+        dict(header='', body = generate_complete_button),
+        ]
+    
+    grid = SQLFORM.grid(exercise ,
+                        csv=False,links=links,editable=False, deletable=False,
+                        )
+    return dict(grid=grid)
+
+@auth.requires_login()
+def showuser():
+    userrev = db(db.auth_user.id == auth.user_id).select().first()
+    linktable_ref = db(db.linktable.user_id == auth.user_id).select()
+    return dict(userrev=userrev,linktable_ref=linktable_ref)
+
+
+def show():
+    exercise = db.exercise(request.args(0,cast=int)) or redirect(URL('index'))
+    point = exercise.point
+    
+    return dict(exercise=exercise,point=point)
+
+@auth.requires_login()
+def complete():
+    
+    content = None
+    
+    exerciseid = request.args(0)
+    
+    exer = db(db.exercise.id == exerciseid).select().first()
+    userrev = db(db.auth_user.id == auth.user_id).select().first()
+    
+    point = exer.point
+    newpoint = int(userrev.point)
+    form2 = FORM.confirm('Did you complete this exercise')
+    if form2.accepted:
+        redirect(URL('default', 'showuser'))
+    newpoint += point
+    userrev.update_record(point=newpoint)
+    
+    linktable_id = db.linktable.insert(user_id = auth.user_id,exercise_id = exerciseid,exercise_name=exer.name)
+    
+    
+    content = form2
+        
+    
+    return dict(content=content,exer=exer,userrev=userrev)
+
+@auth.requires_login()
+def reset():
+    userrev = db(db.auth_user.id == auth.user_id).select().first()
+    userrev.point = 0
+    userrev.update_record()
+    db(db.linktable.user_id == auth.user_id).delete()
+    
+    form = FORM.confirm('You will reset your point')
+    if form.accepted:
+        redirect(URL('default', 'index'))
+    
+    return dict(form=form)
+
+@auth.requires_login()
+def upgrade():
+    userrev = db(db.auth_user.id == auth.user_id).select().first()
+    myadmin = db(db.auth_group.role == "myadmin").select().first()
+    db.auth_membership.insert(user_id = userrev.id,group_id = myadmin.id)
+    
+    
+    return dict()
+
+@auth.requires_membership('myadmin')
+def add_exercise():
+    userrev = db(db.auth_user.id == auth.user_id).select().first()
+    
+    form = SQLFORM.factory(Field('name',label='Exercise Name'),Field('point','integer'),Field('body','text',label='Discription'))
+    form.add_button('Cancel', URL('default', 'index'))
+    
+    if form.process().accepted:
+        db.exercise.insert(name=form.vars.name,point=form.vars.point,body=form.vars.body)
+        # Successful processing.
+        session.flash = T("new exercise created")
+        redirect(URL('default', 'index'))
+    return dict(form=form)
 
 
 def user():

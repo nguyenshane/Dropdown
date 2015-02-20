@@ -50,10 +50,14 @@ service = Service()
 plugins = PluginManager()
 
 ## create all tables needed by auth if not custom tables
-auth.settings.extra_fields['auth_user']= [
-  Field('facebook_id', writable=False, readable=False, default=''),
-  Field('gender'),
-  Field('birthday','date'),]
+auth.settings.extra_fields['auth_user']= [Field('facebook_id', writable=False, readable=False, default=''),
+                                          Field('gender'),
+                                          Field('birthday','date'),
+                                          Field('point',default = 10)]
+
+
+
+
 auth.define_tables(username=False, signature=False)
 
 ## configure email
