@@ -39,7 +39,7 @@ def index():
 
 
     def generate_complete_button(row):
-        b = A('Complete', _class='btn', _href=URL('default', 'complete', args=[row.id]))
+        b = A('Complete', _class='btn', _href=URL('admin', 'complete', args=[row.id]))
         return b
     
     links = [
@@ -57,6 +57,39 @@ def create_circuit():
     grid = SQLFORM.grid(db.circuit)
     return dict(grid=grid)
 
+def exercise_set_manager():
+    query = db().select(db.exercise_set.set_name, distinct=True)
+    links = HTML()
+
+    if not request.args(0):
+        for row in query:
+            links += HTML(A(row.set_name, _class='btn', _href=URL('admin', 'exercise_set_manager', args=[row.set_name])))
+            logger.info(row.set_name)
+
+
+        grid = SQLTABLE(query)
+        return dict(links=links)
+
+    else:
+        set_name = request.args[0]
+        table = TR(TD('Exercise'), TD('Count & Unit'), TD('Point'))
+
+        query = db(db.exercise_set.set_name == set_name).select()
+        for row in query:
+            exercise_name = db(db.exercise.id == row.exercise_id).select(db.exercise.name)[0].name
+            exercise_link = A(exercise_name, _href=URL('admin', 'exercise_manager/view/exercise/'+str(row.exercise_id),user_signature=True))
+            table += TR(TD(exercise_link), TD(str(row.count) + ' ' + row.unit), TD(row.point))
+
+        table = TABLE(table)
+
+        #table = SQLTABLE(query)
+        return dict(table=table)
+
+
+
+
+
+
 def create_exercise_set():
     # List all of the exercises
     form = SQLFORM.factory(
@@ -64,19 +97,21 @@ def create_exercise_set():
         )
     # Create exercise set based on the chosen exercises
     if form.process().accepted:
-        response.cookies['exercises'] = form.vars.exercise
+        response.cookies['create_exercise_set'] = form.vars.exercise
+        response.cookies['create_exercise_set']['expires'] = 3600
         redirect(URL('admin','create_exercise_set_detail'))
-        #redirect(URL('admin','create_exercise_set_detail', vars=dict(exercises=form.vars.exercise)))
-
-    #grid = SQLFORM(db.exercise_set)
+        
     return dict(form=form)
 
 
 def create_exercise_set_detail():
-    if request.cookies.has_key('exercises'):
-        exercises = eval(request.cookies['exercises'].value)
+    # Get create_exercise_set from cookie
+    if request.cookies.has_key('create_exercise_set') and not request.cookies['create_exercise_set'].value == '':
+        exercises = eval(request.cookies['create_exercise_set'].value)
+    else:
+        redirect(URL('admin','create_exercise_set'))
 
-    logger.info(exercises)
+    # Create the form for exercise set detail
     fields = [Field('exercise_set_name', requires=IS_NOT_EMPTY())]
 
     for exercise_id in exercises:
@@ -90,7 +125,6 @@ def create_exercise_set_detail():
         *fields, hidden=dict(exercises=exercises)
     )
 
-
     # Add to database
     if form.process().accepted:
         exercise_set_name = form.vars['exercise_set_name']
@@ -103,8 +137,11 @@ def create_exercise_set_detail():
                 unit = form.vars[exercise_id+'unit'], 
                 )
 
-        session.flash = T("New exercise set created")
-        redirect(URL('admin','index'))
+        session.flash = T("New Exercise Set created")
+        response.cookies['create_exercise_set'] = ''
+        response.cookies['create_exercise_set']['expires'] = -10
+
+        redirect(URL('admin','create_exercise_set'))
 
     return dict(form=form)
 
