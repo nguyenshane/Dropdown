@@ -52,10 +52,104 @@ def index():
 
     #return locals()
 
+def circuit_manager():
+    table = SQLFORM.grid(db.circuit)
+    return dict(table=table)
 
 def create_circuit():
-    grid = SQLFORM.grid(db.circuit)
-    return dict(grid=grid)
+    # List all of the circuits
+    query = db().select(db.exercise_set.set_name, distinct=True)
+    option = CAT()
+    for row in query:
+        exercise_name = row.set_name
+        #exercise_name = db(db.exercise.id == row.exercise_id).select(db.exercise.name)[0].name
+        option += OPTION(exercise_name, _value=exercise_name)
+
+    
+    form = SELECT(option, _class='generic-widget', _id='exercise_set', _name='exercise_set')
+    form = FORM(form , INPUT(_type='submit'), _action='', _method='post')
+
+    # Create exercise set based on the chosen exercises
+    if form.process().accepted:
+        response.cookies['create_circuit'] = form.vars.exercise_set
+        response.cookies['create_circuit']['expires'] = 3600
+        redirect(URL('admin','create_circuit_detail'))
+        
+    return dict(form=form)
+
+def create_circuit_detail():
+    multiple_sets = False
+    # Get create_exercise_set from cookie
+    if request.cookies.has_key('create_circuit') and not request.cookies['create_circuit'].value == '':
+        exercise_sets = request.cookies['create_circuit'].value
+        if (exercise_sets[0] == '['):
+            exercise_sets = eval(exercise_sets)
+            multiple_sets = True
+    else:
+        redirect(URL('admin','create_circuit'))
+
+    # Create the form for exercise set detail
+    fields = [Field('exercise_set_name', label='Exercise set', requires=IS_NOT_EMPTY(), default=exercise_sets, writable=False),
+              Field('circuit_name', requires=IS_NOT_EMPTY(), default=exercise_sets),
+              Field('count', requires=IS_NOT_EMPTY(), label='Count'),
+              Field('unit',  label='Unit', requires=IS_IN_SET(UNITS, zero=None, sort=False)),
+              ]
+    suggested_point = 0
+
+    # case of 1 set only
+    if not multiple_sets:
+        _exercise_sets = db(db.exercise_set.set_name == exercise_sets).select()
+        _point = 0
+
+        for _exercise_set in _exercise_sets:
+            _point += _exercise_set.point
+        suggested_point += _point
+    else:
+        # multiple sets not allow
+        logger.info("error, multiple sets not allowed")
+        # for exercise_set_name in exercise_sets:
+        #     _exercise_sets = db(db.exercise_set.set_name == exercise_set_name).select()
+        #     _point = 0
+
+        #     for _exercise_set in _exercise_sets:
+        #         _point += _exercise_set.point
+        #     suggested_point += _point
+
+    fields += Field('point', requires=IS_NOT_EMPTY(), label='Points (' + str(suggested_point) + ')', default=suggested_point),
+    #fields += Field(exercise_set_name+'name', requires=IS_NOT_EMPTY(), writable=False, label=exercise_set_name, default=""),
+    
+    
+    form = SQLFORM.factory(
+        *fields, hidden=dict(exercise_sets=exercise_sets)
+    )
+    
+
+
+    # Add to database
+    if form.process().accepted:
+        form.vars.exercise_sets = request.vars.exercise_sets
+        logger.info(form.vars)
+        # case of 1 set only
+        if not multiple_sets:
+            db.circuit.insert(
+                circuit_name = form.vars['circuit_name'],
+                count = form.vars['count'], 
+                point = form.vars['point'], 
+                unit = form.vars['unit'], 
+                exercise_set_name = request.vars.exercise_sets,
+                )
+        else:
+            # multiple sets for a circuit
+            logger.info("error, multiple sets not allowed")
+        
+        session.flash = T("New Circuit created")
+        response.cookies['create_circuit'] = ''
+        response.cookies['create_circuit']['expires'] = -10
+
+        redirect(URL('admin','create_circuit'))
+
+    return dict(form=form)
+
 
 def exercise_set_manager():
     query = db().select(db.exercise_set.set_name, distinct=True)
@@ -71,7 +165,7 @@ def exercise_set_manager():
         return dict(links=links)
 
     else:
-        set_name = request.args[0]
+        set_name = request.args[0].replace('_', ' ')
         table = TR(TD('Exercise'), TD('Count & Unit'), TD('Point'))
 
         query = db(db.exercise_set.set_name == set_name).select()
@@ -84,8 +178,6 @@ def exercise_set_manager():
 
         #table = SQLTABLE(query)
         return dict(table=table)
-
-
 
 
 

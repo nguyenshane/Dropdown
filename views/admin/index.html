@@ -2,43 +2,6 @@
 
 <h1>Current Exercise</h1>
 {{=grid}}
-<table>
-	<tbody>
-		<tr>
-			<td>
-				Exercise:
-			</td>
-			<td>
-				{{=A('Exercise manager', _class='btn', _href=URL('admin', 'exercise_manager'))}}
-			</td>
-			<td>
-				{{=A('Create Exercise', _class='btn', _href=URL('admin', 'exercise_manager/new/exercise', user_signature=True))}}
-			</td>
-		</tr>
-		<tr>
-			<td>
-				Exercise Set:
-			</td>
-			<td>
-				{{=A('Exercise Set Manager', _class='btn', _href=URL('admin', 'exercise_set_manager'))}}
-			</td>
-			<td>
-				{{=A('Create Exercise Set', _class='btn', _href=URL('admin', 'create_exercise_set'))}}
-			</td>
-		</tr>
-		<tr>
-			<td>
-				Circuit:
-			</td>
-			<td>
-				{{=A('Circuit Manager', _class='btn', _href=URL('admin', '#'))}}
-			</td>
-			<td>
-				{{=A('Create Circuit', _class='btn', _href=URL('admin', '#'))}}
-			</td>
-		</tr>
-	</tbody>
-</table>
 
 
 
