@@ -1,5 +1,5 @@
 import logging
-logger = logging.getLogger("web2py.app.dropdown")
+logger = logging.getLogger("dropdown")
 logger.setLevel(logging.DEBUG)
 
 

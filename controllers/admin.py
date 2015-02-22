@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # this file is released under public domain and you can use without limitations
 import random
+from gluon.serializers import json
 #########################################################################
 ## This is a sample controller
 ## - index is the default action of any application
@@ -50,6 +51,63 @@ def index():
     return dict(grid=grid)
 
     #return locals()
+
+
+def create_circuit():
+    grid = SQLFORM.grid(db.circuit)
+    return dict(grid=grid)
+
+def create_exercise_set():
+    # List all of the exercises
+    form = SQLFORM.factory(
+        Field('exercise', requires=IS_IN_DB(db, db.exercise.id, '%(name)s', multiple=True))
+        )
+    # Create exercise set based on the chosen exercises
+    if form.process().accepted:
+        response.cookies['exercises'] = form.vars.exercise
+        redirect(URL('admin','create_exercise_set_detail'))
+        #redirect(URL('admin','create_exercise_set_detail', vars=dict(exercises=form.vars.exercise)))
+
+    #grid = SQLFORM(db.exercise_set)
+    return dict(form=form)
+
+
+def create_exercise_set_detail():
+    if request.cookies.has_key('exercises'):
+        exercises = eval(request.cookies['exercises'].value)
+
+    logger.info(exercises)
+    fields = [Field('exercise_set_name', requires=IS_NOT_EMPTY())]
+
+    for exercise_id in exercises:
+        exercise_name = db(db.exercise.id == exercise_id).select().first().name
+        fields += Field(exercise_id+'id', requires=IS_NOT_EMPTY(), writable=False, label=exercise_name, default=""),
+        fields += Field(exercise_id+'count' , requires=IS_NOT_EMPTY(), label='Count'),
+        fields += Field(exercise_id+'unit' ,  label='Unit', requires=IS_IN_SET(UNITS, zero=None, sort=False)),
+        fields += Field(exercise_id+'point' , requires=IS_NOT_EMPTY(), label='Points'),
+
+    form = SQLFORM.factory(
+        *fields, hidden=dict(exercises=exercises)
+    )
+
+
+    # Add to database
+    if form.process().accepted:
+        exercise_set_name = form.vars['exercise_set_name']
+        for exercise_id in exercises:
+            db.exercise_set.insert( 
+                set_name = exercise_set_name, 
+                exercise_id = exercise_id, 
+                count = form.vars[exercise_id+'count'], 
+                point = form.vars[exercise_id+'point'], 
+                unit = form.vars[exercise_id+'unit'], 
+                )
+
+        session.flash = T("New exercise set created")
+        redirect(URL('admin','index'))
+
+    return dict(form=form)
+
 
 
 @auth.requires_login()
@@ -114,18 +172,28 @@ def upgrade():
     return dict()
 
 @auth.requires_membership('myadmin')
-def add_exercise():
-    userrev = db(db.auth_user.id == auth.user_id).select().first()
+def exercise_manager():
+    all_exercises = SQLFORM.grid(db.exercise)
     
-    form = SQLFORM.factory(Field('name',label='Exercise Name'),Field('point','integer'),Field('body','text',label='Discription'))
-    form.add_button('Cancel', URL('default', 'index'))
+    # form = SQLFORM.factory(
+    #     Field('name',label='Exercise Name'),
+    #     Field('point','integer'),
+    #     Field('count','integer'),
+    #     Field('unit', requires = IS_IN_SET(UNITS, zero=None)),
+    #     Field('body','text',label='Description'))
+    # form.add_button('Cancel', URL('default', 'index'))
     
-    if form.process().accepted:
-        db.exercise.insert(name=form.vars.name,point=form.vars.point,body=form.vars.body)
-        # Successful processing.
-        session.flash = T("new exercise created")
-        redirect(URL('default', 'index'))
-    return dict(form=form)
+    # if form.process().accepted:
+    #     db.exercise.insert(
+    #         name=form.vars.name,
+    #         point=form.vars.point,
+    #         count=form.vars.count,
+    #         unit=form.vars.unit,
+    #         body=form.vars.body)
+    #     # Successful processing.
+    #     session.flash = T("New exercise created")
+    #     redirect(URL('default', 'index'))
+    return locals()
 
 
 def user():
