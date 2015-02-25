@@ -52,6 +52,88 @@ def index():
 
     #return locals()
 
+def daily_circuit_manager():
+    table = SQLFORM.grid(db.daily)
+    return dict(table=table)
+
+def create_daily_circuit():
+
+    if not request.args(0):
+        def generate_buttons(row):
+            # If the record is ours, we can edit/delete it. If not, view only
+            b = ''
+            #b = A('View', _class='btn', _href=URL('default', 'view', args=[row.id]))
+            b = A('View Circuit', _class='btn', _href=URL('admin', 'daily_circuit_manager', user_signature=True, vars=dict(keywords='daily.user_id='+str(row.id))))
+            b += ' '
+            b += A('Make New Circuit', _class='btn btn-warning', _href=URL('admin', 'create_daily_circuit', user_signature=True, args=['make',row.id]))
+            return b
+
+        # Creates extra buttons.
+        links = [
+            dict(header='', body = generate_buttons),
+            ]
+
+        table = SQLFORM.grid(db.auth_user,
+            fields=[db.auth_user.first_name, db.auth_user.last_name, db.auth_user.email],
+            editable=False, deletable=False, details=False, create=False, links=links,
+            paginate=10, exportclasses=dict(xml=False, html=False, csv_with_hidden_cols=False, csv=False, 
+                               tsv_with_hidden_cols=False, tsv=False, json=False))
+        return dict(table=table)
+
+    if request.args(0) == 'make':
+        user_id = request.args(1)
+        if make_today_circuit(user_id):
+            session.flash = T("New Daily Circuit created")
+        else:
+            session.flash = T("Error, cannot make Daily Circuit")
+        redirect(URL('admin','create_daily_circuit'))
+
+def make_today_circuit(user_id):
+    today = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+    created_on = get_date_created_circuit(user_id)
+    if created_on < today:
+        logger.info(del_daily_circuit(user_id))
+        random_daily_circuits = get_random_daily_circuits(1,2)
+        logger.info(random_daily_circuits)
+        for circuit in random_daily_circuits:
+            db.daily.insert(
+                user_id = user_id,
+                circuit_id = circuit.id, 
+                created_on = today,
+                )
+        return True
+    return False
+
+def get_today_circuit(user_id):
+    logger.info('here')
+    today_circuit = db(db.daily.user_id==user_id).select()
+    return today_circuit
+
+def del_daily_circuit(user_id):
+    daily_circuit = db(db.daily.user_id==user_id).delete()
+    return daily_circuit
+
+def get_date_created_circuit(user_id):
+    created_on = db(db.daily.user_id==user_id).select(limitby=(0,1))
+
+    if created_on:
+        created_on = created_on[0].created_on
+        created_on = created_on.replace(hour=0, minute=0, second=0, microsecond=0)
+    else:
+        created_on = datetime.utcnow().replace(year=2000,hour=0, minute=0, second=0, microsecond=0)
+    
+    return created_on
+
+
+def get_random_daily_circuits(num_main, num_minor):
+
+    main_circuits = db(db.circuit.main==True).select(orderby='<random>', limitby=(0,num_main))
+    minor_circuits = db(db.circuit.main==False).select(orderby='<random>', limitby=(0,num_minor))
+
+    selected_circuits = main_circuits & minor_circuits
+    return selected_circuits
+
+
 def circuit_manager():
     table = SQLFORM.grid(db.circuit)
     return dict(table=table)
@@ -91,6 +173,7 @@ def create_circuit_detail():
     # Create the form for exercise set detail
     fields = [Field('exercise_set_name', label='Exercise set', requires=IS_NOT_EMPTY(), default=exercise_sets, writable=False),
               Field('circuit_name', requires=IS_NOT_EMPTY(), default=exercise_sets),
+              Field('main', 'boolean', label='Main circuit', default=False),
               Field('count', requires=IS_NOT_EMPTY(), label='Count'),
               Field('unit',  label='Unit', requires=IS_IN_SET(UNITS, zero=None, sort=False)),
               ]
@@ -133,6 +216,7 @@ def create_circuit_detail():
         if not multiple_sets:
             db.circuit.insert(
                 circuit_name = form.vars['circuit_name'],
+                main = form.vars['main'], 
                 count = form.vars['count'], 
                 point = form.vars['point'], 
                 unit = form.vars['unit'], 
@@ -169,6 +253,7 @@ def exercise_set_manager():
         table = TR(TD('Exercise'), TD('Count & Unit'), TD('Point'))
 
         query = db(db.exercise_set.set_name == set_name).select()
+
         for row in query:
             exercise_name = db(db.exercise.id == row.exercise_id).select(db.exercise.name)[0].name
             exercise_link = A(exercise_name, _href=URL('admin', 'exercise_manager/view/exercise/'+str(row.exercise_id),user_signature=True))
@@ -407,6 +492,7 @@ def api():
             logger.info(request.env.http_authorization)
             logger.info(auth.user)
             success=check_access()
+
 
             return dict(success=success)
 

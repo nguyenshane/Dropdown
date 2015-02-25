@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from datetime import datetime
+
 UNITS = ['','sets','minutes','seconds']
 
 
@@ -20,10 +22,10 @@ db.exercise_set.exercise_id.requires = IS_IN_DB(db,'exercise.id',multiple=False)
 db.define_table('circuit',
 		Field('circuit_name', unique=True, length=255),
                 Field('exercise_set_name', length=255),
+                Field('main', 'boolean'),
                 Field('point', 'integer'),
                 Field('count','integer'),
-                Field('unit', length=255), fake_migrate=True)
-
+                Field('unit', length=255), fake_migrate=True, format='%(circuit_name)s')
 
 db.circuit.unit.requires = IS_IN_SET(UNITS, zero=None)
 db.circuit.exercise_set_name.requires = IS_IN_DB(db,'exercise_set.set_name',multiple=False)
@@ -34,5 +36,9 @@ db.define_table('linktable',
                 Field('exercise_name'))
 
 db.define_table('daily',
-                Field('user_id','reference auth_user'),
-                Field('circuit_id','reference exercise'))
+                Field('user_id','reference auth_user', label='User'),
+                Field('circuit_id','reference circuit', label='Circuit'), 
+                Field('created_on','datetime', label='Date Created', default=datetime.utcnow()), fake_migrate=True)
+db.daily.circuit_id.requires = IS_IN_DB(db,'circuit.id','%(circuit_name)s',multiple=False)
+db.daily.created_on.represent = lambda value, row: value.strftime("%m/%d/%Y")
+db.daily.created_on.writable = False

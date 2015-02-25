@@ -207,11 +207,12 @@ def api():
 
         if args[0] == 'signin':
             auth.basic()
-            logger.info(request.env.http_authorization)
-            logger.info(auth.user)
+            #logger.info(request.env.http_authorization)
+            #logger.info(auth.user)
             success=check_access()
+            today_circuit = get_today_circuit(auth.user.id)
 
-            return dict(success=success)
+            return dict(success=success,today_circuit=today_circuit)
 
         if args[0] == 'logout':
             logger.info('Logging out')
@@ -248,6 +249,28 @@ def api():
         return True
     return dict(GET=GET, POST=POST, PUT=PUT, DELETE=DELETE, OPTIONS=OPTIONS)
 
+def get_today_circuit(user_id):
+
+    query_daily = db(db.daily.user_id==user_id).select()
+    today_circuit = []
+    exercise_sets = []
+    exercises = []
+
+    for e in query_daily:
+        
+        _circuit = db(db.circuit.id==e.circuit_id).select()
+        
+        _exercise_sets = db(db.exercise_set.set_name==_circuit[0].exercise_set_name).select()
+
+        for each_set in _exercise_sets:
+            exercises += db(db.exercise.id==each_set.exercise_id).select()
+
+        today_circuit += _circuit
+        exercise_sets += _exercise_sets
+
+    logger.info(today_circuit)
+        
+    return dict(today_circuit=today_circuit,exercise_sets=exercise_sets,exercises=exercises)
 
 # @auth.requires_login() 
 # def api():
