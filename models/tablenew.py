@@ -3,6 +3,14 @@ from datetime import datetime
 
 UNITS = ['','sets','minutes','seconds']
 
+db.define_table('user_photo',
+                Field('content', 'upload'),
+                Field('blob_key'),
+                Field('original_filename'),
+                Field('user_id','reference auth_user'), fake_migrate=True)
+db.user_photo.blob_key.readable = db.user_photo.blob_key.writable = False
+db.user_photo.original_filename.readable = db.user_photo.original_filename.writable = False
+
 
 db.define_table('exercise',
                 Field('name', unique=True, length=255, label='Exercise name'),

@@ -2,6 +2,7 @@
 # this file is released under public domain and you can use without limitations
 import random
 from gluon.serializers import json
+from google.appengine.ext import blobstore
 #########################################################################
 ## This is a sample controller
 ## - index is the default action of any application
@@ -543,3 +544,128 @@ def api():
 #         '<tablename>': {'GET':{},'POST':{},'PUT':{},'DELETE':{}},
 #         }
 #     return Collection(db).process(request,response,rules)
+
+
+
+
+def upload():
+    # As an example ONLY, we always read the item of the table with id 1.
+    item = db.user_photo(request.args(0))
+    upload_url = URL('download', args=request.args(0))
+    if item is None:
+        old_blob_key = None
+        form = SQLFORM(db.user_photo, upload=upload_url, deletable=False)
+    else:
+        old_blob_key = item.blob_key
+        form = SQLFORM(db.user_photo, record=item, upload=upload_url, deletable=False)
+    # If this is a POST, stores the upload information.
+    content_ok = True
+    if request.env.request_method == 'POST': 
+        blob_info = None
+        # Checks if there is new content. 
+        if request.vars.content is not None and request.vars.content != '':
+            # Decodes the new content.
+            try:
+                blob_info = blobstore.parse_blob_info(request.vars.content)
+            except Exception, e:
+                # If the file is missing, in appengine (as opposed to the development
+                # environment) we get a request.vars.content with a special structure.
+                # Tries to detect it.
+                if ('Content-Length: 0\r\n' in request.vars.content and
+                    'filename=""\r\n' in request.vars.content):
+                    # Nothing was uploaded.
+                    blob_info = None
+                else:
+                    # We really don't know how to make sense of this.
+                    blob_info = None
+                    content_ok = False
+            if blob_info != None:
+                # Checks that the upload succeeded.
+                if blob_info.size == 0:
+                    content_ok = False
+                    blobstore.delete(blob_info.key())
+                else:
+                    form.vars.blob_key = blob_info.key()
+                    try:
+                        form.vars.original_filename = request.vars.content.filename
+                    except Exception, e:
+                        content_ok = False
+                        blobstore.delete(blob_info.key())
+                        
+        # Checks if a deletion has been requested without new content.
+        if blob_info is None and request.vars.content__delete == 'on':
+            form.vars.original_filename = None
+            form.vars.blob_key = None
+            form.vars.content = None
+
+    # Form processing.
+    if form.process(onvalidation=process_upload_form(content_ok)).accepted:
+
+        # Deletes the content field, in case the attachment has been deleted.
+        if (request.vars.content__delete == 'on' and blob_info is None):
+            db(db.user_photo.id == form.vars.id).update(
+                content = None,
+                blob_key = None, 
+                original_filename = None)
+
+        if request.vars.content__delete == 'on' and blob_info is None:
+            session.flash = T('The attached file has been deleted.')
+        else:
+            if form.vars.blob_key == old_blob_key:
+                if old_blob_key is None:
+                    session.flash = T('No file has been uploaded.')
+                else:
+                    session.flash = T('Your attached file has been left unchanged.')
+            else:
+                if form.vars.blob_key is None:
+                    session.flash = T('Your attached file has been left unchanged.')
+                else:
+                    session.flash = T('Attached file updated.')
+            
+        # For demo only, we go back to where we were.
+        raise HTTP(303, Location=URL('upload', args=[form.vars.id]))
+    
+    elif form.errors:
+        # There was an error, let's delete the newly uploaded content.
+        if blob_info != None:
+            blobstore.delete(blob_info.key())
+    
+    # Produces an upload URL.
+    upload_url = blobstore.create_upload_url(URL('upload', args=request.args))
+    form['_action'] = upload_url
+    return dict(form=form)
+
+
+def process_upload_form(content_ok):
+    def f(form):
+        if not content_ok:
+            form.errors.content = T('File upload error')
+            return
+    return f
+
+
+def download():
+    item = db.user_photo(request.args(0))
+    if item is None:
+        raise HTTP(404, "Not found")
+    filename = item.original_filename or 'file'
+    if item.blob_key is None:
+        response.headers['Content-Disposition'] = 'attachment; filename="none"'
+        import StringIO
+        return response.stream(StringIO.StringIO(''), chunk_size=1024)
+    blob_info = blobstore.get(item.blob_key)
+    if blob_info is None:
+        #This being appengine, we need to try again.
+        blob_info = blobstore.get(item.blob_key)
+        if blob_info is None:
+            raise HTTP(503, "Temporarily unavailable; try again later.")
+    response.headers['X-AppEngine-BlobKey'] = item.blob_key;
+    response.headers['Content-Type'] = blob_info.content_type;
+    response.headers['Content-Disposition'] = 'attachment; filename="%s"' % filename.replace('"', '\"').replace(' ', '_')
+    return response.body.getvalue()
+
+
+
+
+
+

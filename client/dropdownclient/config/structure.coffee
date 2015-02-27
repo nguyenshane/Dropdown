@@ -3,4 +3,4 @@
 module.exports =
 
   rootView:
-    location: "http://localhost/login.html"
+    location: "http://localhost/upload_avatar.html"

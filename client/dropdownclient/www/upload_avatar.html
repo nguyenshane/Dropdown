@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<head>
+  <title>Drop Down Upload</title>
+  <meta charset="utf8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  <link rel="stylesheet" href="/components/supersonic/css/supersonic.css">
+  <link rel="stylesheet" href="/stylesheets/application.css">
+  <link rel="import" href="/components/supersonic/components/import.html">
+
+
+  <script src="http://localhost/cordova.js"></script>
+  <script src="/components/steroids-js/steroids.js"></script>
+  <script src="/components/angular/angular.js"></script>
+  <script src="/components/supersonic/supersonic.js"></script>
+  
+  <!-- Import Polymer -->
+  <script src="/components/webcomponentsjs/webcomponents.js"></script>
+  <link rel="import" href="/components/core-icons/core-icons.html">
+  <link rel="import" href="/components/paper-button/paper-button.html">
+  <link rel="import" href="/components/paper-fab/paper-fab.html">
+
+  <!-- Import Jquery -->
+  <script src="/components/localforage/dist/localforage.min.js"></script>
+  <script src="/components/jquery/dist/jquery.min.js"></script>
+  <script src="/components/cropit/dist/jquery.cropit.min.js"></script>
+
+  <script src="https://apis.google.com/js/client.js"></script>
+  
+  
+
+  <style>
+      .image-editor{
+        text-align: center;
+        padding: 20px;
+      }
+      .cropit-image-preview {
+        background-color: #f8f8f8;
+        background-size: cover;
+        border: 1px solid #ccc;
+        border-radius: 50%;
+        margin:5px auto;
+        width: 250px;
+        height: 250px;
+        cursor: move;
+      }
+      .cropit-image-background {
+        opacity: .2;
+        cursor: auto;
+      }
+      input.cropit-image-input {
+        visibility: hidden;
+        height: 5px;
+      }
+      .image-size-label {
+        margin-top: 10px;
+      }
+      input {
+        display: block;
+      }
+      .export {
+        margin-top: 10px;
+      }
+      /* Button */
+      .upload-button {
+        background-color: #455663;
+      }
+      .capture-image-btn {
+
+      }
+      .cropit-image-zoom-input {
+        width:80%;
+      }
+
+  </style>
+
+</head>
+
+<body>
+<div class="image-editor">
+      <paper-fab class="select-image-btn upload-button" icon="perm-media"></paper-fab>
+      <paper-fab class="capture-image-btn upload-button" icon="fullscreen"></paper-fab>
+
+      <input type="file" class="cropit-image-input"/>
+      <div class="cropit-image-preview"></div>
+
+      <input type="range" class="cropit-image-zoom-input">
+      <paper-fab class="export" icon="check" raised cross-fade></paper-fab>
+    </div>
+
+    <core-ajax
+    id="signin_ajax"
+    url="{{server}}/dropdown/default/api/signin.json"
+    method="GET"
+    handleAs="json"
+    on-core-response="{{handleResponseSignin}}"></core-ajax>
+
+
+    <script>
+      // Wait for device API libraries to load
+      document.addEventListener("deviceready", onDeviceReady, false);
+      // device APIs are available
+      function onDeviceReady() {
+          window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, onFileSystemSuccess, fail);
+          pictureSource=navigator.camera.PictureSourceType;
+          destinationType=navigator.camera.DestinationType;
+      }
+
+      var options = {
+        quality: 100,
+        allowEdit: false,
+        targetWidth: 300,
+        targetHeight: 300,
+        encodingType: "png",
+        mediaType: "picture",
+        //destinationType: "nativeURI",
+      };
+
+      function fail(e){
+          console.log('error', e);
+      }
+      function onFileSystemSuccess(fileSystem) {
+        //console.log(fileSystem.name);
+      }
+      
+      $('.select-image-btn').click(function() {
+        // supersonic.media.camera.getFromPhotoLibrary(options).then(function(file){
+        //   moveFileToUser(file);
+        //   //$('.image-editor').cropit('imageSrc', result);
+        // });
+
+         // Retrieve image file location from specified source
+         navigator.camera.getPicture(moveFileToUser, fail, 
+          { quality: 100, 
+           targetWidth: 600,
+           targetHeight: 600,
+           allowEdit: true,
+           destinationType: destinationType.FILE_URI,
+           correctOrientation: true,
+           sourceType: Camera.PictureSourceType.PHOTOLIBRARY });
+
+      });
+
+      $('.capture-image-btn').click(function() {
+        // supersonic.media.camera.getFromPhotoLibrary(options).then(function(file){
+        //   moveFileToUser(file);
+        //   //$('.image-editor').cropit('imageSrc', result);
+        // });
+
+         // Retrieve image file location from specified source
+         navigator.camera.getPicture(moveFileToUser, fail, 
+          { quality: 100, 
+           targetWidth: 600,
+           targetHeight: 600,
+           allowEdit: false,
+           destinationType: destinationType.FILE_URI,
+           correctOrientation: true,
+           sourceType: Camera.PictureSourceType.CAMERA });
+
+      });
+
+      function moveFileToUser(file){
+        window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, onFileSystemSuccess, fail);
+        targetDirURL = "file://" + steroids.app.absoluteUserFilesPath;
+        //console.log('cameraURI',file);
+        //console.log('targetDirURL', targetDirURL );
+        
+        window.resolveLocalFileSystemURL(
+          file, function(fileEntry){
+            //console.log('resolvedFileEntry', fileEntry);
+            window.resolveLocalFileSystemURL(targetDirURL, function(directoryEntry){
+              //console.log('resolvedDirEntry', directoryEntry);
+              fileEntry.copyTo(directoryEntry, 'user_pic.png', fileMoved, fail); 
+              });
+          },fail);
+      }
+
+      function fileMoved(file){
+        //console.log('fileMoved', file);
+        imageSrc = file.name + '?' + new Date().getTime(); 
+        console.log('imageSrc', imageSrc);
+        
+        $('.image-editor').cropit('disable');
+        $('.image-editor').cropit('reenable');
+        $('.image-editor').cropit('imageSrc', imageSrc);
+      }
+
+
+
+
+      $(function() {
+        $('.image-editor').cropit({
+          //imageState: {
+          //  src: 'http://lorempixel.com/300/300/'
+         // }
+        });
+
+        $('.export').click(function() {
+          var imageData = $('.image-editor').cropit('export');
+
+          localforage.setItem('photo', imageData, function(err,value) {
+            console.log('set', value);
+          });
+
+          localforage.getItem('photo', function(err, value) {
+            // Run this code once the value has been
+            // loaded from the offline store.
+            console.log('get', value);
+            object = value;
+         });
+
+          var restRequest = gapi.client.request({
+                'path': '/upload/storage/' + API_VERSION + '/b/' + BUCKET + '/o',
+                'method': 'POST',
+                'params': {'uploadType': 'media', 'name' :'test'},
+                'body': object,
+              });
+
+          restRequest.then(function(resp) {
+            console.log(resp.result);
+          }, function(reason) {
+            console.log('Error: ' + reason.result.error.message);
+          });
+
+        });
+      });
+
+
+
+      // Google Cloud Storage
+      var PROJECT = '260233604371';
+      var clientId = '260233604371-5luknu89eidsobsn2peihiljfr3n8t6r.apps.googleusercontent.com';
+      var apiKey = 'AIzaSyDdQcBTW2k_uRSCMAR-SOjKMotq40qZCIY';
+      var scopes = 'https://www.googleapis.com/auth/devstorage.full_control';
+      var API_VERSION = 'v1';
+      var BUCKET = 'dropdown_user_photo';
+      var object = "";
+      var GROUP = 'group-00b4903a970b3e58e7f4edd936bf60b2360e0d7c0be0f060ec71fa928aca6d77';
+      var ENTITY = 'allUsers';
+      var ROLE = 'READER';
+      var ROLE_OBJECT = 'READER';
+
+      $(window)
+            .bind('load', function() {
+              gapi.client.setApiKey(apiKey);
+              //gapi.client.load('storage', API_VERSION).then(function() { console.log('Google Storage loaded.'); });;
+          });
+
+
+
+
+
+      
+
+    </script>
+
+</body>
+</html>
