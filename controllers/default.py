@@ -1,6 +1,15 @@
 # -*- coding: utf-8 -*-
 # this file is released under public domain and you can use without limitations
 import random
+#from faceb import FaceBookAccount
+
+
+## Define oauth application id and secret.
+
+
+
+
+
 #########################################################################
 ## This is a sample controller
 ## - index is the default action of any application
@@ -16,21 +25,23 @@ def index():
     #exercise = db().select(db.exercise.ALL, orderby=db.exercise.name)
     #exercise = db.exercise
     #exercise = db((db.exercise.id ==3) & (db.exercise.id==2)).select()
-    
-    # lastExercise = db.exercise.last()
-    # maxNum = lastExercise.id;
-    
-    # num1 = random.randint(1, maxNum)
-    # num2 = random.randint(1, maxNum)
-    # num3 = random.randint(1, maxNum)
-    # while(num2 == num1 or num2 == num3):
-    #     num2 = random.randint(1, maxNum)
-    # while(num3 == num1 or num3 == num2):
-    #     num3 = random.randint(1, maxNum)
-        
-    # exercise = (db.exercise.id ==num1 ) | (db.exercise.id ==num2) | (db.exercise.id ==num3)
 
-    exercise = db().select(db.exercise.ALL, orderby='<random>', limitby=(0,2))
+    if db(db.circuit).isempty():
+        return dict(grid=None)
+    lastCircuit = db().select(db.circuit.ALL).last()
+    maxNum = lastCircuit.id;
+    
+    num1 = random.randint(1, maxNum)
+    num2 = random.randint(1, maxNum)
+    num3 = random.randint(1, maxNum)
+    while(num2 == num1 or num2 == num3):
+         num2 = random.randint(1, maxNum)
+    while(num3 == num1 or num3 == num2):
+         num3 = random.randint(1, maxNum)
+        
+    exercise = (db.circuit.id ==num1 ) | (db.circuit.id ==num2) | (db.circuit.id ==num3)
+
+    #exercise = db().select(db.exercise.ALL, orderby='<random>', limitby=(0,2))
 
     #exercise = db.executesql('SELECT * FROM exercise ORDER BY RAND() LIMIT 1')
 
@@ -46,17 +57,30 @@ def index():
         ]
     
 
-    grid = SQLTABLE(exercise)
+    grid = SQLFORM.grid(exercise,csv=False,links=links,editable=False, deletable=False)
     return dict(grid=grid)
 
     #return locals()
 
-
+@auth.requires_login()
+def showfriend():
+    #facebook_app_id = '1056851497687275'
+    #user = facebook.get_user_from_cookie(request.cookies,'1056851497687275', "40ae04477987bed07074b8886d82b8bc")
+    #profile = None
+    friendlist = FaceBookAccount().get_friend()
+    #if user:
+    #    graph = facebook.GraphAPI(user["access_token"])
+    #    profile = graph.get_object("me")
+    #    friends = graph.get_connections("me", "friends")
+    
+    return dict(friendlist=friendlist)
+    
 @auth.requires_login()
 def showuser():
     userrev = db(db.auth_user.id == auth.user_id).select().first()
-    linktable_ref = db(db.linktable.user_id == auth.user_id).select()
-    return dict(userrev=userrev,linktable_ref=linktable_ref)
+    #linktable_ref = db(db.linktable.user_id == auth.user_id).select()
+    test_create_table = db(db.test_create_table.user_id == auth.user_id).select()
+    return dict(userrev=userrev,test_create_table=test_create_table)
 
 
 def show():
@@ -70,26 +94,26 @@ def complete():
     
     content = None
     
-    exerciseid = request.args(0)
+    circuit_id = request.args(0)
     
-    exer = db(db.exercise.id == exerciseid).select().first()
+    cir = db(db.circuit.id == circuit_id).select().first()
     userrev = db(db.auth_user.id == auth.user_id).select().first()
     
-    point = exer.point
-    newpoint = int(userrev.point)
+    point = cir.point
+    newpoint = int(cir.point)
     form2 = FORM.confirm('Did you complete this exercise')
     if form2.accepted:
         redirect(URL('default', 'showuser'))
     newpoint += point
     userrev.update_record(point=newpoint)
     
-    linktable_id = db.linktable.insert(user_id = auth.user_id,exercise_id = exerciseid,exercise_name=exer.name)
-    
+    #linktable_id = db.linktable.insert(user_id = auth.user_id,exercise_id = exerciseid,exercise_name=exer.name)
+    db.test_create_table.insert(user_id = auth.user_id,circuit_id = cir.id,circuit_count=1,created_on=datetime.utcnow())
     
     content = form2
         
     
-    return dict(content=content,exer=exer,userrev=userrev)
+    return dict(content=content,cir=cir,userrev=userrev)
 
 @auth.requires_login()
 def reset():
@@ -127,6 +151,10 @@ def add_exercise():
         redirect(URL('default', 'index'))
     return dict(form=form)
 
+def login_with_facebook():
+    auth.settings.login_form = FaceBookAccount()
+    return dict(form = auth.login())
+
 
 def user():
     """
@@ -143,7 +171,9 @@ def user():
         @auth.requires_permission('read','table name',record_id)
     to decorate functions that need access control
     """
-    return dict(form=auth())
+    auth.settings.login_form=FaceBookAccount()
+    #return dict(form=auth())
+    return dict(login_form = auth())
 
 
 @cache.action()
@@ -206,7 +236,8 @@ def api():
             return dict(success=success)
 
         if args[0] == 'signin':
-            auth.basic()
+            #auth.basic()
+            auth.settings.login_form=FaceBookAccount()
             #logger.info(request.env.http_authorization)
             #logger.info(auth.user)
             success=check_access()
@@ -271,6 +302,8 @@ def get_today_circuit(user_id):
     logger.info(today_circuit)
         
     return dict(today_circuit=today_circuit,exercise_sets=exercise_sets,exercises=exercises)
+
+
 
 # @auth.requires_login() 
 # def api():
