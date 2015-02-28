@@ -140,9 +140,10 @@ def add_exercise():
     return dict(form=form)
 
 def login_with_facebook():
-    auth.settings.login_form = FaceBookAccount()
+    #auth.settings.login_form = FaceBookAccount()
     return dict(form = auth.login())
 
+@auth.requires_login()
 def test_add_friend():
     friend_id = request.args(0)
     friend = db(db.auth_user.id == friend_id).select().first()
@@ -165,7 +166,9 @@ def isFriend(from_user_id,to_user_id):
         return True
     else:
         return False
+    
 
+@auth.requires_login()
 def test_show_all_friend():
     friendlist = show_all_friend(auth.user_id)
     #grid = SQLTABLE(friendlist)
@@ -176,6 +179,8 @@ def show_all_friend(user_id):
     
     return friendlist
 
+
+@auth.requires_login()
 def test_show_all_user():
     userlist = show_all_user()
     
