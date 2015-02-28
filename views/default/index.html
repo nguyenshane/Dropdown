@@ -1,0 +1,39 @@
+{{extend 'layout.html'}}
+
+<h1>Current Exercise</h1>
+{{=grid}}
+
+
+
+
+{{=A('Refresh', _class='btn', _href=URL('default', 'index'))}}
+{{=A('See user', _class='btn', _href=URL('default', 'test_show_user',args=[auth.user_id]))}}
+{{=A('Upgrade to Admin', _class='btn', _href=URL('default', 'upgrade'))}}
+{{=A('Login with Facebook', _class='btn', _href=URL('default', 'login_with_facebook'))}}
+{{=A('Show Friend', _class='btn', _href=URL('default', 'test_show_all_friend'))}}
+{{=A('Show All User', _class='btn', _href=URL('default', 'test_show_all_user'))}}
+<div
+  class="fb-like"
+  data-share="true"
+  data-width="450"
+  data-show-faces="true">
+</div>
+
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '1056851497687275',
+	  cookie	: true, 
+      xfbml      : true,
+      version    : 'v2.2'
+    });
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "//connect.facebook.net/en_US/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+</script>

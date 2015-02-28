@@ -1,0 +1,9 @@
+{{extend 'layout.html'}}
+
+{{if isAdded:}}
+<h1>Added this user to your friendlist</h1>
+<p> Name: {{=friend.first_name}} {{=friend.last_name}} </p>
+{{else:}}
+<p>Friend already added! No adding! </p>
+{{pass}}
+{{=A('Back', _class='btn', _href=URL('default', 'index'))}}
