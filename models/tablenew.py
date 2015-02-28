@@ -59,3 +59,10 @@ db.define_table('test_create_table',
 db.daily.circuit_id.requires = IS_IN_DB(db,'circuit.id','%(circuit_name)s',multiple=False)
 db.daily.created_on.represent = lambda value, row: value.strftime("%m/%d/%Y")
 db.daily.created_on.writable = False
+
+db.define_table('friend_table',
+                Field('from_user_id','reference auth_user', label='From User'),
+                Field('to_user_id','reference auth_user', label='To User'),
+                Field('created_on','datetime', label='Date Added', default=datetime.utcnow()), fake_migrate=True)
+db.friend_table.created_on.represent = lambda value, row: value.strftime("%m/%d/%Y")
+db.friend_table.created_on.writable = False

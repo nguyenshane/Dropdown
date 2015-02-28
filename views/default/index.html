@@ -7,10 +7,11 @@
 
 
 {{=A('Refresh', _class='btn', _href=URL('default', 'index'))}}
-{{=A('See user', _class='btn', _href=URL('default', 'showuser'))}}
+{{=A('See user', _class='btn', _href=URL('default', 'test_show_user',args=[auth.user_id]))}}
 {{=A('Upgrade to Admin', _class='btn', _href=URL('default', 'upgrade'))}}
 {{=A('Login with Facebook', _class='btn', _href=URL('default', 'login_with_facebook'))}}
-{{=A('Show Friend', _class='btn', _href=URL('default', 'showfriend'))}}
+{{=A('Show Friend', _class='btn', _href=URL('default', 'test_show_all_friend'))}}
+{{=A('Show All User', _class='btn', _href=URL('default', 'test_show_all_user'))}}
 <div
   class="fb-like"
   data-share="true"

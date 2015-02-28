@@ -3,13 +3,6 @@
 import random
 #from faceb import FaceBookAccount
 
-
-## Define oauth application id and secret.
-
-
-
-
-
 #########################################################################
 ## This is a sample controller
 ## - index is the default action of any application
@@ -63,23 +56,18 @@ def index():
     #return locals()
 
 @auth.requires_login()
-def showfriend():
-    #facebook_app_id = '1056851497687275'
-    #user = facebook.get_user_from_cookie(request.cookies,'1056851497687275', "40ae04477987bed07074b8886d82b8bc")
-    #profile = None
+def showfriendFacebook():
+    
     friendlist = FaceBookAccount().get_friend()
-    #if user:
-    #    graph = facebook.GraphAPI(user["access_token"])
-    #    profile = graph.get_object("me")
-    #    friends = graph.get_connections("me", "friends")
     
-    return dict(friendlist=friendlist)
+def test_show_user():
+    user_id = request.args(0)
+    return show_user(user_id)
     
-@auth.requires_login()
-def showuser():
-    userrev = db(db.auth_user.id == auth.user_id).select().first()
+def show_user(user_id):
+    userrev = db(db.auth_user.id == user_id).select().first()
     #linktable_ref = db(db.linktable.user_id == auth.user_id).select()
-    test_create_table = db(db.test_create_table.user_id == auth.user_id).select()
+    test_create_table = db(db.test_create_table.user_id == user_id).select()
     return dict(userrev=userrev,test_create_table=test_create_table)
 
 
@@ -155,6 +143,60 @@ def login_with_facebook():
     auth.settings.login_form = FaceBookAccount()
     return dict(form = auth.login())
 
+def test_add_friend():
+    friend_id = request.args(0)
+    friend = db(db.auth_user.id == friend_id).select().first()
+    isAdded = add_friend(auth.user_id,friend_id)
+    return dict(friend=friend,isAdded=isAdded)
+
+def add_friend(from_user_id,to_user_id):
+    if isFriend(from_user_id,to_user_id):
+        return False
+    db.friend_table.insert(from_user_id=from_user_id,to_user_id=to_user_id,created_on=datetime.utcnow())
+    return True
+
+def isFriend(from_user_id,to_user_id):
+    fromIdObj = db(db.auth_user.id == from_user_id).select().first()
+    toIdObj = db(db.auth_user.id == to_user_id).select().first()
+    exist_data = db((db.friend_table.from_user_id==fromIdObj) & (db.friend_table.to_user_id == toIdObj)).select().first()
+    
+
+    if exist_data is not None:
+        return True
+    else:
+        return False
+
+def test_show_all_friend():
+    friendlist = show_all_friend(auth.user_id)
+    #grid = SQLTABLE(friendlist)
+    return dict(friendlist=friendlist)
+
+def show_all_friend(user_id):
+    friendlist = db(db.friend_table.from_user_id == user_id).select(orderby=~db.friend_table.created_on)
+    
+    return friendlist
+
+def test_show_all_user():
+    userlist = show_all_user()
+    
+    def generate_addfriend_button(row):
+        b = 'Added'
+        if not isFriend(auth.user_id,row.id):
+            b = A('Add Friend', _class='btn', _href=URL('default', 'test_add_friend', args=[row.id]))
+        return b
+    
+    links = [
+        dict(header='', body = generate_addfriend_button),
+        ]
+    grid = SQLFORM.grid(db.auth_user,
+                        fields=[db.auth_user.first_name,db.auth_user.last_name,db.auth_user.email,db.auth_user.point],
+                        details=False,csv=False,links=links,editable=False, deletable=False)
+    return dict(grid = grid)
+
+def show_all_user():
+    userlist = db().select(db.auth_user.ALL, orderby=db.auth_user.id)
+    
+    return userlist
 
 def user():
     """
@@ -171,9 +213,9 @@ def user():
         @auth.requires_permission('read','table name',record_id)
     to decorate functions that need access control
     """
-    auth.settings.login_form=FaceBookAccount()
-    #return dict(form=auth())
-    return dict(login_form = auth())
+    #auth.settings.login_form=FaceBookAccount()
+    return dict(form=auth())
+    #return dict(login_form = auth())
 
 
 @cache.action()
@@ -236,8 +278,8 @@ def api():
             return dict(success=success)
 
         if args[0] == 'signin':
-            #auth.basic()
-            auth.settings.login_form=FaceBookAccount()
+            auth.basic()
+            #auth.settings.login_form=FaceBookAccount()
             #logger.info(request.env.http_authorization)
             #logger.info(auth.user)
             success=check_access()
