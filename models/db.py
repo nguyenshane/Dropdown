@@ -16,7 +16,7 @@ if not request.env.web2py_runtime_gae:
 else:
     ## connect to Google BigTable (optional 'google:datastore://namespace')
     #db = DAL('google:datastore+ndb')
-    db = DAL('google:sql://future-aurora-851:dropdown/dropdown')
+    db = DAL('google:sql://future-aurora-851:dropdown/dropdown', migrate=False, fake_migrate=True)
     #migration='false'
     ## store sessions and tickets there
     session.connect(request, response, db=db)

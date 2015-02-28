@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 # this file is released under public domain and you can use without limitations
 import random
+import ast
+import json
 #########################################################################
 ## This is a sample controller
 ## - index is the default action of any application
@@ -226,6 +228,29 @@ def api():
             success=check_access()
             return dict(success=success)
 
+        if args[0] == 'get_user_photo_url':
+            logger.info('get_user_photo_url')
+            #logger.info(request.env.http_authorization)
+            auth.basic()
+            result = None
+            #logger.info(auth.user)
+            if auth.user:
+                result = {}
+                logger.info(vars)
+                if len(vars) == 1:
+                    email = vars['email']
+                    cached_url = get_user_photo_url(email)
+                    result[email] = cached_url
+                    #result.append(dict(email=cached_url))
+                else:
+                    for email in vars['email']:
+                        cached_url = get_user_photo_url(email)
+                        result[email] = cached_url
+                        #result.append(dict(email=cached_url))
+
+            logger.info(result)
+            return dict(result=result)
+
         else:
             patterns = 'auto'
             parser = db.parse_as_rest(patterns,args,vars)
@@ -236,9 +261,49 @@ def api():
             else:
                 raise HTTP(parser.status,parser.error)
     
-    auth.settings.allow_basic_login = True
-    @auth.requires_login()
-    def POST(table_name,**vars):
+    #auth.settings.allow_basic_login = True
+    #@auth.requires_login()
+    #def POST(table_name,**vars):
+    def POST(*args,**vars):
+        if args[0] == 'get_upload_url':
+            logger.info('getting post get upload')
+            auth.basic()
+            if check_access():
+                #logger.info(request.env.http_authorization)
+                #logger.info(auth.user)
+                upload_url = get_upload_url(auth.user)
+                return dict(upload_url=upload_url['upload_url'])
+            else:
+                return dict(upload_url=None, error="Auth error")
+
+        if args[0] == 'get_user_photo_url':
+            logger.info('get_user_photo_url')
+            post_vars = request.body.read()
+            logger.info(post_vars)
+            post_vars = json.loads(post_vars)
+            logger.info(post_vars)
+            logger.info(post_vars['email'])
+
+            #logger.info(request.env.http_authorization)
+            auth.basic()
+            result = None
+            #logger.info(auth.user)
+            if auth.user:
+                result = {}
+                if len(vars) == 1:
+                    email = post_vars['email']
+                    cached_url = get_user_photo_url(email)
+                    result[email] = cached_url
+                    #result.append(dict(email=cached_url))
+                else:
+                    for email in post_vars['email']:
+                        cached_url = get_user_photo_url(email)
+                        result[email] = cached_url
+                        #result.append(dict(email=cached_url))
+
+            logger.info(result)
+            return dict(result=result)
+
         return db[table_name].validate_and_insert(**vars)
     def PUT(table_name,record_id,**vars):
         return db(db[table_name]._id==record_id).update(**vars)
@@ -271,6 +336,38 @@ def get_today_circuit(user_id):
     logger.info(today_circuit)
         
     return dict(today_circuit=today_circuit,exercise_sets=exercise_sets,exercises=exercises)
+
+def get_upload_url(auth_user):
+    from google.appengine.ext import blobstore
+    upload_url = blobstore.create_upload_url(URL('return_upload', vars=dict(user_id=auth_user.id)))
+    return dict(upload_url=upload_url)
+
+def return_upload():
+    from google.appengine.ext import blobstore
+    from google.appengine.api import images
+
+    blob_info = blobstore.parse_blob_info(request.vars.content)
+    blob_key = blob_info.key()
+    cached_url = images.get_serving_url(blob_key)
+    original_filename = blob_info.filename
+    logger.info(blob_key)
+    logger.info(original_filename)
+
+    db.user_photo.update_or_insert(db.user_photo.user_id==request.vars.user_id,user_id=request.vars.user_id,
+        blob_key=blob_key,original_filename=original_filename,cached_url=cached_url)
+
+    return None
+
+def get_user_photo_url(email):
+    logger.info(email)
+    user_id = db(db.auth_user.email == email).select().first()['id']
+    logger.info(user_id)
+    cached_url = db(db.user_photo.user_id == user_id).select().first()['cached_url']
+    logger.info(cached_url)
+
+    return cached_url
+
+
 
 # @auth.requires_login() 
 # def api():
