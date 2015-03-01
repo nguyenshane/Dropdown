@@ -7,10 +7,10 @@
     Point: {{=userrev.point}} <br>
     
 </p>
-<h1>List of completed exercise</h1>
-<ul>{{for test_create_table in test_create_table:}}
-     {{=LI(A(test_create_table.circuit_id, _href=URL('show', args=test_create_table.circuit_id)))}}
+<h1>List of completed circuit</h1>
+<ul>{{for circuit_tag_table in circuit_tag_table:}}
+     {{=LI(A(circuit_tag_table.circuit_id.circuit_name, _href=URL('test_show_circuit', args=circuit_tag_table.circuit_id)))}}
 {{pass}}
 </ul>
 {{=A('Back to Home', _class='btn', _href=URL('default', 'index'))}}
-{{=A('Reset Point', _class='btn', _href=URL('default', 'reset'))}}
+{{=A('Reset Point', _class='btn', _href=URL('default', 'test_reset'))}}

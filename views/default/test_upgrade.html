@@ -1,0 +1,7 @@
+{{extend 'layout.html'}}
+{{if isUpgrade:}}
+<h1>You have upgraded to Admin Role</h1>
+{{else:}}
+<p>You already has Admin Role </p>
+{{pass}}
+{{=A('Back', _class='btn', _href=URL('default', 'index'))}}
