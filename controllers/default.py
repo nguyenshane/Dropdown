@@ -3,7 +3,7 @@
 import random
 import ast
 import json
-from faceb import FaceBookAccount
+#from faceb import FaceBookAccount
 
 
 def login():
@@ -50,10 +50,9 @@ def index():
 
     #return locals()
 
-@auth.requires_login()
-def showfriendFacebook():
-    
-    friendlist = FaceBookAccount().get_friend()
+#@auth.requires_login()
+#def showfriendFacebook():
+    #friendlist = FaceBookAccount().get_friend()
     
 def test_show_user():
     user_id = request.args(0)
@@ -285,7 +284,8 @@ def api():
             success=check_access()
             today_circuit = get_today_circuit(auth.user.id)
 
-            return dict(success=success,today_circuit=today_circuit)
+            return dict(success=success,today_circuit=today_circuit,
+                firstname=auth.user.first_name,lastname=auth.user.last_name)
 
         if args[0] == 'logout':
             logger.info('Logging out')
@@ -299,27 +299,15 @@ def api():
             success=check_access()
             return dict(success=success)
 
-        if args[0] == 'get_user_photo_url':
-            logger.info('get_user_photo_url')
+        if args[0] == 'get_today_circuit':
+            logger.info('get_today_circuit')
             #logger.info(request.env.http_authorization)
             auth.basic()
             result = None
             #logger.info(auth.user)
             if auth.user:
-                result = {}
-                logger.info(vars)
-                if len(vars) == 1:
-                    email = vars['email']
-                    cached_url = get_user_photo_url(email)
-                    result[email] = cached_url
-                    #result.append(dict(email=cached_url))
-                else:
-                    for email in vars['email']:
-                        cached_url = get_user_photo_url(email)
-                        result[email] = cached_url
-                        #result.append(dict(email=cached_url))
-
-            logger.info(result)
+                result = get_today_circuit(auth.user.id)
+                logger.info(result)
             return dict(result=result)
 
         else:
@@ -428,7 +416,7 @@ def return_upload():
     db.user_photo.update_or_insert(db.user_photo.user_id==request.vars.user_id,user_id=request.vars.user_id,
         blob_key=blob_key,original_filename=original_filename,cached_url=cached_url)
 
-    return None
+    return cached_url
 
 def get_user_photo_url(email):
     logger.info(email)

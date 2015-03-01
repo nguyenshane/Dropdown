@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <head>
-  <title>Drop Down</title>
+  <title>Drop Down Index</title>
   <meta charset="utf8">
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
@@ -33,9 +33,18 @@
   <link rel="import" href="/components/core-animated-pages/transitions/cross-fade.html">
   <link rel="import" href="/components/core-animated-pages/transitions/list-cascade.html">
   <link rel="import" href="/components/core-animated-pages/transitions/scale-up.html">
+
+  <!-- Import Jquery -->
+  <script src="/components/localforage/dist/localforage.min.js"></script>
+  <script src="/components/jquery/dist/jquery.min.js"></script>
+  <script src="/scripts/jquery.db.0.1.3.min.js"></script>
+
 </head>
 
 <body fullbleed layout vertical>
+<script>
+    supersonic.ui.navigationBar.hide();
+</script>
 <polymer-element name="drop-down">
 <template>
 <style>
@@ -226,7 +235,7 @@ core-drawer-panel:not([narrow]) #navicon {
   font-size: 2em;
 }
 </style>
-<core-animated-pages selected="{{toppingsListOrDetails}}" transitions="hero-transition slide-up slide-down cross-fade list-cascade scale-up" on-core-animated-pages-transition-end="{{complete}}">     
+<core-animated-pages selected="{{page}}" transitions="hero-transition slide-up slide-down cross-fade list-cascade scale-up" on-core-animated-pages-transition-end="{{complete}}">     
 <section>
   <core-drawer-panel id="drawerPanel" rightDrawer>
     
@@ -255,17 +264,18 @@ core-drawer-panel:not([narrow]) #navicon {
             <core-icon-button icon="search" id="core_icon_button1"></core-icon-button>
             <core-icon-button icon="more-vert" id="core_icon_button2"></core-icon-button>
             <div class="top indent">Test</div>  -->
-            <div class="greeting">Cassie, your circuit for today</div>
+            <div class="greeting">{{firstname}}, your circuits for today</div>
             <div class="middle">
             
            
               <div horizontal layout>
               
-                <div class="chip-container-main" hero?="{{selected=='main_chip'}}" on-tap="{{transitionTopping}}" flex one style="position:relative;">
+                <div class="chip-container-main" hero?="{{selected=='main_chip'}}" on-tap="{{transitionDetail}}" flex one style="position:relative;">
+                 <!-- Main today_circuit -->
                   <div class="chip" id="main_chip" hero-id="first-{{selected}}" hero?="{{selected=='main_chip'}}" style="position:absolute; width:97%; height:97%; background:#0b8f77" vertical layout>
-                    <div class="chip-top" style=""  ><span class="point"><strong>50</strong> pts</span></div>
-                    <div class="chip-middle" style="position: relative;margin: auto 0; left: 5%;" hero-id="second-{{selected}}" hero?="{{selected=='main_chip'}}" ><span class="number">12</span> sets</div>
-                    <div class="chip-bottom" style="position: relative;bottom: 10px; left: 5%;" hero-id="third-{{selected}}" hero?="{{selected=='main_chip'}}">2 Burpees<br>1 Squat<br>2 High Knees</div>
+                    <div class="chip-top" style=""  ><span class="point"><strong>{{main_today_circuit_point}}</strong> pts</span></div>
+                    <div class="chip-middle" style="position: relative;margin: auto 0; left: 5%;" hero-id="second-{{selected}}" hero?="{{selected=='main_chip'}}" ><span class="number">{{main_today_circuit_count}}</span> {{main_today_circuit_unit}}</div>
+                    <div class="chip-bottom" style="position: relative;bottom: 10px; left: 5%;" hero-id="third-{{selected}}" hero?="{{selected=='main_chip'}}" id="main_today_circuit_exercise_sets"></div>
                     
                   </div>
                 </div>
@@ -274,21 +284,21 @@ core-drawer-panel:not([narrow]) #navicon {
 
                 <div flex one>
                 <div vertical layout>
-                  <div class="chip-container-top" hero?="{{selected=='top_chip'}}"  on-tap="{{transitionTopping}}" flex one>
+                  <div class="chip-container-top" hero?="{{selected=='top_chip'}}"  on-tap="{{transitionDetail}}" flex one>
                     <div class="chip" id="top_chip" hero-id="first-{{selected}}" hero?="{{selected=='top_chip'}}" vertical layout>
-                      <div class="chip-top" style="" flex one><span class="point"><strong>30</strong> pts</span></div>
-                      <div class="chip-middle" style="text-align:center;" flex two hero-id="second-{{selected}}" hero?="{{selected=='top_chip'}}" ><span class="number">1</span> min</div>
-                      <div class="chip-bottom" style="text-align:center;" flex one hero-id="third-{{selected}}" hero?="{{selected=='top_chip'}}" >Push Ups</div>
+                      <div class="chip-top" style="" flex one><span class="point"><strong>{{minor.top.point}}</strong> pts</span></div>
+                      <div class="chip-middle" style="text-align:center;" flex two hero-id="second-{{selected}}" hero?="{{selected=='top_chip'}}" ><span class="number">{{minor.top.count}}</span> {{minor.top.unit}}</div>
+                      <div class="chip-bottom" style="text-align:center;" flex one hero-id="third-{{selected}}" hero?="{{selected=='top_chip'}}" id="minor_top_today_circuit_exercise_sets">{{minor.top.name}}</div>
                       
                     </div>
                   </div>
 
 
-                  <div class="chip-container-bottom" hero?="{{selected=='bottom_chip'}}" on-tap="{{transitionTopping}}" flex one>
+                  <div class="chip-container-bottom" hero?="{{selected=='bottom_chip'}}" on-tap="{{transitionDetail}}" flex one>
                     <div class="chip" id="bottom_chip" hero-id="first-{{selected}}" hero?="{{selected=='bottom_chip'}}" vertical layout>
-                      <div class="chip-top" style="" flex one><span class="point"><strong>15</strong> pts</span></div>
-                      <div class="chip-middle" style="text-align:center;" flex two hero-id="second-{{selected}}" hero?="{{selected=='bottom_chip'}}" ><span class="number">6</span> </div>
-                      <div class="chip-bottom" style="text-align:center;" flex one hero-id="third-{{selected}}" hero?="{{selected=='bottom_chip'}}" >Jumping Jacks</div>
+                      <div class="chip-top" style="" flex one><span class="point"><strong>{{minor.bottom.point}}</strong> pts</span></div>
+                      <div class="chip-middle" style="text-align:center;" flex two hero-id="second-{{selected}}" hero?="{{selected=='bottom_chip'}}" ><span class="number">{{minor.bottom.count}}</span> {{minor.bottom.unit}}</div>
+                      <div class="chip-bottom" style="text-align:center;" flex one hero-id="third-{{selected}}" hero?="{{selected=='bottom_chip'}}" id="minor_bottom_today_circuit_exercise_sets">{{minor.bottom.name}}</div>
                       
                     </div>
                   </div>
@@ -300,7 +310,7 @@ core-drawer-panel:not([narrow]) #navicon {
               </div>
             </div>
             <div style="text-align:center;">
-            <paper-button class="start-btn" id="start-btn" on-tap="{{transitionTopping}}" raised cross-fade>Start Circuit <core-icon icon="chevron-right"></core-icon></paper-button>
+            <paper-button class="start-btn" id="start-btn" on-tap="{{transitionDetail}}" raised cross-fade>Start Circuit <core-icon icon="chevron-right"></core-icon></paper-button>
             </div>
           </core-toolbar>
          
@@ -309,28 +319,35 @@ core-drawer-panel:not([narrow]) #navicon {
     </div>
 
   </core-drawer-panel>
+
 </section>
 
 <!-- Detail circuit -->
 <section id="details">
+<core-animated-pages selected="{{detailpage}}" transitions="hero-transition slide-up slide-down cross-fade list-cascade scale-up" on-core-animated-pages-transition-end="{{complete}}"> 
+
+<template repeat="{{card in cards}}">
   <div class="card" layout vertical hero-id="first-{{selected}}" hero>
     <div class="card-top" style="background:{{}};" >
-    <paper-icon-button id="arrow-back" on-tap="{{transitionTopping}}" icon="arrow-back" style="margin: -4px -10px 0px -10px; padding: 0; float: left;"></paper-icon-button>Remaining: 12 Sets</div>
-    <div class="card-top-sub" style="background:{{}};" hero-id="second-{{selected}}">2 Burpees</div>
+    <paper-icon-button id="arrow-back" on-tap="{{transitionDetail}}" icon="arrow-back" style="margin: -4px -10px 0px -10px; padding: 0; float: left;"></paper-icon-button>Remaining: {{card.setcount}} {{card.setunit}}</div>
+    <div class="card-top-sub" style="background:{{}};" hero-id="second-{{selected}}">{{card.excount}} {{card.exunit}} {{card.exname}}</div>
+
     <div class="card-bottom" layout vertical hero-id="third-{{selected}}" >
-      <div flex><img style="margin:50px 0" src="/images/burpees.png"></div>
+      <div flex><img style="margin:50px 0" src="/images/{{card.exdemopic}}"></div>
 
         <div>
-          <paper-icon-button id="fast-rewind" icon="av:fast-rewind" class="play-icon" scale-up></paper-icon-button>
+          <paper-icon-button id="fast-rewind" icon="av:fast-rewind" class="play-icon"  scale-up></paper-icon-button>
           <paper-icon-button id="play-arrow" icon="av:play-arrow" class="play-icon" scale-up></paper-icon-button>
-          <paper-icon-button id="fast-forward" icon="av:fast-forward" class="play-icon" scale-up></paper-icon-button>
+          <paper-icon-button id="fast-forward" icon="av:fast-forward" class="play-icon" on-tap="{{card.nextExercise}}" scale-up></paper-icon-button>
         </div>
 
     </div>
   </div>
+</template>
+
+    
+</core-animated-pages>
 </section>
-
-
 
 </core-animated-pages>
 
@@ -339,6 +356,8 @@ core-drawer-panel:not([narrow]) #navicon {
 <core-localstorage name="lastname" value="{{lastname}}"></core-localstorage>
 <core-localstorage name="email" value="{{email}}"></core-localstorage>
 <core-localstorage name="password" value="{{password}}"></core-localstorage>
+
+
 <core-ajax
     id="logout_ajax"
     url="{{server}}/dropdown/default/api/logout.json"
@@ -348,11 +367,28 @@ core-drawer-panel:not([narrow]) #navicon {
 
 </template>
 
+<core-ajax
+    id="logout_ajax"
+    url="{{server}}/dropdown/default/api/get_today_circuit.json"
+    method="GET"
+    handleAs="json"
+    on-core-response="{{handleResponseGetTodayCircuit}}"></core-ajax>
+
+</template>
+
 
 <script>
+    supersonic.ui.navigationBar.hide();
     Polymer('drop-down', {
       server: 'http://future-aurora-851.appspot.com',
       page: 0,
+      minor:{top:{point:0, count:0, unit: 'u', name: 'name'},
+             bottom:{point:0, count:0, unit: 'u', name: 'name'}},
+      exercise_ids_needed : [],
+      cached_exercises: {},
+
+      cards:[{setcount:1, setunit:'', excount:1, exunit:'', exname:'', exdemopic:'burpees.png'},],
+
       transition: function(e) {
         if (this.page === 2) {
           this.page = 0;
@@ -367,6 +403,192 @@ core-drawer-panel:not([narrow]) #navicon {
           navicon.onclick = function() {
             drawerPanel.togglePanel();
           };
+          //console.log(this.main_today_circuit_point);
+          this.fill_main_today_circuit();
+          this.fill_minor_today_circuit();
+
+      },
+
+      get_exercises: function(exercise_id){
+        console.log('exercise_ids_needed', this.exercise_ids_needed, this.exercise_ids_needed.length);
+
+        var db = openDatabase("dropdown", "1.0", "Dropdown Database", 1024 * 1024);
+        var _self = this;
+
+        db.transaction(function (tx) {
+          var self = _self;
+
+          var query = 'SELECT * FROM exercise WHERE id IN (';
+          var size = _self.exercise_ids_needed.length;
+          for (var i = 0; i < size; i++) {
+            query += _self.exercise_ids_needed[i];
+
+            if (i<size-1) query += ',';
+          }
+          query += ')';
+          console.log('query', query);
+
+          tx.executeSql(query, [], function (tx, results) {
+            var len = results.rows.length, i;
+            total_exercise = len;
+        
+            for (i = 0; i < len; i++) {
+              var id = results.rows.item(i).id;
+              var name = results.rows.item(i).name;
+              console.log('inside', id, name, self.cached_exercises);
+              /*
+              self.cached_exercises[results.rows.item(i).id].name = results.rows.item(i).name;
+              self.cached_exercises[results.rows.item(i).id].body = results.rows.item(i).body;
+              self.cached_exercises[results.rows.item(i).id].demopic = results.rows.item(i).demopic;
+              */
+            }
+          });
+        },null, function(){_self.exercise_ids_needed.length=0; console.log('cached', _self.cached_exercises)});
+      },
+
+      build_cards: function(){
+          // for main circuits
+          this.cards[0].setcount = self.main_today_circuit_count;
+          this.cards[0].setunit = self.main_today_circuit_unit;
+          this.cards[0].excount = self.main_today_circuit_unit;
+
+      },
+
+      fill_main_today_circuit: function() {
+        var db = openDatabase("dropdown", "1.0", "Dropdown Database", 1024 * 1024);
+        var _self = this;
+        //var main_exercise_set_name = '';
+
+        db.transaction(function (tx) {
+          var self = _self;
+          //console.log(_self.main_today_circuit_point);
+          tx.executeSql('SELECT * FROM today_circuit WHERE main = 1', [], function (tx, results) {
+            var len = results.rows.length, i;
+            for (i = 0; i < len; i++) {
+              //console.log(results.rows.item(i));
+              //console.log(self.main_today_circuit_point);
+              self.main_today_circuit_point = results.rows.item(i).point
+              self.main_today_circuit_count = results.rows.item(i).count
+              self.main_today_circuit_unit = results.rows.item(i).unit
+
+              var main_exercise_set_name = results.rows.item(i).exercise_set_name;
+              //console.log(main_exercise_set_name);
+              self.fill_main_exercise_set(main_exercise_set_name);
+            }            
+          });
+        });
+
+        
+      },
+
+      fill_main_exercise_set: function(set_name){
+        var db = openDatabase("dropdown", "1.0", "Dropdown Database", 1024 * 1024);
+        var _self = this;
+        exercise_ids = [];
+        exercise_names = [];
+        counts = [];
+        units = [];
+        points = [];
+        total_exercise = 0;
+
+        db.transaction(function (tx) {
+          var self = _self;
+          var exercise_ids_needed = self.exercise_ids_needed;
+
+          tx.executeSql('SELECT * FROM exercise_sets WHERE set_name = ?', [set_name], function (tx, results) {
+
+            var len = results.rows.length, i;
+            total_exercise = len;
+        
+            for (i = 0; i < len; i++) {
+              //console.log(results.rows.item(i));
+              exercise_ids[i] = results.rows.item(i).exercise_id;
+              exercise_ids_needed.push(results.rows.item(i).exercise_id);
+              console.log(self.exercise_ids_needed);
+              counts[i] = results.rows.item(i).count;
+              units[i] = results.rows.item(i).unit;
+              points[i] = results.rows.item(i).point;
+            }
+            render(self);
+          });
+        });
+        
+        // get exercise names and render
+        function render(s) {
+          var _self = s;
+          render = '';
+          var db = openDatabase("dropdown", "1.0", "Dropdown Database", 1024 * 1024);
+          db.transaction(function (tx) {
+            var self = _self;
+            var id = exercise_ids[i];
+
+            var query = 'SELECT * FROM exercise WHERE id IN (';
+            for (var i = 0; i < total_exercise; i++) {
+              query += exercise_ids[i];
+              if (i<total_exercise-1) query += ',';
+            }
+            query += ')';
+            console.log('query',query);
+
+            tx.executeSql(query, [], function (tx, results) {
+                var len = results.rows.length, i;
+                for (i = 0; i < len; i++) {
+                  console.log(results.rows.item(i));
+                  exercise_names[i] = results.rows.item(i).name;
+                  console.log(exercise_names[i]);
+                  render += counts[i] + ' ' + exercise_names[i] + '<br>';
+                }
+                self.injectBoundHTML(render, self.$.main_today_circuit_exercise_sets);
+            });
+          });
+        }
+      },
+
+
+      fill_minor_today_circuit: function() {
+        var db = openDatabase("dropdown", "1.0", "Dropdown Database", 1024 * 1024);
+        var _self = this;
+
+        db.transaction(function (tx) {
+          var self = _self;
+          //console.log(_self.main_today_circuit_point);
+          tx.executeSql('SELECT * FROM today_circuit WHERE main < 1', [], function (tx, results) {
+            var len = results.rows.length;
+
+            self.minor.top.point = results.rows.item(0).point
+            self.minor.top.count = results.rows.item(0).count
+            self.minor.top.unit = results.rows.item(0).unit
+            self.minor.top.name = results.rows.item(0).exercise_set_name;
+            self.fill_minor_exercise_set(results.rows.item(0).exercise_set_name);
+
+            self.minor.bottom.point = results.rows.item(1).point
+            self.minor.bottom.count = results.rows.item(1).count
+            self.minor.bottom.unit = results.rows.item(1).unit
+            self.minor.bottom.name = results.rows.item(1).exercise_set_name;
+            self.fill_minor_exercise_set(results.rows.item(1).exercise_set_name);
+
+          });
+        });
+        
+      },
+
+      fill_minor_exercise_set: function(set_name){
+        var db = openDatabase("dropdown", "1.0", "Dropdown Database", 1024 * 1024);
+        var _self = this;
+
+        db.transaction(function (tx) {
+          var self = _self;
+          tx.executeSql('SELECT * FROM exercise_sets WHERE set_name = ?', [set_name], function (tx, results) {
+            var len = results.rows.length, i;
+        
+            for (i = 0; i < len; i++) {
+              self.exercise_ids_needed.push(results.rows.item(i).exercise_id);
+              console.log(self.exercise_ids_needed);
+            }
+            self.get_exercises();
+          });
+          
+        });
       },
 
       logout: function() {
@@ -381,11 +603,27 @@ core-drawer-panel:not([narrow]) #navicon {
         console.log(auth);
         
         if (!auth){
-          this.firstname = null;
-          this.lastname = null;
-          this.email = null;
-          this.password = null;
-          window.location.replace("login.html");
+          this.firstname = "";
+          this.lastname = "";
+          this.email = "";
+          this.password = "";
+
+          window.localStorage.clear();
+
+          var message = {
+            sender: "index",
+            content: "logout"
+          };
+
+          supersonic.data.channel('index').publish('logout');
+          var animation = supersonic.ui.animate("slideFromTop");
+
+          //var initialView = new supersonic.ui.View("login.html");
+
+          //supersonic.ui.layers.push(initialView, {animation:animation});
+          supersonic.ui.initialView.show(animation);
+
+          //window.location.replace("login.html");
         } 
         else {
           console.log("Failed logout");
@@ -393,10 +631,15 @@ core-drawer-panel:not([narrow]) #navicon {
 
       },
 
+      handleResponseGetTodayCircuit: function(e){
+        console.log(e);
+      
+      },
+
       toppingsListOrDetails: 0,
       selected: null,
 
-      transitionTopping: function(e) {
+      transitionDetail: function(e) {
         //console.log(e.path);
         var chip_name = e.path[1].id;
 
@@ -415,16 +658,16 @@ core-drawer-panel:not([narrow]) #navicon {
         console.log(this.selected);
         
         if (chip_name == 'main_chip'){
-          this.toppingsListOrDetails = 1;
+          this.page = 1;
         }
         if (chip_name == 'top_chip'){
-          this.toppingsListOrDetails = 1;
+          this.page = 1;
         }
         if (chip_name == 'bottom_chip'){
-          this.toppingsListOrDetails = 1;
+          this.page = 1;
         }
         else if (chip_name == 'arrow-back'){
-          this.toppingsListOrDetails = 0;
+          this.page = 0;
         }
       },
 

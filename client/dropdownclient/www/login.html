@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <head>
-  <title>Drop Down</title>
+  <title>Drop Down Login</title>
   <meta charset="utf8">
   <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
 
@@ -16,9 +16,9 @@
   <!-- Import Polymer -->
   <script src="/components/webcomponentsjs/webcomponents.js"></script>
   <link rel="import" href="/components/core-elements/core-elements.html">
-  <link rel="import" href="/components/core-toolbar/core-toolbar.html">
+  <!-- <link rel="import" href="/components/core-toolbar/core-toolbar.html">
   <link rel="import" href="/components/core-menu/core-menu.html">
-  <link rel="import" href="/components/core-item/core-item.html">
+  <link rel="import" href="/components/core-item/core-item.html"> -->
   <link rel="import" href="/components/core-icons/core-icons.html">
   <link rel="import" href="/components/core-icons/image-icons.html">
   <link rel="import" href="/components/core-icons/av-icons.html">
@@ -27,10 +27,15 @@
   <link rel="import" href="/components/paper-input/paper-input.html">
   <link rel="import" href="/components/paper-tabs/paper-tabs.html">
   <link rel="import" href="/components/paper-checkbox/paper-checkbox.html">
+
+  <!-- Import Jquery -->
+  <script src="/components/localforage/dist/localforage.min.js"></script>
+  <script src="/components/jquery/dist/jquery.min.js"></script>
+  <script src="/scripts/jquery.db.0.1.3.min.js"></script>
+
 </head>
 
 <body fullbleed layout vertical style="background: #313d46;">
-
 <polymer-element name="drop-down-login">
 <template>
 <style>
@@ -52,7 +57,6 @@ main {
   background: #313d46;
 }
 
-/**Tab**/
 paper-tabs.transparent-blue {
   background-color: transparent;
   color: white;
@@ -66,7 +70,7 @@ paper-tabs.transparent-blue::shadow #selectionBar {
 paper-tabs.transparent-blue paper-tab::shadow #ink {
   color: #455663;
 }
-/*Input*/
+
 paper-input {
   color: rgba(255, 255, 255, 0.72);
   padding: 0;
@@ -91,8 +95,7 @@ paper-input-decorator /deep/ .focused-underline {
   padding: inherit;
 }
 
-/* Button */
-.button {
+.lgbutton {
   margin: 20px 0;
   width: 100%;
   font-size: 1.2em;
@@ -102,7 +105,6 @@ paper-input-decorator /deep/ .focused-underline {
   cursor: pointer;
 }
 
-/**checkbox**/
 paper-checkbox {
   color: #575757
 }
@@ -116,7 +118,6 @@ paper-checkbox.blue::shadow #checkbox.checked {
   width: 80%;
   margin: 0 auto;
   background: #313d46;
-  /*padding-top: 180px*/
 }
 
 h1 {
@@ -150,170 +151,7 @@ h2 {
   font-style: bold;
   text-align: center;
 }
-.key {
-  margin: 15px
-}
-.ball {
-  -webkit-animation-name: dribbbling;
-  -webkit-animation-duration: .6s;
-  -webkit-animation-iteration-count: infinite;
-  -webkit-animation-direction: alternate;
-  -webkit-animation-delay: 0;
-  -webkit-animation-timing-function: ease-out;
-  animation-name: dribbbling;
-  animation-duration: .6s;
-  animation-iteration-count: infinite;
-  animation-direction: alternate;
-  animation-delay: 0;
-  animation-timing-function: ease-out;
-  animation-play-state: running;
-  animation-fill-mode: none;
-}
-@-webkit-keyframes dribbbling {
-  from {
-    height: 70px;
-    -webkit-transform: translateY(50px)
-  }
-  10% {
-    height: 100px
-  }
-  to {
-    height: 110px;
-    -webkit-transform: translateY(-10px)
-  }
-}
-@keyframes dribbbling {
-  from {
-    height: 70px;
-    transform: translateY(50px)
-  }
-  10% {
-    height: 100px
-  }
-  to {
-    height: 110px;
-    transform: translateY(-10px)
-  }
-}
-.animated {
-  -webkit-animation-duration: 1s;
-  animation-duration: 1s;
-  -webkit-animation-fill-mode: both;
-  animation-fill-mode: both;
-}
-@-webkit-keyframes fadeIn {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-@keyframes fadeIn {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-.fadeIn {
-  -webkit-animation-duration: 3s;
-  animation-duration: 3s;
-  -webkit-animation-fill-mode: both;
-  animation-fill-mode: both;
-  display: block;
-  -webkit-animation-name: fadeIn;
-  animation-name: fadeIn;
-  -webkit-animation-delay: 4s;
-  animation-delay: 4s;
-}
-@-webkit-keyframes zoomInDown {
-  0% {
-    opacity: 0;
-    -webkit-transform: scale3d(.1, .1, .1) translate3d(0, -1000px, 0);
-    transform: scale3d(.1, .1, .1) translate3d(0, -1000px, 0);
-    -webkit-animation-timing-function: cubic-bezier(0.550, 0.055, 0.675, 0.190);
-    animation-timing-function: cubic-bezier(0.550, 0.055, 0.675, 0.190);
-  }
-  60% {
-    opacity: 1;
-    -webkit-transform: scale3d(.475, .475, .475) translate3d(0, 60px, 0);
-    transform: scale3d(.475, .475, .475) translate3d(0, 60px, 0);
-    -webkit-animation-timing-function: cubic-bezier(0.175, 0.885, 0.320, 1);
-    animation-timing-function: cubic-bezier(0.175, 0.885, 0.320, 1);
-  }
-}
-@keyframes zoomInDown {
-  0% {
-    opacity: 0;
-    -webkit-transform: scale3d(.1, .1, .1) translate3d(0, -1000px, 0);
-    -ms-transform: scale3d(.1, .1, .1) translate3d(0, -1000px, 0);
-    transform: scale3d(.1, .1, .1) translate3d(0, -1000px, 0);
-    -webkit-animation-timing-function: cubic-bezier(0.550, 0.055, 0.675, 0.190);
-    animation-timing-function: cubic-bezier(0.550, 0.055, 0.675, 0.190);
-  }
-  60% {
-    opacity: 1;
-    -webkit-transform: scale3d(.475, .475, .475) translate3d(0, 60px, 0);
-    -ms-transform: scale3d(.475, .475, .475) translate3d(0, 60px, 0);
-    transform: scale3d(.475, .475, .475) translate3d(0, 60px, 0);
-    -webkit-animation-timing-function: cubic-bezier(0.175, 0.885, 0.320, 1);
-    animation-timing-function: cubic-bezier(0.175, 0.885, 0.320, 1);
-  }
-}
-.zoomInDown {
-  -webkit-animation-name: zoomInDown;
-  animation-name: zoomInDown;
-}
-.zoomOutUp {
-  -webkit-animation-duration: 1s;
-  animation-duration: 1s;
-  -webkit-animation-fill-mode: both;
-  animation-fill-mode: both;
-  -webkit-animation-delay: 3s;
-  animation-delay: 3s;
-  -webkit-animation-name: zoomOutUp;
-  animation-name: zoomOutUp;
-}
-@-webkit-keyframes zoomOutUp {
-  40% {
-    opacity: 1;
-    -webkit-transform: scale3d(.475, .475, .475) translate3d(0, 60px, 0);
-    transform: scale3d(.475, .475, .475) translate3d(0, 60px, 0);
-    -webkit-animation-timing-function: cubic-bezier(0.550, 0.055, 0.675, 0.190);
-    animation-timing-function: cubic-bezier(0.550, 0.055, 0.675, 0.190);
-  }
-  100% {
-    opacity: 0;
-    -webkit-transform: scale3d(.1, .1, .1) translate3d(0, -2000px, 0);
-    transform: scale3d(.1, .1, .1) translate3d(0, -2000px, 0);
-    -webkit-transform-origin: center bottom;
-    transform-origin: center bottom;
-    -webkit-animation-timing-function: cubic-bezier(0.175, 0.885, 0.320, 1);
-    animation-timing-function: cubic-bezier(0.175, 0.885, 0.320, 1);
-  }
-}
-@keyframes zoomOutUp {
-  40% {
-    opacity: 1;
-    -webkit-transform: scale3d(.475, .475, .475) translate3d(0, 60px, 0);
-    -ms-transform: scale3d(.475, .475, .475) translate3d(0, 60px, 0);
-    transform: scale3d(.475, .475, .475) translate3d(0, 60px, 0);
-    -webkit-animation-timing-function: cubic-bezier(0.550, 0.055, 0.675, 0.190);
-    animation-timing-function: cubic-bezier(0.550, 0.055, 0.675, 0.190);
-  }
-  100% {
-    opacity: 0;
-    -webkit-transform: scale3d(.1, .1, .1) translate3d(0, -2000px, 0);
-    -ms-transform: scale3d(.1, .1, .1) translate3d(0, -2000px, 0);
-    transform: scale3d(.1, .1, .1) translate3d(0, -2000px, 0);
-    -webkit-transform-origin: center bottom;
-    -ms-transform-origin: center bottom;
-    transform-origin: center bottom;
-    -webkit-animation-timing-function: cubic-bezier(0.175, 0.885, 0.320, 1);
-    animation-timing-function: cubic-bezier(0.175, 0.885, 0.320, 1);
-  }
+
 }
 
 </style>
@@ -330,26 +168,26 @@ h2 {
 
               <paper-input-decorator id="firstname_decorator" label="First Name" error="Please enter your first name">
               <input id="firstname" is="core-input" value="{{firstname}}" pattern="^[a-zA-Z]+(([\'\,\.\-][a-zA-Z])?[a-zA-Z]*)*$" required>
-              <core-localstorage name="firstname" value="{{firstname}}"></core-localstorage>
+              
               </paper-input-decorator>
 
               <paper-input-decorator id="lastname_decorator" label="Last Name" error="Please enter your last name">
               <input id="lastname" is="core-input" value="{{lastname}}" pattern="^[a-zA-Z]+(([\'\,\.\-][a-zA-Z])?[a-zA-Z]*)*$" required>
-              <core-localstorage name="lastname" value="{{lastname}}"></core-localstorage>
+              
               </paper-input-decorator>
 
               <paper-input-decorator id="email_decorator" label="Email" error="Please enter your valid email address">
               <input id="email" is="core-input" value="{{email}}" pattern="^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$" required>
-              <core-localstorage name="email" value="{{email}}"></core-localstorage>
+              
               </paper-input-decorator>
               <p id="error_signup" class="error" hidden?="{{hide_error_signup}}">This email is already existed</p>
 
               <paper-input-decorator id="password_decorator" label="Password" error="Password has to be 4 to 15 characters">
               <input id="password" is="core-input" value="{{password}}" type="password" pattern="^.{4,15}$" required>
-              <core-localstorage name="password" value="{{password}}"></core-localstorage>
+              
               </paper-input-decorator>
               
-              <paper-button class="button" id="signup-btn" on-tap="{{submit_signup}}" raised cross-fade>Sign Up</paper-button>
+              <paper-button class="lgbutton" id="signup-btn" on-tap="{{submit_signup}}" raised cross-fade>Sign Up</paper-button>
             </div>
             
           </section>
@@ -360,20 +198,23 @@ h2 {
                 <p id="error_login" class="error" hidden?="{{hide_error_login}}">Incorrect email and/or password!</p>
                 <paper-input-decorator id="email_decorator" label="Email" error="Please enter your registerd email address">
                 <input id="email" is="core-input" value="{{email}}" pattern="^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$" required>
-                <core-localstorage name="email" value="{{email}}"></core-localstorage>
                 </paper-input-decorator>
 
                 <paper-input-decorator id="password_decorator" label="Password" error="Password has to be 4 to 15 characters">
                 <input id="password" is="core-input" value="{{password}}" type="password" pattern="^.{4,15}$" required>
-                <core-localstorage name="password" value="{{password}}"></core-localstorage>
                 </paper-input-decorator>
 
-                <paper-button class="button" id="signin-btn" on-tap="{{submit_signin}}" raised cross-fade>Login<core-icon icon="chevron-right"></core-icon></paper-button>
+                <paper-button class="lgbutton" id="signin-btn" on-tap="{{submit_signin}}" raised cross-fade>Login<core-icon icon="chevron-right"></core-icon></paper-button>
             </div>
           </section>
         </core-pages>
 </main>
 
+<core-localstorage name="firstname" value="{{firstname}}"></core-localstorage>
+<core-localstorage name="lastname" value="{{lastname}}"></core-localstorage>
+<core-localstorage name="email" value="{{email}}"></core-localstorage>
+<core-localstorage name="password" value="{{password}}"></core-localstorage>
+<core-localstorage name="today_circuit" value="{{today_circuit}}"></core-localstorage>
 <core-ajax
     id="signup_ajax"
     url="{{server}}/dropdown/default/api/create_account.json"
@@ -392,12 +233,86 @@ h2 {
 
 
 <script>
+    supersonic.ui.navigationBar.hide();
     Polymer('drop-down-login', {
-      //server : 'http://future-aurora-851.appspot.com',
-      server : 'http://127.0.0.1:8000',
+      server : 'http://future-aurora-851.appspot.com',
       selected : 0,
       hide_error_login: true,
       hide_error_signup: true,
+      indexView : null,
+      
+
+      domReady: function() {
+        if (localStorage.getItem("password") && localStorage.getItem("password") != '') {
+          selected = 1;
+          this.submit_signin();
+        } 
+         else { 
+          this.firstname = this.lastname = this.email = this.password = null;
+          localStorage.clear();
+          hide_error_login = true;
+          hide_error_signup = true;
+          console.log('hide_error_login',hide_error_login);
+        }
+
+        db = $.db("dropdown", "1.0", "Dropdown Database", 1024 * 1024);
+        db.createTable({
+          name: "exercise",
+          columns: [
+              "id INTEGER PRIMARY KEY",
+              "name TEXT",
+              "body TEXT",
+              "demopic TEXT"
+          ],
+          dropOrIgnore: "ignore", 
+          done: function () {
+              console.log("Created exercise database");
+          },
+          fail: function () {
+              console.log("Something went wrong....");
+          }
+      });
+
+      db.createTable({
+          name: "today_circuit",
+          columns: [
+              "id INTEGER PRIMARY KEY",
+              "circuit_name TEXT",
+              "exercise_set_name TEXT",
+              "main INTEGER",
+              "count INTEGER",
+              "unit TEXT",
+              "point INTEGER"
+          ],
+          dropOrIgnore: "ignore", 
+          done: function () {
+              console.log("Created today_circuit database");
+          },
+          fail: function () {
+              console.log("Something went wrong....");
+          }
+      });
+
+      db.createTable({
+          name: "exercise_sets",
+          columns: [
+              "id INTEGER PRIMARY KEY",
+              "set_name TEXT",
+              "exercise_id INTEGER",
+              "count INTEGER",
+              "unit TEXT",
+              "point INTEGER"
+          ],
+          dropOrIgnore: "ignore", 
+          done: function () {
+              console.log("Created exercise_sets database");
+          },
+          fail: function () {
+              console.log("Something went wrong....");
+          }
+      });
+
+      },
 
       handleResponseSignup: function(e){
         var success = e.detail.response.success;
@@ -412,6 +327,7 @@ h2 {
       },
 
       submit_signup: function(){
+        console.log('submit_signup');
         this.$.firstname_decorator.isInvalid = !this.$.firstname.validity.valid;
         this.$.lastname_decorator.isInvalid = !this.$.lastname.validity.valid;
         this.$.email_decorator.isInvalid = !this.$.email.validity.valid;
@@ -439,8 +355,13 @@ h2 {
         } 
         else {
           this.hide_error_login = true;
-          console.log(e.detail.response.today_circuit)
-          //window.location.replace("index.html");
+          this.firstname = e.detail.response.firstname;
+          this.lastname = e.detail.response.lastname;
+          this.today_circuit = e.detail.response.today_circuit;
+
+          this.insert_today_circuit();
+
+          console.log("handleResponseSignin", e.detail.response);
         } 
       },
 
@@ -454,11 +375,116 @@ h2 {
 
           var params = '{"epas":"' + btoa(this.email + ':' + this.password) + '"';
           params += '}';
-          console.log(params);
+          //console.log(params);
           this.$.signin_ajax.params = params;
           this.$.signin_ajax.go();
         }
       },
+
+      insert_today_circuit: function(){
+        var exercises = this.today_circuit.exercises;
+        console.log(this.today_circuit);
+        for (exercise of exercises){
+          console.log(exercise, exercise.id, exercise.name, exercise.demopic);
+          db.insert("exercise", {
+            data: {
+                id: exercise.id,
+                body: exercise.body,
+                name: exercise.name,
+                demopic: exercise.demopic
+            },
+            done: function () {
+                console.log("Created an exercise!");
+            },
+            fail: function () {
+                console.log("Something went wrong....");
+            }
+          });
+        }
+
+        var exercise_sets = this.today_circuit.exercise_sets;
+        for (exercise_set of exercise_sets){
+          db.insert("exercise_sets", {
+            data: {
+                id: exercise_set.id,
+                exercise_id: exercise_set.exercise_id,
+                set_name: exercise_set.set_name,
+                count: exercise_set.count,
+                unit: exercise_set.unit,
+                point: exercise_set.point
+            },
+            done: function () {
+                console.log("Created an exercise_set!");
+            },
+            fail: function () {
+                console.log("Something went wrong....");
+            }
+          });
+        }
+
+        today_circuits = this.today_circuit.today_circuit;
+        dismissLogin = this.dismissLogin;
+        db.createTable({
+            name: "today_circuit",
+            columns: [
+                "id INTEGER PRIMARY KEY",
+                "circuit_name TEXT",
+                "exercise_set_name TEXT",
+                "main INTEGER",
+                "count INTEGER",
+                "unit TEXT",
+                "point INTEGER"
+            ],
+            dropOrIgnore: "drop", 
+            done: function () {
+                console.log("Created today_circuit database");
+                add_today_circuit(today_circuits);
+                setTimeout(dismissLogin,1000); 
+            },
+            fail: function () {
+                console.log("Something went wrong....");
+            }
+        });
+
+        var add_today_circuit = function(today_circuits){
+          console.log(today_circuits);
+          for (today_circuit of today_circuits){
+            var is_main = 0;
+            if(today_circuit.main) {is_main = 1;}
+            db.insert("today_circuit", {
+              data: {
+                  id: today_circuit.id,
+                  circuit_name: today_circuit.circuit_name,
+                  exercise_set_name: today_circuit.exercise_set_name,
+                  count: today_circuit.count,
+                  unit: today_circuit.unit,
+                  point: today_circuit.point,
+                  main: is_main
+              },
+              done: function () {
+                  console.log("Created a today_circuit!");
+              },
+              fail: function () {
+                  console.log("Something went wrong....");
+              }
+            });
+          }
+        }
+
+
+
+      },
+
+      dismissLogin: function(){
+        var animation = supersonic.ui.animate("slideFromBottom");
+          supersonic.ui.initialView.dismiss(animation);
+          
+          //var indexView = new supersonic.ui.View("index.html");
+          //supersonic.ui.views.find("index").then(function(indexView) {
+          //supersonic.ui.layers.push(indexView, {animation:animation, navigationBar: false});
+          //});
+          //window.location.replace("index.html");
+      }
 
     });
 
@@ -467,6 +493,19 @@ h2 {
 
 </polymer-element>
 
-<drop-down-login></drop-down-login>
+<drop-down-login id="drop-down-login"></drop-down-login>
+
+<script type="text/javascript">
+supersonic.data.channel('index').subscribe(function(message) {
+  if (message == 'logout'){
+    localStorage.clear();
+    var drop_down_login = document.querySelector('#drop-down-login');
+    console.log(drop_down_login);
+    drop_down_login.domReady();
+  }
+});
+  
+
+</script>
 </body>
 </html>

@@ -25,11 +25,7 @@
   <script src="/components/jquery/dist/jquery.min.js"></script>
   <script src="/components/cropit/dist/jquery.cropit.min.js"></script>
 
-  <script src="https://apis.google.com/js/client.js"></script>
   <script src="/scripts/jquery.db.0.1.3.min.js"></script>
-  
-  
-
   <style>
       .image-editor{
         text-align: center;
@@ -90,243 +86,232 @@
       <paper-fab class="export" icon="check" raised cross-fade></paper-fab>
 </div>
 </form>
-
-    <core-ajax
-    id="signin_ajax"
-    url="{{server}}/dropdown/default/api/signin.json"
-    method="GET"
-    handleAs="json"
-    on-core-response="{{handleResponseSignin}}"></core-ajax>
-
-
-    <script>
-      var email = '', password = '';
-      // Wait for device API libraries to load
-      document.addEventListener("deviceready", onDeviceReady, false);
-      // device APIs are available
-      function onDeviceReady() {
-          window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, onFileSystemSuccess, fail);
-          pictureSource=navigator.camera.PictureSourceType;
-          destinationType=navigator.camera.DestinationType;
-          db = $.db("dropdown", "1.0", "Dropdown Database", 1024 * 1024);
-          db.createTable({
-              name: "user_photo",
-              columns: [
-                  "email INTEGER PRIMARY KEY",
-                  "photo_url TEXT",
-              ],
-              done: function () {
-                  console.log("Created user_photo database");
-              },
-              fail: function () {
-                  console.log("Something went wrong....");
-              }
-          });
-      }
-
-      function fail(e){
-          console.log('error', e);
-      }
-      function onFileSystemSuccess(fileSystem) {
-        //console.log(fileSystem.name);
-      }
+<script>
+  // Wait for device API libraries to load
+  document.addEventListener("deviceready", onDeviceReady, false);
+  // device APIs are available
+  function onDeviceReady() {
+      window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, onFileSystemSuccess, fail);
+      pictureSource=navigator.camera.PictureSourceType;
+      destinationType=navigator.camera.DestinationType;
       
-      $('.select-image-btn').click(function() {
-        // supersonic.media.camera.getFromPhotoLibrary(options).then(function(file){
-        //   moveFileToUser(file);
-        //   //$('.image-editor').cropit('imageSrc', result);
-        // });
-
-        // Retrieve image file location from specified source
-        navigator.camera.getPicture(moveFileToUser, fail, 
-          { quality: 100, 
-           targetWidth: 600,
-           targetHeight: 600,
-           allowEdit: true,
-           destinationType: destinationType.FILE_URI,
-           correctOrientation: true,
-           sourceType: Camera.PictureSourceType.PHOTOLIBRARY });
-
-      });
-
-      $('.capture-image-btn').click(function() {
-        // supersonic.media.camera.getFromPhotoLibrary(options).then(function(file){
-        //   moveFileToUser(file);
-        //   //$('.image-editor').cropit('imageSrc', result);
-        // });
-
-         // Retrieve image file location from specified source
-         navigator.camera.getPicture(moveFileToUser, fail, 
-          { quality: 100, 
-           targetWidth: 600,
-           targetHeight: 600,
-           allowEdit: false,
-           destinationType: destinationType.FILE_URI,
-           correctOrientation: true,
-           sourceType: Camera.PictureSourceType.CAMERA });
-
-      });
-
-      function moveFileToUser(file){
-        //window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, onFileSystemSuccess, fail);
-        targetDirURL = "file://" + steroids.app.absoluteUserFilesPath;
-        console.log('cameraURI',file);
-        console.log('targetDirURL', targetDirURL );
-        
-      window.resolveLocalFileSystemURL(
-        file, function(fileEntry){
-          console.log('resolvedFileEntry', fileEntry);
-          window.resolveLocalFileSystemURL(targetDirURL, function(directoryEntry){
-            console.log('resolvedDirEntry', directoryEntry);
-            directoryEntry.getFile('user_pic.png',{create: false, exclusive: false}, function(fileEntryToRemove){
-                console.log('toRemove', fileEntryToRemove);
-                fileEntryToRemove.remove(function(){
-                  //sucess removal, file was there
-                  console.log('sucess remove fileEntry',fileEntry);
-                  fileEntry.copyTo(directoryEntry, 'user_pic.png', fileMoved, fail); 
-                }, fail);
-              }, function(){
-                  //fail removal, file wasn't there
-                  console.log('fail remove fileEntry',fileEntry);
-                  fileEntry.copyTo(directoryEntry, 'user_pic.png', fileMoved, fail);
-              });
-          });
-        },fail);
-      }
-
-      function fileMoved(file){
-        //console.log('fileMoved', file);
-        imageSrc = file.name + '?' + new Date().getTime(); 
-        console.log('imageSrc', imageSrc);
-        $('.image-editor').cropit('disable');
-        $('.image-editor').cropit('reenable');
-        $('.image-editor').cropit('imageSrc', imageSrc);
-      }
-
-      function getAuth(){
-        return btoa(JSON.parse(localStorage.getItem("email")) + ':' +
-                    JSON.parse(localStorage.getItem("password")));
-      }
-
-      function user_pic_name(){
-        return btoa(JSON.parse(localStorage.getItem("email"))) + '.png';
-      }
-
-      $(function() {
-        $('.image-editor').cropit();
-
-        $('.export').click(function() {
-          var imageData = $('.image-editor').cropit('export');
-          
-          
-          function send_blobstore(url){
-              var formdata = new FormData($("#fileinfo"));
-              formdata.append('content', dataURItoBlob(imageData), user_pic_name());
-
-              $.ajax({
-              url: url,
-              data: formdata,
-              cache: false,
-              contentType: false,
-              processData: false,
-              type: 'POST',
-              crossDomain: true,
-              success: function(data){
-                  console.log(data);
-              }
-            });
+      db = $.db("dropdown", "1.0", "Dropdown Database", 1024 * 1024);
+      db.createTable({
+          name: "user_photo",
+          columns: [
+              "email TEXT PRIMARY KEY",
+              "photo_url TEXT",
+          ],
+          dropOrIgnore: "ignore", 
+          done: function () {
+              console.log("Created user_photo database");
+          },
+          fail: function () {
+              console.log("Something went wrong....");
           }
-          
-          // get upload url
-          $.ajax({
-            url: 'http://dropdown.nguyenshane.com/dropdown/default/api/get_upload_url',
-            headers: { 'X-Requested-With': 'XMLHttpRequest',
-                        'Authorization': 'Basic ' + getAuth(), },
-            data: {'request_type': 'get_upload_url'},
-            dataType: 'json',
-            cache: false,
-            contentType: false,
-            processData: false,
-            type: 'POST',
-            success: function(response){
-                console.log(response);
-                send_blobstore(response.upload_url);
-            }
-          })
-
-          
-          localforage.setItem('photo', imageData, function(err,value) {
-            console.log('set', value, 'filename.png');
-          });
-
-          localforage.getItem('photo', function(err, value) {
-            // Run this code once the value has been
-            // loaded from the offline store.
-            console.log('get', value);
-            object = value;
-         });
-
-        });
       });
-      function get_user_photo_url(){
-        emails = [];
-        emails.push('shanedo@ucsc.edu');
-      // get upload url
+  }
+
+  function fail(e){
+      console.log('error', e);
+  }
+  function onFileSystemSuccess(fileSystem) {
+    //console.log(fileSystem.name);
+  }
+  
+  $('.select-image-btn').click(function() {
+    // Retrieve image file location from specified source
+    navigator.camera.getPicture(moveFileToUser, fail, 
+      { quality: 100, 
+       targetWidth: 600,
+       targetHeight: 600,
+       allowEdit: true,
+       destinationType: destinationType.FILE_URI,
+       correctOrientation: true,
+       sourceType: Camera.PictureSourceType.PHOTOLIBRARY });
+
+  });
+
+  $('.capture-image-btn').click(function() {
+     // Retrieve image file location from camera
+     navigator.camera.getPicture(moveFileToUser, fail, 
+      { quality: 100, 
+       targetWidth: 600,
+       targetHeight: 600,
+       allowEdit: false,
+       destinationType: destinationType.FILE_URI,
+       correctOrientation: true,
+       sourceType: Camera.PictureSourceType.CAMERA });
+
+  });
+
+  function moveFileToUser(file){
+    //window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, onFileSystemSuccess, fail);
+    targetDirURL = "file://" + steroids.app.absoluteUserFilesPath;
+    console.log('cameraURI',file);
+    console.log('targetDirURL', targetDirURL );
+    
+  window.resolveLocalFileSystemURL(
+    file, function(fileEntry){
+      console.log('resolvedFileEntry', fileEntry);
+      window.resolveLocalFileSystemURL(targetDirURL, function(directoryEntry){
+        console.log('resolvedDirEntry', directoryEntry);
+        directoryEntry.getFile('user_pic.png',{create: false, exclusive: false}, function(fileEntryToRemove){
+            console.log('toRemove', fileEntryToRemove);
+            fileEntryToRemove.remove(function(){
+              //sucess removal, file was there
+              console.log('sucess remove fileEntry',fileEntry);
+              fileEntry.copyTo(directoryEntry, 'user_pic.png', fileMoved, fail); 
+            }, fail);
+          }, function(){
+              //fail removal, file wasn't there
+              console.log('fail remove fileEntry',fileEntry);
+              fileEntry.copyTo(directoryEntry, 'user_pic.png', fileMoved, fail);
+          });
+      });
+    },fail);
+  }
+
+  function fileMoved(file){
+    //console.log('fileMoved', file);
+    imageSrc = file.name + '?' + new Date().getTime(); 
+    console.log('imageSrc', imageSrc);
+    $('.image-editor').cropit('disable');
+    $('.image-editor').cropit('reenable');
+    $('.image-editor').cropit('imageSrc', imageSrc);
+  }
+
+  function getAuth(){
+    console.log("email", JSON.parse(localStorage.getItem("email")));
+    console.log("pass", JSON.parse(localStorage.getItem("password")));
+    return btoa(JSON.parse(localStorage.getItem("email")) + ':' +
+                JSON.parse(localStorage.getItem("password")));
+  }
+
+  function user_pic_name(){
+    return btoa(JSON.parse(localStorage.getItem("email"))) + '.png';
+  }
+
+  $(function() {
+    $('.image-editor').cropit();
+
+    $('.export').click(function() {
+      var imageData = $('.image-editor').cropit('export');
+      
+      
+      function send_blobstore(url){
+          form = $("#fileinfo");
+          var formdata = new FormData(form[0]);
+          formdata.append('content', dataURItoBlob(imageData), user_pic_name());
+
           $.ajax({
-            url: 'http://dropdown.nguyenshane.com/dropdown/default/api/get_user_photo_url',
-            headers: { 'X-Requested-With': 'XMLHttpRequest','Authorization': 'Basic ' + getAuth()},
-            data: '{"email":'+JSON.stringify(emails)+'}',
-            dataType: 'json',
-            cache: false,
-            contentType: false,
-            processData: false,
-            type: 'POST',
-            success: function(response){
-                console.log(response);
-                for (var email in response.result){
-                  console.log(email, response.result[email]);
-                  localforage.setItem('user_photo_url_'+email, response.result[email]);
-                  db.insert("user_photo", {
-                      data: {
-                          email: email,
-                          photo_url: response.result[email]
-                      },
-                      done: function () {
-                          console.log("Added a photo to WebSQL");
-                      },
-                      fail: function (e) {
-                          console.log("Something went wrong....",e);
-                      }
-                  });
-                }
-            },
-            error: function(exception){
-              console.log('Exeption:', exception);}
-          })
-        }
-
-      function dataURItoBlob(dataURI) {
-        // convert base64/URLEncoded data component to raw binary data held in a string
-        var byteString;
-        if (dataURI.split(',')[0].indexOf('base64') >= 0)
-            byteString = atob(dataURI.split(',')[1]);
-        else
-            byteString = unescape(dataURI.split(',')[1]);
-
-        // separate out the mime component
-        var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
-
-        // write the bytes of the string to a typed array
-        var ia = new Uint8Array(byteString.length);
-        for (var i = 0; i < byteString.length; i++) {
-            ia[i] = byteString.charCodeAt(i);
-        }
-
-        return new Blob([ia], {type:mimeString});
+          url: url,
+          data: formdata,
+          cache: false,
+          contentType: false,
+          processData: false,
+          type: 'POST',
+          crossDomain: true,
+          success: function(cached_url){
+              localforage.setItem('user_photo_url_'+JSON.stringify(emails), cached_url);
+              console.log("Uploaded");
+          }
+        });
       }
       
+      // get upload url
+      $.ajax({
+        url: 'http://dropdown.nguyenshane.com/dropdown/default/api/get_upload_url',
+        headers: { 'X-Requested-With': 'XMLHttpRequest',
+                    'Authorization': 'Basic ' + getAuth(), },
+        data: {'request_type': 'get_upload_url'},
+        dataType: 'json',
+        cache: false,
+        contentType: false,
+        processData: false,
+        type: 'POST',
+        success: function(response){
+            console.log(response);
+            send_blobstore(response.upload_url);
+        }
+      })
+      
+      /*
+      localforage.setItem('photo', imageData, function(err,value) {
+        console.log('set', value, 'filename.png');
+      });
 
-    </script>
+      
+      localforage.getItem('photo', function(err, value) {
+        // Run this code once the value has been
+        // loaded from the offline store.
+        console.log('get', value);
+        object = value;
+     });
+    */
+
+    });
+  });
+
+  function get_user_photo_url(){
+    emails = [];
+    emails.push('shanedo@ucsc.edu');
+  // get upload url
+      $.ajax({
+        url: 'http://dropdown.nguyenshane.com/dropdown/default/api/get_user_photo_url',
+        headers: { 'X-Requested-With': 'XMLHttpRequest','Authorization': 'Basic ' + getAuth()},
+        data: '{"email":'+JSON.stringify(emails)+'}',
+        dataType: 'json',
+        cache: false,
+        contentType: false,
+        processData: false,
+        type: 'POST',
+        success: function(response){
+            console.log(response);
+            for (var email in response.result){
+              console.log(email, response.result[email]);
+              localforage.setItem('user_photo_url_'+email, response.result[email]);
+
+              db.insert("user_photo", {
+                  data: {
+                      email: email,
+                      photo_url: response.result[email]
+                  },
+                  done: function () {
+                      console.log("Added a photo to WebSQL");
+                  },
+                  fail: function (e) {
+                      console.log("Something went wrong....",e);
+                  }
+              });
+            }
+          },
+        error: function(exception){
+          console.log('Exeption:', exception);}
+      })
+    }
+
+  function dataURItoBlob(dataURI) {
+    // convert base64/URLEncoded data component to raw binary data held in a string
+    var byteString;
+    if (dataURI.split(',')[0].indexOf('base64') >= 0)
+        byteString = atob(dataURI.split(',')[1]);
+    else
+        byteString = unescape(dataURI.split(',')[1]);
+
+    // separate out the mime component
+    var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+
+    // write the bytes of the string to a typed array
+    var ia = new Uint8Array(byteString.length);
+    for (var i = 0; i < byteString.length; i++) {
+        ia[i] = byteString.charCodeAt(i);
+    }
+    return new Blob([ia], {type:mimeString});
+  }
+  
+
+</script>
 
 </body>
 </html>
