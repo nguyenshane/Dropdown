@@ -1,0 +1,13 @@
+{{extend 'layout.html'}}
+<h1>You completed this circuit</h1>
+<h3>{{=cir.circuit_name}}</h3>
+<p>
+    Discription: 
+</p>
+<p>
+    Point: {{=cir.point}}
+</p>
+<p>
+    Count: {{=cir.count}} - {{=cir.unit}}
+</p>
+{{=A('Back to Home', _class='btn', _href=URL('default', 'index'))}}

@@ -3,7 +3,7 @@
 import random
 import ast
 import json
-from faceb import FaceBookAccount
+#from faceb import FaceBookAccount
 
 
 def login():
@@ -37,7 +37,7 @@ def index():
 
 
     def generate_complete_button(row):
-        b = A('Complete', _class='btn', _href=URL('default', 'complete', args=[row.id]))
+        b = A('Complete', _class='btn', _href=URL('default', 'test_complete', args=[row.id]))
         return b
     
     links = [
@@ -50,93 +50,46 @@ def index():
 
     #return locals()
 
-@auth.requires_login()
-def showfriendFacebook():
-    
-    friendlist = FaceBookAccount().get_friend()
-    
+#########################################################
+##List of test backend function####
+#########################################################
 def test_show_user():
     user_id = request.args(0)
     return show_user(user_id)
-    
-def show_user(user_id):
-    userrev = db(db.auth_user.id == user_id).select().first()
-    #linktable_ref = db(db.linktable.user_id == auth.user_id).select()
-    test_create_table = db(db.test_create_table.user_id == user_id).select()
-    return dict(userrev=userrev,test_create_table=test_create_table)
 
-
-def show():
-    exercise = db.exercise(request.args(0,cast=int)) or redirect(URL('index'))
-    point = exercise.point
-    
-    return dict(exercise=exercise,point=point)
-
-@auth.requires_login()
-def complete():
-    
-    content = None
-    
+def test_show_circuit():
     circuit_id = request.args(0)
-    
+    circuit = get_circuit(circuit_id)
+    exercise_set = get_exercise_set(circuit.exercise_set_name)    
+    return dict(circuit=circuit,exercise_set=exercise_set)
+
+def test_show_exercise():
+    exercise_id = request.args(0)
+    exercise = get_exercise(exercise_id)    
+    return dict(exercise=exercise)
+
+@auth.requires_login()
+def test_complete():    
+    circuit_id = request.args(0)
     cir = db(db.circuit.id == circuit_id).select().first()
-    userrev = db(db.auth_user.id == auth.user_id).select().first()
-    
-    point = cir.point
-    newpoint = int(cir.point)
-    form2 = FORM.confirm('Did you complete this exercise')
-    if form2.accepted:
-        redirect(URL('default', 'showuser'))
-    newpoint += point
-    userrev.update_record(point=newpoint)
-    
-    #linktable_id = db.linktable.insert(user_id = auth.user_id,exercise_id = exerciseid,exercise_name=exer.name)
-    db.test_create_table.insert(user_id = auth.user_id,circuit_id = cir.id,circuit_count=1,created_on=datetime.utcnow())
-    
-    content = form2
-        
-    
-    return dict(content=content,cir=cir,userrev=userrev)
+    complete_circuit(auth.user_id,circuit_id)    
+    return dict(cir=cir)
+
 
 @auth.requires_login()
-def reset():
-    userrev = db(db.auth_user.id == auth.user_id).select().first()
-    userrev.point = 0
-    userrev.update_record()
-    db(db.linktable.user_id == auth.user_id).delete()
-    
-    form = FORM.confirm('You will reset your point')
-    if form.accepted:
-        redirect(URL('default', 'index'))
-    
-    return dict(form=form)
-
-@auth.requires_login()
-def upgrade():
-    userrev = db(db.auth_user.id == auth.user_id).select().first()
-    myadmin = db(db.auth_group.role == "myadmin").select().first()
-    db.auth_membership.insert(user_id = userrev.id,group_id = myadmin.id)
-    
-    
+def test_reset():
+    reset_point(auth.user_id)    
     return dict()
 
-@auth.requires_membership('myadmin')
-def add_exercise():
-    userrev = db(db.auth_user.id == auth.user_id).select().first()
-    
-    form = SQLFORM.factory(Field('name',label='Exercise Name'),Field('point','integer'),Field('body','text',label='Discription'))
-    form.add_button('Cancel', URL('default', 'index'))
-    
-    if form.process().accepted:
-        db.exercise.insert(name=form.vars.name,point=form.vars.point,body=form.vars.body)
-        # Successful processing.
-        session.flash = T("new exercise created")
-        redirect(URL('default', 'index'))
-    return dict(form=form)
+@auth.requires_login()
+def test_upgrade():
+    isUpgrade = upgrade(auth.user_id)    
+    return dict(isUpgrade=isUpgrade)
 
-def login_with_facebook():
-    #auth.settings.login_form = FaceBookAccount()
-    return dict(form = auth.login())
+    
+@auth.requires_login()
+def showfriendFacebook():    
+    friendlist = FaceBookAccount().get_friend()
 
 @auth.requires_login()
 def test_add_friend():
@@ -145,23 +98,6 @@ def test_add_friend():
     isAdded = add_friend(auth.user_id,friend_id)
     return dict(friend=friend,isAdded=isAdded)
 
-def add_friend(from_user_id,to_user_id):
-    if isFriend(from_user_id,to_user_id):
-        return False
-    db.friend_table.insert(from_user_id=from_user_id,to_user_id=to_user_id,created_on=datetime.utcnow())
-    return True
-
-def isFriend(from_user_id,to_user_id):
-    fromIdObj = db(db.auth_user.id == from_user_id).select().first()
-    toIdObj = db(db.auth_user.id == to_user_id).select().first()
-    exist_data = db((db.friend_table.from_user_id==fromIdObj) & (db.friend_table.to_user_id == toIdObj)).select().first()
-    
-
-    if exist_data is not None:
-        return True
-    else:
-        return False
-    
 
 @auth.requires_login()
 def test_show_all_friend():
@@ -169,16 +105,10 @@ def test_show_all_friend():
     #grid = SQLTABLE(friendlist)
     return dict(friendlist=friendlist)
 
-def show_all_friend(user_id):
-    friendlist = db(db.friend_table.from_user_id == user_id).select(orderby=~db.friend_table.created_on)
-    
-    return friendlist
-
 
 @auth.requires_login()
 def test_show_all_user():
-    userlist = show_all_user()
-    
+    userlist = show_all_user()    
     def generate_addfriend_button(row):
         b = 'Added'
         if not isFriend(auth.user_id,row.id):
@@ -191,12 +121,123 @@ def test_show_all_user():
     grid = SQLFORM.grid(db.auth_user,
                         fields=[db.auth_user.first_name,db.auth_user.last_name,db.auth_user.email,db.auth_user.point],
                         details=False,csv=False,links=links,editable=False, deletable=False)
-    return dict(grid = grid)
+    return dict(grid = grid)    
 
+#########################################################
+#########################################################
+#########################################################  
+
+
+
+
+#Show user information, 
+#including list of complete circuit
+def show_user(user_id):
+    userrev = db(db.auth_user.id == user_id).select().first()
+    #linktable_ref = db(db.linktable.user_id == auth.user_id).select()
+    circuit_tag_table = db(db.circuit_tag_table.user_id == user_id).select()
+    return dict(userrev=userrev,circuit_tag_table=circuit_tag_table)
+
+def get_circuit(circuit_id):
+    circuit = db(db.circuit.id == circuit_id).select().first()
+    return circuit
+
+def get_exercise_set(exercise_set_name):
+    exercise_set = db(db.exercise_set.set_name == exercise_set_name).select()
+    return exercise_set
+
+def get_exercise(exercise_id):
+    exercise = db(db.exercise.id == exercise_id).select().first()
+    return exercise
+
+def get_exercise_name(exercise_id):
+    exercise = db(db.exercise.id == exercise_id).select()
+    return exercise.name
+
+#Call when user complete circuit
+#Increase user's point and add circuit to list of completed 
+def complete_circuit(user_id,circuit_id):
+    cir = db(db.circuit.id == circuit_id).select().first()
+    userrev = db(db.auth_user.id == user_id).select().first()    
+    if cir is None:
+        return False
+    if userrev is None:
+        return False    
+    point = cir.point
+    #newpoint = int(cir.point)
+    oldpoint = userrev.point
+    newpoint = oldpoint + point
+    userrev.update_record(point=newpoint)
+    db.circuit_tag_table.insert(user_id = auth.user_id,circuit_id = cir.id,circuit_count=1,created_on=datetime.utcnow())
+    return True
+
+#When user want to reset point
+#Reset user's point and remove all completed circuit
+def reset_point(user_id):
+    userrev = db(db.auth_user.id == user_id).select().first()
+    if userrev is None:
+        return False
+    userrev.point = 0
+    userrev.update_record()
+    db(db.circuit_tag_table.user_id == userrev).delete()
+    return True
+
+#When user want to upgrade to Admin role
+#Return True: success
+#False: is already admin
+def upgrade(user_id):
+    isAd = isAdmin(user_id)
+    if isAd:
+        return False    
+    myadmin = db(db.auth_group.role == "myadmin").select().first()
+    db.auth_membership.insert(user_id = user_id,group_id = myadmin.id)
+    return True
+
+#Check if user is Admin
+def isAdmin(user_id):
+    userrev = db(db.auth_user.id == user_id).select().first()
+    myadmin = db(db.auth_group.role == "myadmin").select().first()
+    exist_data = db((db.auth_membership.user_id==userrev) & (db.auth_membership.group_id == myadmin)).select().first()    
+    if exist_data is not None:
+        return True
+    else:
+        return False
+
+#Use facebook login - Not using right now
+def login_with_facebook():
+    #auth.settings.login_form = FaceBookAccount()
+    return dict(form = auth.login())
+
+#When user want to add a friend
+#Return True: success
+#False: is already friend
+def add_friend(from_user_id,to_user_id):
+    if isFriend(from_user_id,to_user_id):
+        return False
+    db.friend_table.insert(from_user_id=from_user_id,to_user_id=to_user_id,created_on=datetime.utcnow())
+    return True
+
+#Check if one user is friend with another
+def isFriend(from_user_id,to_user_id):
+    fromIdObj = db(db.auth_user.id == from_user_id).select().first()
+    toIdObj = db(db.auth_user.id == to_user_id).select().first()
+    exist_data = db((db.friend_table.from_user_id==fromIdObj) & (db.friend_table.to_user_id == toIdObj)).select().first()
+    if exist_data is not None:
+        return True
+    else:
+        return False
+#When user want to list all friend    
+def show_all_friend(user_id):
+    friendlist = db(db.friend_table.from_user_id == user_id).select(orderby=~db.friend_table.created_on)
+    return friendlist
+
+#When user want to see all user
 def show_all_user():
-    userlist = db().select(db.auth_user.ALL, orderby=db.auth_user.id)
-    
+    userlist = db().select(db.auth_user.ALL, orderby=db.auth_user.id)    
     return userlist
+
+
+
 
 def user():
     """

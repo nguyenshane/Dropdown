@@ -1,0 +1,10 @@
+{{extend 'layout.html'}}
+
+<h1>Exercise: {{=exercise.name}}</h1>
+<p>Discription: {{=exercise.body}}</p>
+
+<img width="200px"
+     src="{{=URL('static','images',exercise.demopic)}}" />
+<div>
+{{=A('Back to Home', _class='btn', _href=URL('default', 'index'))}}
+</div>

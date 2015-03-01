@@ -1,0 +1,10 @@
+{{extend 'layout.html'}}
+
+<h1>Circuit: {{=circuit.circuit_name}}</h1>
+<h3>List of exercise</h3>
+<ul>{{for exercise in exercise_set:}}
+     {{=LI(A(exercise.exercise_id, _href=URL('test_show_exercise', args=exercise.exercise_id)))}}
+{{pass}}
+</ul>
+
+{{=A('Back to Home', _class='btn', _href=URL('default', 'index'))}}
