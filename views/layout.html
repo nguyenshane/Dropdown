@@ -135,6 +135,36 @@
     </section><!--/main-->
 
     <table>
+	  <tr>
+        <td>
+          User:
+        </td>
+        <td>
+          {{=A('See user infor', _class='btn', _href=URL('default', 'test_show_user',args=[auth.user_id]))}}
+        </td>
+        <td>
+          {{=A('User Setting', _class='btn', _href=URL('default', 'test_user_setting'))}}
+        </td>
+      </tr>
+	  <tr>
+        <td>
+          Friend:
+        </td>
+        <td>
+          {{=A('Show Friend', _class='btn', _href=URL('default', 'test_show_all_friend'))}}
+        </td>
+        <td>
+          {{=A('Show All User', _class='btn', _href=URL('default', 'test_show_all_user'))}}
+        </td>
+      </tr>
+	  <tr>
+        <td>
+          Admin:
+        </td>
+        <td>
+			{{=A('Upgrade to Admin', _class='btn', _href=URL('default', 'test_upgrade'))}}
+        </td>
+      </tr>
       <tr>
         <td>
           Exercise:
