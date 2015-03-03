@@ -255,7 +255,8 @@ h2 {
           console.log('hide_error_login',hide_error_login);
         }
 
-        db = $.db("dropdown", "1.0", "Dropdown Database", 1024 * 1024);
+        db = $.db("dropdown", "", "Dropdown Database", 1024 * 1024);
+        //db = openDatabase("dropdown", "", "Dropdown Database", 1024 * 1024);
         db.createTable({
           name: "exercise",
           columns: [

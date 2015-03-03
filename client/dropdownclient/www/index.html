@@ -13,23 +13,25 @@
   <script src="/components/angular/angular.js"></script>
   <script src="/components/supersonic/supersonic.js"></script>
 
-    <!-- Import Polymer -->
+  <!-- Import Polymer -->
   <script src="/components/webcomponentsjs/webcomponents.js"></script>
   <link rel="import" href="/components/core-elements/core-elements.html">
-  <link rel="import" href="/components/core-toolbar/core-toolbar.html">
+  <!-- <link rel="import" href="/components/core-toolbar/core-toolbar.html">
   <link rel="import" href="/components/core-menu/core-menu.html">
   <link rel="import" href="/components/core-item/core-item.html">
   <link rel="import" href="/components/core-header-panel/core-header-panel.html">
   <link rel="import" href="/components/core-drawer-panel/core-drawer-panel.html">
-  <link rel="import" href="/components/core-scroll-header-panel/core-scroll-header-panel.html">
+  <link rel="import" href="/components/core-scroll-header-panel/core-scroll-header-panel.html"> -->
   <link rel="import" href="/components/core-icons/core-icons.html">
   <link rel="import" href="/components/core-icons/image-icons.html">
   <link rel="import" href="/components/core-icons/av-icons.html">
   <link rel="import" href="/components/paper-icon-button/paper-icon-button.html">
   <link rel="import" href="/components/paper-button/paper-button.html">
+  <link rel="import" href="/components/paper-fab/paper-fab.html">
   <link rel="import" href="/components/core-animated-pages/core-animated-pages.html">
   <link rel="import" href="/components/core-animated-pages/transitions/slide-up.html">
   <link rel="import" href="/components/core-animated-pages/transitions/slide-down.html">
+  <link rel="import" href="/components/core-animated-pages/transitions/slide-from-right.html">
   <link rel="import" href="/components/core-animated-pages/transitions/cross-fade.html">
   <link rel="import" href="/components/core-animated-pages/transitions/list-cascade.html">
   <link rel="import" href="/components/core-animated-pages/transitions/scale-up.html">
@@ -43,7 +45,7 @@
 
 <body fullbleed layout vertical>
 <script>
-    supersonic.ui.navigationBar.hide();
+    supersonic.ui.navigationBar.hide(); 
 </script>
 <polymer-element name="drop-down">
 <template>
@@ -221,7 +223,8 @@ core-drawer-panel:not([narrow]) #navicon {
   width: 60px;
   height: 60px;
   margin-right: 16px;
-  color: #15b8a3;
+  color: #fff;
+  background: #15b8a3;
 }
 
 .play-icon /deep/ core-icon[role=img] {
@@ -324,21 +327,21 @@ core-drawer-panel:not([narrow]) #navicon {
 
 <!-- Detail circuit -->
 <section id="details">
-<core-animated-pages selected="{{detailpage}}" transitions="hero-transition slide-up slide-down cross-fade list-cascade scale-up" on-core-animated-pages-transition-end="{{complete}}"> 
+<core-animated-pages selected="{{currentEx}}" transitions="hero-transition slide-up slide-down cross-fade slide-from-right list-cascade scale-up" on-core-animated-pages-transition-end="{{complete}}" hero-id="first-{{selected}}" hero> 
 
 <template repeat="{{card in cards}}">
-  <div class="card" layout vertical hero-id="first-{{selected}}" hero>
+  <div class="card" layout vertical  >
     <div class="card-top" style="background:{{}};" >
     <paper-icon-button id="arrow-back" on-tap="{{transitionDetail}}" icon="arrow-back" style="margin: -4px -10px 0px -10px; padding: 0; float: left;"></paper-icon-button>Remaining: {{card.setcount}} {{card.setunit}}</div>
-    <div class="card-top-sub" style="background:{{}};" hero-id="second-{{selected}}">{{card.excount}} {{card.exunit}} {{card.exname}}</div>
+    <div class="card-top-sub" style="background:{{}};" hero-id="second-{{selected}}" current="{{card.id}}" slide-from-right>{{card.excount}} {{card.exunit}} {{card.exname}}</div>
 
     <div class="card-bottom" layout vertical hero-id="third-{{selected}}" >
-      <div flex><img style="margin:50px 0" src="/images/{{card.exdemopic}}"></div>
+      <div flex ><img style="margin:50px 0" src="/images/demopic/{{card.exdemopic}}"></div>
 
-        <div>
-          <paper-icon-button id="fast-rewind" icon="av:fast-rewind" class="play-icon"  scale-up></paper-icon-button>
-          <paper-icon-button id="play-arrow" icon="av:play-arrow" class="play-icon" scale-up></paper-icon-button>
-          <paper-icon-button id="fast-forward" icon="av:fast-forward" class="play-icon" on-tap="{{card.nextExercise}}" scale-up></paper-icon-button>
+        <div style="margin: 20px;text-align: right;">
+          <!-- <paper-icon-button id="fast-rewind" icon="av:fast-rewind" class="play-icon"  scale-up></paper-icon-button>
+          <paper-icon-button id="play-arrow" icon="av:play-arrow" class="play-icon" scale-up></paper-icon-button>-->
+          <paper-fab id="fast-forward" current="{{card.id}}" icon="av:fast-forward" class="play-icon" on-tap="{{nextExercise}}" scale-up></paper-fab>
         </div>
 
     </div>
@@ -386,13 +389,15 @@ core-drawer-panel:not([narrow]) #navicon {
              bottom:{point:0, count:0, unit: 'u', name: 'name'}},
       exercise_ids_needed : [],
       cached_exercises: {},
+      cached_exercise_sets: {},
 
-      cards:[{setcount:1, setunit:'', excount:1, exunit:'', exname:'', exdemopic:'burpees.png'},],
+      cards:[],
+      currentEx: 0,
 
       transition: function(e) {
         if (this.page === 2) {
           this.page = 0;
-        } else {
+        } else { 
           this.page += 1;
         }
       },
@@ -403,17 +408,17 @@ core-drawer-panel:not([narrow]) #navicon {
           navicon.onclick = function() {
             drawerPanel.togglePanel();
           };
-          //console.log(this.main_today_circuit_point);
           this.fill_main_today_circuit();
           this.fill_minor_today_circuit();
 
       },
 
       get_exercises: function(exercise_id){
-        console.log('exercise_ids_needed', this.exercise_ids_needed, this.exercise_ids_needed.length);
+        //console.log('exercise_ids_needed', this.exercise_ids_needed, this.exercise_ids_needed.length);
 
-        var db = openDatabase("dropdown", "1.0", "Dropdown Database", 1024 * 1024);
+        var db = openDatabase("dropdown", "", "Dropdown Database", 1024 * 1024);
         var _self = this;
+
 
         db.transaction(function (tx) {
           var self = _self;
@@ -426,36 +431,54 @@ core-drawer-panel:not([narrow]) #navicon {
             if (i<size-1) query += ',';
           }
           query += ')';
-          console.log('query', query);
+          //console.log('query', query);
+
+          var cached_exercises = _self.cached_exercises;
 
           tx.executeSql(query, [], function (tx, results) {
             var len = results.rows.length, i;
-            total_exercise = len;
-        
+
+            
             for (i = 0; i < len; i++) {
-              var id = results.rows.item(i).id;
+              var id = results.rows.item(i).id; 
               var name = results.rows.item(i).name;
-              console.log('inside', id, name, self.cached_exercises);
-              /*
-              self.cached_exercises[results.rows.item(i).id].name = results.rows.item(i).name;
-              self.cached_exercises[results.rows.item(i).id].body = results.rows.item(i).body;
-              self.cached_exercises[results.rows.item(i).id].demopic = results.rows.item(i).demopic;
-              */
+              var body = results.rows.item(i).body;
+              var demopic = results.rows.item(i).demopic;
+              //console.log('inside', id, name, demopic, self.cached_exercises);
+              
+              self.cached_exercises[id] = {name: name, body: body, demopic: demopic}; 
             }
           });
-        },null, function(){_self.exercise_ids_needed.length=0; console.log('cached', _self.cached_exercises)});
+        },null, function(){_self.exercise_ids_needed.length=0; console.log('cached ex', _self.cached_exercises); _self.build_cards()});
       },
 
       build_cards: function(){
           // for main circuits
-          this.cards[0].setcount = self.main_today_circuit_count;
-          this.cards[0].setunit = self.main_today_circuit_unit;
-          this.cards[0].excount = self.main_today_circuit_unit;
+          var setcount = this.main_today_circuit_count;
+          var setunit = this.main_today_circuit_unit;
+          for (var setcountdown=this.main_today_circuit_count; setcountdown > 0; setcountdown--){
+            var setname = this.main_exercise_set_name;
+            var exercise_set = this.cached_exercise_sets[setname];
+            for (var ex_id in exercise_set){
+              var excount = exercise_set[ex_id].count;
+              var expoint = exercise_set[ex_id].point;
+              var exunit = exercise_set[ex_id].unit;
+              var exname = this.cached_exercises[ex_id].name;
+              var demopic = this.cached_exercises[ex_id].demopic;
+              //var body = this.cached_exercises[ex_id].body;
+              this.cards.push({setcount:setcountdown, setunit:setunit, excount:excount, exunit:exunit, 
+                                   exname:exname, exdemopic:demopic, id:this.cards.length});
+            }
+          }
+
+          console.log('cards', this.cards);
+          //this.cards[0].excount = 
+          //this.cards[0].exunit = self.cached_exercises[0].
 
       },
 
       fill_main_today_circuit: function() {
-        var db = openDatabase("dropdown", "1.0", "Dropdown Database", 1024 * 1024);
+        var db = openDatabase("dropdown", "", "Dropdown Database", 1024 * 1024);
         var _self = this;
         //var main_exercise_set_name = '';
 
@@ -472,6 +495,7 @@ core-drawer-panel:not([narrow]) #navicon {
               self.main_today_circuit_unit = results.rows.item(i).unit
 
               var main_exercise_set_name = results.rows.item(i).exercise_set_name;
+              self.main_exercise_set_name = main_exercise_set_name;
               //console.log(main_exercise_set_name);
               self.fill_main_exercise_set(main_exercise_set_name);
             }            
@@ -482,7 +506,7 @@ core-drawer-panel:not([narrow]) #navicon {
       },
 
       fill_main_exercise_set: function(set_name){
-        var db = openDatabase("dropdown", "1.0", "Dropdown Database", 1024 * 1024);
+        var db = openDatabase("dropdown", "", "Dropdown Database", 1024 * 1024);
         var _self = this;
         exercise_ids = [];
         exercise_names = [];
@@ -494,21 +518,32 @@ core-drawer-panel:not([narrow]) #navicon {
         db.transaction(function (tx) {
           var self = _self;
           var exercise_ids_needed = self.exercise_ids_needed;
+          self.cached_exercise_sets[set_name] = {};
 
+          var cached_exercise_set = self.cached_exercise_sets[set_name];
           tx.executeSql('SELECT * FROM exercise_sets WHERE set_name = ?', [set_name], function (tx, results) {
 
             var len = results.rows.length, i;
             total_exercise = len;
-        
+            
             for (i = 0; i < len; i++) {
               //console.log(results.rows.item(i));
-              exercise_ids[i] = results.rows.item(i).exercise_id;
-              exercise_ids_needed.push(results.rows.item(i).exercise_id);
-              console.log(self.exercise_ids_needed);
-              counts[i] = results.rows.item(i).count;
-              units[i] = results.rows.item(i).unit;
-              points[i] = results.rows.item(i).point;
+              var exercise_id = results.rows.item(i).exercise_id;
+              exercise_ids[i] = exercise_id;
+              exercise_ids_needed.push(exercise_id);
+
+              var count = results.rows.item(i).count;
+              counts[i] = count;
+
+              var unit = results.rows.item(i).unit;
+              units[i] = unit;
+
+              var point = results.rows.item(i).point;
+              points[i] = point;
+
+              cached_exercise_set[exercise_id] = {count: count, unit: unit, point: point};
             }
+            
             render(self);
           });
         });
@@ -517,7 +552,7 @@ core-drawer-panel:not([narrow]) #navicon {
         function render(s) {
           var _self = s;
           render = '';
-          var db = openDatabase("dropdown", "1.0", "Dropdown Database", 1024 * 1024);
+          var db = openDatabase("dropdown", "", "Dropdown Database", 1024 * 1024);
           db.transaction(function (tx) {
             var self = _self;
             var id = exercise_ids[i];
@@ -528,14 +563,14 @@ core-drawer-panel:not([narrow]) #navicon {
               if (i<total_exercise-1) query += ',';
             }
             query += ')';
-            console.log('query',query);
+            //console.log('query',query);
 
             tx.executeSql(query, [], function (tx, results) {
                 var len = results.rows.length, i;
                 for (i = 0; i < len; i++) {
-                  console.log(results.rows.item(i));
+                  //console.log(results.rows.item(i));
                   exercise_names[i] = results.rows.item(i).name;
-                  console.log(exercise_names[i]);
+                  //console.log(exercise_names[i]);
                   render += counts[i] + ' ' + exercise_names[i] + '<br>';
                 }
                 self.injectBoundHTML(render, self.$.main_today_circuit_exercise_sets);
@@ -546,7 +581,7 @@ core-drawer-panel:not([narrow]) #navicon {
 
 
       fill_minor_today_circuit: function() {
-        var db = openDatabase("dropdown", "1.0", "Dropdown Database", 1024 * 1024);
+        var db = openDatabase("dropdown", "", "Dropdown Database", 1024 * 1024);
         var _self = this;
 
         db.transaction(function (tx) {
@@ -573,18 +608,32 @@ core-drawer-panel:not([narrow]) #navicon {
       },
 
       fill_minor_exercise_set: function(set_name){
-        var db = openDatabase("dropdown", "1.0", "Dropdown Database", 1024 * 1024);
+        var db = openDatabase("dropdown", "", "Dropdown Database", 1024 * 1024);
         var _self = this;
 
         db.transaction(function (tx) {
           var self = _self;
+
+          self.cached_exercise_sets[set_name] = {};
+
+          var cached_exercise_set = self.cached_exercise_sets[set_name];
+
           tx.executeSql('SELECT * FROM exercise_sets WHERE set_name = ?', [set_name], function (tx, results) {
             var len = results.rows.length, i;
         
             for (i = 0; i < len; i++) {
-              self.exercise_ids_needed.push(results.rows.item(i).exercise_id);
-              console.log(self.exercise_ids_needed);
+              //self.exercise_ids_needed.push(results.rows.item(i).exercise_id);
+              //console.log(self.exercise_ids_needed);
+
+               //console.log(results.rows.item(i));
+              var exercise_id = results.rows.item(i).exercise_id;
+              self.exercise_ids_needed.push(exercise_id);
+              var count = results.rows.item(i).count;
+              var unit = results.rows.item(i).unit;
+              var point = results.rows.item(i).point;
+              cached_exercise_set[exercise_id] = {count: count, unit: unit, point: point};
             }
+            console.log('cached ex set', self.cached_exercise_sets);
             self.get_exercises();
           });
           
@@ -669,6 +718,56 @@ core-drawer-panel:not([narrow]) #navicon {
         else if (chip_name == 'arrow-back'){
           this.page = 0;
         }
+      },
+
+
+      nextExercise: function(event, detail, sender) {
+        //console.log(event);
+        //console.log(detail);
+        //console.log(window.testsender = sender);
+        //console.log(sender.getAttribute('current'));
+        var nextEx = parseInt(sender.getAttribute('current')) + 1;
+        console.log(nextEx);
+        if (nextEx > this.cards.length){
+          this.currentEx = 0;
+          this.page = 0;
+        }
+        else {
+          this.currentEx = nextEx;
+        }
+
+        
+
+        /*
+        var chip_name = e.path[1].id;
+
+        
+        for(var i = 0; ;i++){
+          chip_name = e.path[i].id;
+          if (chip_name != undefined && chip_name != "") {
+            if (chip_name == 'start-btn')
+              chip_name = 'main_chip';
+            if (chip_name != 'arrow-back')
+              this.selected = chip_name;
+            break;
+          }
+        }
+
+        console.log(this.selected);
+        
+        if (chip_name == 'main_chip'){
+          this.page = 1;
+        }
+        if (chip_name == 'top_chip'){
+          this.page = 1;
+        }
+        if (chip_name == 'bottom_chip'){
+          this.page = 1;
+        }
+        else if (chip_name == 'arrow-back'){
+          this.page = 0;
+        }
+        */
       },
 
       complete: function(e){

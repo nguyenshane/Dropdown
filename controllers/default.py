@@ -420,7 +420,7 @@ def api():
     return dict(GET=GET, POST=POST, PUT=PUT, DELETE=DELETE, OPTIONS=OPTIONS)
 
 def get_today_circuit(user_id):
-
+    make_today_circuit(user_id);
     query_daily = db(db.daily.user_id==user_id).select()
     today_circuit = []
     exercise_sets = []

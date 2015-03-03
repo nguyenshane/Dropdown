@@ -79,3 +79,51 @@ db.define_table('friend_table',
                 Field('created_on','datetime', label='Date Added', default=datetime.utcnow()), fake_migrate=True)
 db.friend_table.created_on.represent = lambda value, row: value.strftime("%m/%d/%Y")
 db.friend_table.created_on.writable = False
+
+
+
+
+#####################
+
+def make_today_circuit(user_id):
+    today = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+    created_on = get_date_created_circuit(user_id)
+    if created_on < today:
+        logger.info(del_daily_circuit(user_id))
+        random_daily_circuits = get_random_daily_circuits(1,2)
+        logger.info(random_daily_circuits)
+        for circuit in random_daily_circuits:
+            db.daily.insert(
+                user_id = user_id,
+                circuit_id = circuit.id, 
+                created_on = today,
+                )
+        return True
+    return False
+
+def get_today_circuit(user_id):
+    logger.info('here')
+    today_circuit = db(db.daily.user_id==user_id).select()
+    return today_circuit
+
+def del_daily_circuit(user_id):
+    daily_circuit = db(db.daily.user_id==user_id).delete()
+    return daily_circuit
+
+def get_date_created_circuit(user_id):
+    created_on = db(db.daily.user_id==user_id).select(limitby=(0,1))
+
+    if created_on:
+        created_on = created_on[0].created_on
+        created_on = created_on.replace(hour=0, minute=0, second=0, microsecond=0)
+    else:
+        created_on = datetime.utcnow().replace(year=2000,hour=0, minute=0, second=0, microsecond=0)
+    
+    return created_on
+
+def get_random_daily_circuits(num_main, num_minor):
+    main_circuits = db(db.circuit.main==True).select(orderby='<random>', limitby=(0,num_main))
+    minor_circuits = db(db.circuit.main==False).select(orderby='<random>', limitby=(0,num_minor))
+
+    selected_circuits = main_circuits & minor_circuits
+    return selected_circuits
