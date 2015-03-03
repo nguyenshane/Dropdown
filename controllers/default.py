@@ -127,6 +127,23 @@ def test_show_all_user():
                         details=False,csv=False,links=links,editable=False, deletable=False)
     return dict(grid = grid)    
 
+@auth.requires_login()
+def test_user_setting():
+    form = user_setting(auth.user_id)
+    userrev = db(db.auth_user.id == auth.user_id).select().first()
+    photo_url = get_user_photo_url(userrev.email)
+    if form.process().accepted:
+        session.flash = T('Updated')
+        redirect(URL('default', 'index'))
+    return dict(form=form,photo_url=photo_url)
+
+@auth.requires_login()
+def test_user_setting_photo():
+    form = user_setting_photo(auth.user_id)
+    if form.process().accepted:
+        session.flash = T('Updated')
+        redirect(URL('default', 'index'))
+    return dict(form=form)
 #########################################################
 #########################################################
 #########################################################  
@@ -240,6 +257,23 @@ def show_all_user():
     userlist = db().select(db.auth_user.ALL, orderby=db.auth_user.id)    
     return userlist
 
+#When user want to edit setting
+def user_setting(user_id):
+    userrev = db(db.auth_user.id == user_id).select().first()
+    form = SQLFORM(db.auth_user, record=userrev,showid=False,
+                   fields = ['first_name','last_name','email','password','gender','birthday'])
+    
+    return form
+
+#When user want to edit photo
+def user_setting_photo(user_id):
+    userrev = db(db.auth_user.id == user_id).select().first()
+    user_photo = db(db.user_photo.user_id == userrev).select().first()
+    if user_photo is None:
+        return None
+    form2 = SQLFORM(db.user_photo, record=user_photo,showid=False,
+                   fields = ['cached_url'])
+    return form2
 
 
 

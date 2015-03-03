@@ -51,7 +51,7 @@ plugins = PluginManager()
 
 ## create all tables needed by auth if not custom tables
 auth.settings.extra_fields['auth_user']= [Field('facebook_id', writable=False, readable=False, default=''),
-                                          Field('gender'),
+                                          Field('gender',requires=IS_IN_SET(['Male', 'Female'])),
                                           Field('birthday','date'),
                                           Field('point',default = 10)]
 

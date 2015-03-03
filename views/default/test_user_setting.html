@@ -1,0 +1,8 @@
+{{extend 'layout.html'}}
+<h1>User Setting</h1>
+<div>Avatar: <img width="150px"
+     src="{{=photo_url}}" />
+	 {{=A('Change Avatar', _class='btn', _href=URL('default', 'test_user_setting_photo'))}}
+</div>
+{{=form}}
+{{=A('Back', _class='btn', _href=URL('default', 'index'))}}
