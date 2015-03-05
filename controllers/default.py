@@ -76,9 +76,26 @@ def test_show_exercise():
 def test_complete():    
     circuit_id = request.args(0)
     cir = db(db.circuit.id == circuit_id).select().first()
-    complete_circuit(auth.user_id,circuit_id)    
+    complete_circuit(auth.user_id,circuit_id)
     return dict(cir=cir)
 
+@auth.requires_login()
+def test_send_dropdown():    
+    circuit_id = request.args(0)
+    friendlist = show_all_friend(auth.user_id)    
+    return dict(circuit_id=circuit_id,friendlist=friendlist)
+
+
+def test_receive_dropdown():    
+    circuit_id = request.args(0)
+    friend_id = request.args(1)
+    add_dropdown(auth.user_id,friend_id,circuit_id)
+    return dict()
+
+@auth.requires_login()
+def test_show_dropdown():    
+    dropdown_list = get_dropdown(auth.user_id)    
+    return dict(dropdown_list=dropdown_list)
 
 @auth.requires_login()
 def test_reset():
@@ -274,6 +291,32 @@ def user_setting_photo(user_id):
     form2 = SQLFORM(db.user_photo, record=user_photo,showid=False,
                    fields = ['cached_url'])
     return form2
+
+#When user send dropdown to their friend
+def add_dropdown(user_id,friend_id,circuit_id):
+    userrev = db(db.auth_user.id == user_id).select().first()
+    friendrev = db(db.auth_user.id == friend_id).select().first()
+    circuit = get_circuit(circuit_id)
+    
+    if userrev is None:
+        return False
+    
+    
+    db.dropdown_table.insert(from_user_id=userrev,
+                             to_user_id=friendrev,
+                             circuit_id=circuit,
+                             isComplete = False,
+                             created_on=datetime.utcnow())
+    
+    return True
+
+
+#When user want to show dropdow list
+def get_dropdown(user_id):
+    userrev = db(db.auth_user.id == user_id).select().first()
+    dropdown_list = db(db.dropdown_table.to_user_id == userrev).select()
+    
+    return dropdown_list
 
 
 

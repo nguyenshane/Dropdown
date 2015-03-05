@@ -80,7 +80,13 @@ db.define_table('friend_table',
 db.friend_table.created_on.represent = lambda value, row: value.strftime("%m/%d/%Y")
 db.friend_table.created_on.writable = False
 
-
+db.define_table('dropdown_table',
+                Field('from_user_id','reference auth_user', label='From User'),
+                Field('to_user_id','reference auth_user', label='To User'),
+                Field('circuit_id','reference circuit', label='Circuit'),
+                Field('isComplete','boolean', label='Completed'),
+                Field('created_on','datetime', label='Date Added', default=datetime.utcnow()), fake_migrate=True)
+db.dropdown_table.created_on.represent = lambda value, row: value.strftime("%m/%d/%Y")
 
 
 #####################
