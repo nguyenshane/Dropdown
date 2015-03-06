@@ -16,6 +16,7 @@
   
   <!-- Import Polymer -->
   <script src="/components/webcomponentsjs/webcomponents.js"></script>
+  <link rel="import" href="/components/core-elements/core-elements.html">
   <link rel="import" href="/components/core-icons/core-icons.html">
   <link rel="import" href="/components/paper-button/paper-button.html">
   <link rel="import" href="/components/paper-fab/paper-fab.html">
@@ -24,66 +25,89 @@
   <script src="/components/localforage/dist/localforage.min.js"></script>
   <script src="/components/jquery/dist/jquery.min.js"></script>
   <script src="/components/cropit/dist/jquery.cropit.min.js"></script>
-
   <script src="/scripts/jquery.db.0.1.3.min.js"></script>
+  <script src="/scripts/application.js"></script>
   <style>
-      .image-editor{
-        text-align: center;
-        padding: 20px;
-      }
-      .cropit-image-preview {
-        background-color: #f8f8f8;
-        background-size: cover;
-        border: 1px solid #ccc;
-        border-radius: 50%;
-        margin:5px auto;
-        width: 250px;
-        height: 250px;
-        cursor: move;
-      }
-      .cropit-image-background {
-        opacity: .2;
-        cursor: auto;
-      }
-      input.cropit-image-input {
-        visibility: hidden;
-        height: 5px;
-      }
-      .image-size-label {
-        margin-top: 10px;
-      }
-      input {
-        display: block;
-      }
-      .export {
-        margin-top: 10px;
-      }
-      /* Button */
-      .upload-button {
-        background-color: #455663;
-      }
-      .capture-image-btn {
+    core-toolbar#mainheader {
+      background-color: rgba(64, 78, 88, 1);
+      color: #fff3ef;
+      padding: 0 5px;
+    }
+    .image-editor{
+      text-align: center;
+      padding: 20px;
+    }
+    .cropit-image-preview {
+      background-color: #f8f8f8;
+      background-size: cover;
+      border: 1px solid #ccc;
+      border-radius: 50%;
+      margin:5px auto;
+      width: 250px;
+      height: 250px;
+      cursor: move;
+    }
+    .cropit-image-background {
+      opacity: .2;
+      cursor: auto;
+    }
+    input.cropit-image-input {
+      visibility: hidden;
+      height: 5px;
+    }
+    .image-size-label {
+      margin-top: 10px;
+    }
+    input {
+      display: block;
+    }
+    .export {
+      margin-top: 10px;
+    }
+    /* Button */
+    .upload-button {
+      width: 45%;
+      color: rgba(0, 0, 0, 0.59);
+    }
+    .select-image-btn {
 
-      }
-      .cropit-image-zoom-input {
-        width:80%;
-      }
+    }
+    .capture-image-btn {
+
+    }
+    .cropit-image-zoom-input {
+      width:80%;
+    }
+    .subheader {
+      /*background: rgba(86, 105, 118, 0.79);*/
+    }
 
   </style>
 
 </head>
 
 <body>
+<core-toolbar id="mainheader">
+  <core-icon-button id="arrow-back" icon="close" style="margin: -11px -17px -8px -10px; float: left;"></core-icon-button>
+  <span style="margin:0 auto;">Edit your photo</span>
+</core-toolbar>
+
+<core-toolbar class="subheader">
+  <paper-button class="select-image-btn upload-button">
+    <core-icon icon="perm-media"></core-icon>
+  </paper-button>
+  <paper-button class="capture-image-btn upload-button">
+    <core-icon icon="fullscreen"></core-icon>
+  </paper-buton> 
+</core-toolbar>
+
 <form enctype="multipart/form-data" method="post" name="fileinfo" id="fileinfo">
 <div class="image-editor">
-      <paper-fab class="select-image-btn upload-button" icon="perm-media"></paper-fab>
-      <paper-fab class="capture-image-btn upload-button" icon="fullscreen"></paper-fab>
+  <input type="file" class="cropit-image-input"/>
+  <div class="cropit-image-preview"></div>
 
-      <input type="file" class="cropit-image-input"/>
-      <div class="cropit-image-preview"></div>
-
-      <input type="range" class="cropit-image-zoom-input">
-      <paper-fab class="export" icon="check" raised cross-fade></paper-fab>
+  <input type="range" class="cropit-image-zoom-input">
+  <paper-fab class="export" icon="check" raised cross-fade></paper-fab>
 </div>
 </form>
 <script>
@@ -95,7 +119,14 @@
       pictureSource=navigator.camera.PictureSourceType;
       destinationType=navigator.camera.DestinationType;
       
-      db = $.db("dropdown", "1.0", "Dropdown Database", 1024 * 1024);
+      var user_photo = JSON.parse(localStorage.getItem("user_photo"));
+      if (user_photo==null) user_photo = '/images/noavatar.png';
+
+      $('.image-editor').cropit({
+        imageState: { src: user_photo }
+      });
+
+      /*db = $.db("dropdown", "", "Dropdown Database", 1024 * 1024);
       db.createTable({
           name: "user_photo",
           columns: [
@@ -109,15 +140,20 @@
           fail: function () {
               console.log("Something went wrong....");
           }
-      });
+      });*/
   }
 
+
   function fail(e){
-      console.log('error', e);
+    console.log('error', e);
   }
   function onFileSystemSuccess(fileSystem) {
     //console.log(fileSystem.name);
   }
+
+  $('#arrow-back').click(function() {
+    supersonic.ui.modal.hide();
+  });
   
   $('.select-image-btn').click(function() {
     // Retrieve image file location from specified source
@@ -129,7 +165,6 @@
        destinationType: destinationType.FILE_URI,
        correctOrientation: true,
        sourceType: Camera.PictureSourceType.PHOTOLIBRARY });
-
   });
 
   $('.capture-image-btn').click(function() {
@@ -142,7 +177,6 @@
        destinationType: destinationType.FILE_URI,
        correctOrientation: true,
        sourceType: Camera.PictureSourceType.CAMERA });
-
   });
 
   function moveFileToUser(file){
@@ -173,9 +207,11 @@
   }
 
   function fileMoved(file){
-    //console.log('fileMoved', file);
+    console.log('fileMoved', file);
     imageSrc = file.name + '?' + new Date().getTime(); 
     console.log('imageSrc', imageSrc);
+    console.log('imageSrc', imageSrc);
+    $('.image-editor').cropit();
     $('.image-editor').cropit('disable');
     $('.image-editor').cropit('reenable');
     $('.image-editor').cropit('imageSrc', imageSrc);
@@ -192,67 +228,68 @@
     return btoa(JSON.parse(localStorage.getItem("email"))) + '.png';
   }
 
-  $(function() {
-    $('.image-editor').cropit();
 
-    $('.export').click(function() {
-      var imageData = $('.image-editor').cropit('export');
-      
-      
-      function send_blobstore(url){
-          form = $("#fileinfo");
-          var formdata = new FormData(form[0]);
-          formdata.append('content', dataURItoBlob(imageData), user_pic_name());
+  $('.export').click(function() {
+    var imageData = $('.image-editor').cropit('export');      
+    
+    function send_blobstore(url){
+        form = $("#fileinfo");
+        var formdata = new FormData(form[0]);
+        formdata.append('content', dataURItoBlob(imageData), user_pic_name());
 
-          $.ajax({
-          url: url,
-          data: formdata,
-          cache: false,
-          contentType: false,
-          processData: false,
-          type: 'POST',
-          crossDomain: true,
-          success: function(cached_url){
-              localforage.setItem('user_photo_url_'+JSON.stringify(emails), cached_url);
-              console.log("Uploaded");
-          }
-        });
-      }
-      
-      // get upload url
-      $.ajax({
-        url: 'http://dropdown.nguyenshane.com/dropdown/default/api/get_upload_url',
-        headers: { 'X-Requested-With': 'XMLHttpRequest',
-                    'Authorization': 'Basic ' + getAuth(), },
-        data: {'request_type': 'get_upload_url'},
-        dataType: 'json',
+        $.ajax({
+        url: url,
+        data: formdata,
         cache: false,
         contentType: false,
         processData: false,
         type: 'POST',
-        success: function(response){
-            console.log(response);
-            send_blobstore(response.upload_url);
+        crossDomain: true,
+        success: function(cached_url){
+            var email = JSON.parse(localStorage.getItem("email"));
+            localStorage.setItem('user_photo', JSON.stringify(cached_url));
+            console.log("Uploaded");
+            supersonic.ui.modal.hide();
+            supersonic.data.channel('all').publish('refresh');
         }
-      })
-      
-      /*
-      localforage.setItem('photo', imageData, function(err,value) {
-        console.log('set', value, 'filename.png');
       });
-
-      
-      localforage.getItem('photo', function(err, value) {
-        // Run this code once the value has been
-        // loaded from the offline store.
-        console.log('get', value);
-        object = value;
-     });
-    */
-
+    }
+    
+    // get upload url
+    $.ajax({
+      url: 'http://dropdown.nguyenshane.com/dropdown/default/api/get_upload_url',
+      headers: { 'X-Requested-With': 'XMLHttpRequest',
+                  'Authorization': 'Basic ' + getAuth(), },
+      data: {'request_type': 'get_upload_url'},
+      dataType: 'json',
+      cache: false,
+      contentType: false,
+      processData: false,
+      type: 'POST',
+      success: function(response){
+          console.log(response);
+          send_blobstore(response.upload_url);
+      }
+    })
+    
+    /*
+    localforage.setItem('photo', imageData, function(err,value) {
+      console.log('set', value, 'filename.png');
     });
+
+    
+    localforage.getItem('photo', function(err, value) {
+      // Run this code once the value has been
+      // loaded from the offline store.
+      console.log('get', value);
+      object = value;
+   });
+  */
+
   });
 
+
+  /*
   function get_user_photo_url(){
     emails = [];
     emails.push('shanedo@ucsc.edu');
@@ -291,6 +328,7 @@
       })
     }
 
+
   function dataURItoBlob(dataURI) {
     // convert base64/URLEncoded data component to raw binary data held in a string
     var byteString;
@@ -309,7 +347,7 @@
     }
     return new Blob([ia], {type:mimeString});
   }
-  
+  */
 
 </script>
 

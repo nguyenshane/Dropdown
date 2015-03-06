@@ -22,12 +22,15 @@
   <link rel="import" href="/components/core-header-panel/core-header-panel.html">
   <link rel="import" href="/components/core-drawer-panel/core-drawer-panel.html">
   <link rel="import" href="/components/core-scroll-header-panel/core-scroll-header-panel.html"> -->
+  <link rel="import" href="/components/core-scroll-threshold/core-scroll-threshold.html">
   <link rel="import" href="/components/core-icons/core-icons.html">
   <link rel="import" href="/components/core-icons/image-icons.html">
   <link rel="import" href="/components/core-icons/av-icons.html">
+  <link rel="import" href="/components/core-icon-button/core-icon-button.html">
   <link rel="import" href="/components/paper-icon-button/paper-icon-button.html">
   <link rel="import" href="/components/paper-button/paper-button.html">
   <link rel="import" href="/components/paper-fab/paper-fab.html">
+  <link rel="import" href="/components/paper-spinner/paper-spinner.html">
   <link rel="import" href="/components/core-animated-pages/core-animated-pages.html">
   <link rel="import" href="/components/core-animated-pages/transitions/slide-up.html">
   <link rel="import" href="/components/core-animated-pages/transitions/slide-down.html">
@@ -40,6 +43,7 @@
   <script src="/components/localforage/dist/localforage.min.js"></script>
   <script src="/components/jquery/dist/jquery.min.js"></script>
   <script src="/scripts/jquery.db.0.1.3.min.js"></script>
+  <script src="/scripts/application.js"></script>
 
 </head>
 
@@ -54,36 +58,42 @@ core-animated-pages {
   height: 100%;
   width: 100%;
   position: initial;
-      
 }
 
 .greeting {
   text-align: center;
   text-transform: uppercase;
-  color: white;
-  margin: 20px 0;
+  color: rgba(255, 255, 255, 0.95);
+  margin: 10px 0;
 }
 
 core-header-panel {
-  background: white;
+  background: rgba(255, 255, 255, 0.95);
 }
+
 core-toolbar#mainheader {
-  background-color: #0b8f77;
+  background-color: rgba(64, 78, 88, 1);
   color: #fff3ef;
 }
 
 .maincircuit {
-  background-color: #15b8a3;
+  background-color: rgba(86, 105, 118, 1);
   padding: 10px;
 }
 
 #navheader {
-  background-color: #15b8a3;
+  background-color: rgba(64, 78, 88, 1);
+  color:white;
+}
+
+.navitem {
+  margin: 10px;
 }
 
 #title {
   text-align: center;
 }
+
 .content {
   
 }
@@ -108,7 +118,7 @@ core-toolbar#mainheader {
 
 #section {
   height: 5000px;
-  background: linear-gradient(rgb(214, 227, 231), rgb(173, 216, 230));
+  background: #313d46;
 }
 
 core-drawer-panel:not([narrow]) #navicon {
@@ -134,6 +144,24 @@ core-drawer-panel:not([narrow]) #navicon {
   
 }
 
+.completed {
+  position: absolute;
+  background: rgba(71, 71, 71, 0.8);
+  width: 100%;
+  height: 100%;
+  border-radius: 3px;  
+  text-align: center;
+  vertical-align: middle;
+}
+
+.completed-icon {
+  color: rgba(255, 255, 255, 0.95);
+  margin: auto;
+  width: 70px;
+  height: 70px;
+  display: block;
+}
+
 .chip {
   display: inline-block;
   position: relative;
@@ -141,10 +169,10 @@ core-drawer-panel:not([narrow]) #navicon {
   margin: 4px;
   overflow: hidden;
   text-align: start;
-  background-color: #00a186;
+  background-color: rgba(74, 90, 102, 1);
   box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.16);
   height: 100%;
-  color: white;
+  color: rgba(255, 255, 255, 0.79);
 }
 
 .chip-top {
@@ -152,39 +180,90 @@ core-drawer-panel:not([narrow]) #navicon {
 }
 
 .point {
-  background: #e7d67a;
+  background: rgba(129, 24, 12, 0.79);;
   padding: 1px 4px;
   border-radius: 3px;
   font-size: 0.7em;
   text-transform: lowercase;
   float: right;
-  margin: 10px;
+  margin: 10px 10px 0;
   /*box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.19);*/
-  color: #4d4542;
+  color: rgba(237, 237, 237, 0.79);
   opacity: 50%;
 }
 
 .chip-middle {
-  padding: 8px;
+  padding: 4px;
 }
 
 .number {
   font-size: 3em;
+  color: rgba(255, 255, 255, 0.79);
 }
 
 .chip-bottom {
   padding: 8px;
   font-size: 1em;
-
-
 }
 
 .chip-title {
   font-weight: bold;
 }
+
 #details {
   padding: 0px;
   /*background: #15b8a3;*/
+}
+
+#scroller {
+  height: 250px;
+  padding: 10px;
+  overflow: auto;
+}
+
+.user {
+  padding: 2px;
+  border-bottom: rgb(242, 242, 242) solid 1px;
+}
+
+.user_photo_container {
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  padding: 0;
+  margin-top: 2px;
+  position: relative;
+  border: rgba(255, 255, 255, 0.52) 2px solid;
+  margin-right: -10px !important;
+}
+
+.user_photo {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  position: relative;
+}
+
+.user_photo_ripple {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.user_name {
+  font-size: 1.2em;
+  bottom: 20px;
+  position: relative;
+}
+
+.add_friend {
+  border-radius: 30%;
+  float: right;
+  background: rgba(74, 90, 102, 0.85);
+  position: relative;
+  top: 8px;
+  color: white;
 }
 
 .card {
@@ -203,7 +282,7 @@ core-drawer-panel:not([narrow]) #navicon {
   color: white;
   font-size: 2em;
   text-align: center;
-  background: #0b8f77;
+  background: rgba(64, 78, 88, 0.9);
 }
 
 .card-top-sub {
@@ -211,7 +290,7 @@ core-drawer-panel:not([narrow]) #navicon {
   color: white;
   font-size: 2em;
   text-align: center;
-  background: #15b8a3;
+  background: rgba(74, 90, 102, 0.8);
 }
 
 .card-bottom {
@@ -224,7 +303,8 @@ core-drawer-panel:not([narrow]) #navicon {
   height: 60px;
   margin-right: 16px;
   color: #fff;
-  background: #15b8a3;
+  background: rgba(74, 90, 102, 0.8);
+  padding: 10px 12px 14px 10px;
 }
 
 .play-icon /deep/ core-icon[role=img] {
@@ -237,6 +317,8 @@ core-drawer-panel:not([narrow]) #navicon {
 .card-album-title {
   font-size: 2em;
 }
+
+
 </style>
 <core-animated-pages selected="{{page}}" transitions="hero-transition slide-up slide-down cross-fade list-cascade scale-up" on-core-animated-pages-transition-end="{{complete}}">     
 <section>
@@ -246,17 +328,18 @@ core-drawer-panel:not([narrow]) #navicon {
       <core-toolbar id="navheader" cross-fade>
         <span>Menu</span>
       </core-toolbar>
-      <core-menu>
-        <core-item label="One"></core-item>
-        <core-item label="Log out" on-click="{{logout}}"></core-item>
-      </core-menu>
+        <core-item class="navitem" label="Settings" icon="settings" on-click="{{settings}}"></core-item>
+        <core-item class="navitem" label="Log out" icon="exit-to-app" on-click="{{logout}}"></core-item>
      </core-header-panel>
 
     <core-header-panel main>
       <core-toolbar id="mainheader">
-        <paper-icon-button id="useravatar" icon="account-circle"></paper-icon-button>
+        <div class="user_photo_container">
+          <img class="user_photo" src="{{user_photo}}" />
+        </div>
         <span flex id="title">Dropdown</span>
-        <paper-icon-button id="navicon" icon="image:flash-on"></paper-icon-button>
+        <core-icon-button id="navicon" icon="image:flash-on"></core-icon-button>
+        <!--<paper-icon-button id="navicon" icon="image:flash-on"></paper-icon-button>-->
       </core-toolbar>
 
       <div class="content">
@@ -275,10 +358,18 @@ core-drawer-panel:not([narrow]) #navicon {
               
                 <div class="chip-container-main" hero?="{{selected=='main_chip'}}" on-tap="{{transitionDetail}}" flex one style="position:relative;">
                  <!-- Main today_circuit -->
-                  <div class="chip" id="main_chip" hero-id="first-{{selected}}" hero?="{{selected=='main_chip'}}" style="position:absolute; width:97%; height:97%; background:#0b8f77" vertical layout>
+                  <div class="chip" id="main_chip" hero-id="first-{{selected}}" hero?="{{selected=='main_chip'}}" style="position:absolute; width:97%; height:97%; background:#313d46; color:rgba(255, 255, 255, 0.79) !important;" vertical layout>
+                    <div class="completed" hidden?="{{!completed_main}}">
+                      <div style="position: relative; height:100%; width:100%;">
+                      <div style="position: absolute; top: 22%;">
+                       <core-icon class="completed-icon" icon="check"></core-icon>
+                        Drag to your friend to throwdown
+                       </div>
+                      </div>
+                    </div>
                     <div class="chip-top" style=""  ><span class="point"><strong>{{main_today_circuit_point}}</strong> pts</span></div>
-                    <div class="chip-middle" style="position: relative;margin: auto 0; left: 5%;" hero-id="second-{{selected}}" hero?="{{selected=='main_chip'}}" ><span class="number">{{main_today_circuit_count}}</span> {{main_today_circuit_unit}}</div>
-                    <div class="chip-bottom" style="position: relative;bottom: 10px; left: 5%;" hero-id="third-{{selected}}" hero?="{{selected=='main_chip'}}" id="main_today_circuit_exercise_sets"></div>
+                    <div class="chip-middle" style="margin: auto auto auto 5%; color:rgba(255, 255, 255, 0.79) !important;" hero-id="second-{{selected}}" hero?="{{selected=='main_chip'}}" ><span class="number">{{main_today_circuit_count}}</span> {{main_today_circuit_unit}}</div>
+                    <div class="chip-bottom" style="margin: auto auto auto 5%; color:rgba(255, 255, 255, 0.79) !important;" hero-id="third-{{selected}}" hero?="{{selected=='main_chip'}}" id="main_today_circuit_exercise_sets">&nbsp;</div>
                     
                   </div>
                 </div>
@@ -289,6 +380,10 @@ core-drawer-panel:not([narrow]) #navicon {
                 <div vertical layout>
                   <div class="chip-container-top" hero?="{{selected=='top_chip'}}"  on-tap="{{transitionDetail}}" flex one>
                     <div class="chip" id="top_chip" hero-id="first-{{selected}}" hero?="{{selected=='top_chip'}}" vertical layout>
+                      <div class="completed" hidden?="{{!completed_top}}">
+                        <core-icon class="completed-icon" icon="check"></core-icon>
+                        Drag to your friend to throwdown
+                      </div>
                       <div class="chip-top" style="" flex one><span class="point"><strong>{{minor.top.point}}</strong> pts</span></div>
                       <div class="chip-middle" style="text-align:center;" flex two hero-id="second-{{selected}}" hero?="{{selected=='top_chip'}}" ><span class="number">{{minor.top.count}}</span> {{minor.top.unit}}</div>
                       <div class="chip-bottom" style="text-align:center;" flex one hero-id="third-{{selected}}" hero?="{{selected=='top_chip'}}" id="minor_top_today_circuit_exercise_sets">{{minor.top.name}}</div>
@@ -299,6 +394,10 @@ core-drawer-panel:not([narrow]) #navicon {
 
                   <div class="chip-container-bottom" hero?="{{selected=='bottom_chip'}}" on-tap="{{transitionDetail}}" flex one>
                     <div class="chip" id="bottom_chip" hero-id="first-{{selected}}" hero?="{{selected=='bottom_chip'}}" vertical layout>
+                      <div class="completed" hidden?="{{!completed_bottom}}">
+                        <core-icon class="completed-icon" icon="check"></core-icon>
+                        Drag to your friend to throwdown
+                      </div>
                       <div class="chip-top" style="" flex one><span class="point"><strong>{{minor.bottom.point}}</strong> pts</span></div>
                       <div class="chip-middle" style="text-align:center;" flex two hero-id="second-{{selected}}" hero?="{{selected=='bottom_chip'}}" ><span class="number">{{minor.bottom.count}}</span> {{minor.bottom.unit}}</div>
                       <div class="chip-bottom" style="text-align:center;" flex one hero-id="third-{{selected}}" hero?="{{selected=='bottom_chip'}}" id="minor_bottom_today_circuit_exercise_sets">{{minor.bottom.name}}</div>
@@ -312,15 +411,29 @@ core-drawer-panel:not([narrow]) #navicon {
                 
               </div>
             </div>
-            <div style="text-align:center;">
+            <!-- <div style="text-align:center;">
             <paper-button class="start-btn" id="start-btn" on-tap="{{transitionDetail}}" raised cross-fade>Start Circuit <core-icon icon="chevron-right"></core-icon></paper-button>
-            </div>
-          </core-toolbar>
+            </div>-->
          
-
       </div>
     </div>
 
+    <core-scroll-threshold id="threshold" scrollTarget="{{$.scroller}}" lowerThreshold="100" on-lower-trigger="{{loadMore}}"></core-scroll-threshold>
+
+    <div id="scroller">
+      <template repeat="{{i in public_users}}">
+
+        <div class="user">
+          <img src="{{i.photo_url}}" class="user_photo" />
+          <span class="user_name">{{i.first_name}} {{i.last_name}}</span>
+          <core-icon-button class="add_friend" id="add-friend-{{i.id}}" icon="add" on-tap="{{addFriend}}"></core-icon-button>
+        </div>
+
+      </template>
+      <div hidden?="{{!$.threshold.lowerTriggered}}" style="text-align:center;"><paper-spinner active?="{{!$.threshold.lowerTriggered}}"></paper-spinner>Please wait...</div>
+    </div> 
+
+  </core-header-panel>
   </core-drawer-panel>
 
 </section>
@@ -331,17 +444,15 @@ core-drawer-panel:not([narrow]) #navicon {
 
 <template repeat="{{card in cards}}">
   <div class="card" layout vertical  >
-    <div class="card-top" style="background:{{}};" >
-    <paper-icon-button id="arrow-back" on-tap="{{transitionDetail}}" icon="arrow-back" style="margin: -4px -10px 0px -10px; padding: 0; float: left;"></paper-icon-button>Remaining: {{card.setcount}} {{card.setunit}}</div>
-    <div class="card-top-sub" style="background:{{}};" hero-id="second-{{selected}}" current="{{card.id}}" slide-from-right>{{card.excount}} {{card.exunit}} {{card.exname}}</div>
+    <div class="card-top">
+    <core-icon-button id="arrow-back" on-tap="{{transitionDetail}}" icon="arrow-back" style="margin: -11px -17px -8px -10px; float: left;"></core-icon-button>Remaining: {{card.setcount}} {{card.setunit}}</div>
+    <div class="card-top-sub" hero-id="second-{{selected}}" current="{{card.id}}" slide-from-right>{{card.excount}} {{card.exunit}} {{card.exname}}</div>
 
     <div class="card-bottom" layout vertical hero-id="third-{{selected}}" >
       <div flex ><img style="margin:50px 0" src="/images/demopic/{{card.exdemopic}}"></div>
 
-        <div style="margin: 20px;text-align: right;">
-          <!-- <paper-icon-button id="fast-rewind" icon="av:fast-rewind" class="play-icon"  scale-up></paper-icon-button>
-          <paper-icon-button id="play-arrow" icon="av:play-arrow" class="play-icon" scale-up></paper-icon-button>-->
-          <paper-fab id="fast-forward" current="{{card.id}}" icon="av:fast-forward" class="play-icon" on-tap="{{nextExercise}}" scale-up></paper-fab>
+        <div style="margin:20px;text-align:right;">
+          <paper-fab id="fast-forward" current="{{card.id}}" icon="chevron-right" class="play-icon" on-tap="{{nextExercise}}" scale-up></paper-fab>
         </div>
 
     </div>
@@ -359,6 +470,10 @@ core-drawer-panel:not([narrow]) #navicon {
 <core-localstorage name="lastname" value="{{lastname}}"></core-localstorage>
 <core-localstorage name="email" value="{{email}}"></core-localstorage>
 <core-localstorage name="password" value="{{password}}"></core-localstorage>
+<core-localstorage name="user_photo" value="{{user_photo}}"></core-localstorage>
+<core-localstorage id="completed_main" name="completed_main" value="{{completed_main}}"></core-localstorage>
+<core-localstorage id="completed_top" name="completed_top" value="{{completed_top}}"></core-localstorage>
+<core-localstorage id="completed_bottom" name="completed_bottom" value="{{completed_bottom}}"></core-localstorage>
 
 
 <core-ajax
@@ -371,7 +486,7 @@ core-drawer-panel:not([narrow]) #navicon {
 </template>
 
 <core-ajax
-    id="logout_ajax"
+    id="get_today_circuit"
     url="{{server}}/dropdown/default/api/get_today_circuit.json"
     method="GET"
     handleAs="json"
@@ -382,17 +497,59 @@ core-drawer-panel:not([narrow]) #navicon {
 
 <script>
     supersonic.ui.navigationBar.hide();
+
     Polymer('drop-down', {
       server: 'http://future-aurora-851.appspot.com',
       page: 0,
-      minor:{top:{point:0, count:0, unit: 'u', name: 'name'},
-             bottom:{point:0, count:0, unit: 'u', name: 'name'}},
+      main_today_circuit_point:0,
+      main_today_circuit_count:0,
+      main_today_circuit_unit:'loading...',
+      minor:{top:{id:0, point:0, count:0, unit: '', name: 'loading...'},
+             bottom:{id:0, point:0, count:0, unit: '', name: 'loading...'}},
       exercise_ids_needed : [],
       cached_exercises: {},
       cached_exercise_sets: {},
 
       cards:[],
       currentEx: 0,
+      start_minor_top: -1,
+      start_minor_bottom: -1,
+      start_minor_end: -1,
+      card_end:-1,
+      public_users: [],
+
+      loadMore: function() {
+        console.log('called Loadmore');
+        var self=this;
+
+        // get new public users 
+        show_user(this.public_users, this.public_users.length);
+
+        setTimeout(function() {
+          self.$.threshold.clearLower();
+        }, 1000);
+      },
+
+      addFriend: function(event, detail, sender) {
+        console.log(sender.getAttribute('id'));
+        var id = parseInt(sender.getAttribute('id').substring(11));
+          var param = 'touser=' + id;
+          $.ajax({
+            url: 'http://dropdown.nguyenshane.com/dropdown/default/api/add_friend.json',
+            headers: { 'X-Requested-With': 'XMLHttpRequest',
+                      'Authorization': 'Basic ' + getAuth(), },
+            data: param,
+            dataType: 'json',
+            cache: false,
+            contentType: false,
+            processData: false,
+            type: 'GET',
+            success: function(response){
+              console.log('addFriend', response);
+            }
+          });
+      },
+
 
       transition: function(e) {
         if (this.page === 2) {
@@ -403,14 +560,27 @@ core-drawer-panel:not([narrow]) #navicon {
       },
       
       domReady: function() {
-          var navicon = this.$.navicon;
-          var drawerPanel = this.$.drawerPanel
-          navicon.onclick = function() {
-            drawerPanel.togglePanel();
-          };
+        var navicon = this.$.navicon;
+        var drawerPanel = this.$.drawerPanel
+        navicon.onclick = function() {
+          drawerPanel.togglePanel();
+        };
+        this.refresh();
+      },
+
+      refresh: function() {
+          this.user_photo = JSON.parse(localStorage.getItem("user_photo"));
+          if(this.user_photo == null) this.user_photo = "/images/noavatar.png";
+
           this.fill_main_today_circuit();
           this.fill_minor_today_circuit();
 
+          this.completed_main = JSON.parse(localStorage.getItem("completed_main"));
+          this.completed_top = JSON.parse(localStorage.getItem("completed_top"));
+          this.completed_bottom = JSON.parse(localStorage.getItem("completed_bottom"));
+
+          show_user(this.public_users,this.public_users.length);
+          //console.log(this.public_users);
       },
 
       get_exercises: function(exercise_id){
@@ -454,24 +624,78 @@ core-drawer-panel:not([narrow]) #navicon {
 
       build_cards: function(){
           // for main circuits
-          var setcount = this.main_today_circuit_count;
-          var setunit = this.main_today_circuit_unit;
-          for (var setcountdown=this.main_today_circuit_count; setcountdown > 0; setcountdown--){
-            var setname = this.main_exercise_set_name;
-            var exercise_set = this.cached_exercise_sets[setname];
-            for (var ex_id in exercise_set){
-              var excount = exercise_set[ex_id].count;
-              var expoint = exercise_set[ex_id].point;
-              var exunit = exercise_set[ex_id].unit;
-              var exname = this.cached_exercises[ex_id].name;
-              var demopic = this.cached_exercises[ex_id].demopic;
-              //var body = this.cached_exercises[ex_id].body;
-              this.cards.push({setcount:setcountdown, setunit:setunit, excount:excount, exunit:exunit, 
-                                   exname:exname, exdemopic:demopic, id:this.cards.length});
+          if (this.start_minor_top == -1) {
+            var setcount = this.main_today_circuit_count;
+            var setunit = this.main_today_circuit_unit;
+            for (var setcountdown = this.main_today_circuit_count; setcountdown > 0; setcountdown--){
+              var setname = this.main_exercise_set_name;
+              var exercise_set = this.cached_exercise_sets[setname];
+              for (var ex_id in exercise_set){
+                var excount = exercise_set[ex_id].count;
+                var expoint = exercise_set[ex_id].point;
+                var exunit = exercise_set[ex_id].unit;
+                var exname = this.cached_exercises[ex_id].name;
+                var demopic = this.cached_exercises[ex_id].demopic;
+                //var body = this.cached_exercises[ex_id].body;
+                this.cards.push({setcount:setcountdown, setunit:setunit, excount:excount, exunit:exunit, 
+                                     exname:exname, exdemopic:demopic, id:this.cards.length});
+              }
+              //console.log('setcountdown_main',setcountdown);
             }
+
+            this.start_minor_top = this.cards.length;
+            //console.log('start_minor_top', this.start_minor_top);
           }
 
-          console.log('cards', this.cards);
+          // for top minor circuit
+          if (this.start_minor_bottom == -1) {
+            var setcount = this.minor.top.count;
+            var setunit = this.minor.top.unit;
+            for (var setcountdown = this.minor.top.count; setcountdown > 0; setcountdown--){
+              var setname = this.minor.top.name;
+              var exercise_set = this.cached_exercise_sets[setname];
+              for (var ex_id in exercise_set){
+                var excount = exercise_set[ex_id].count;
+                var expoint = exercise_set[ex_id].point;
+                var exunit = exercise_set[ex_id].unit;
+                var exname = this.cached_exercises[ex_id].name;
+                var demopic = this.cached_exercises[ex_id].demopic;
+                //var body = this.cached_exercises[ex_id].body;
+                this.cards.push({setcount:setcountdown, setunit:setunit, excount:excount, exunit:exunit, 
+                                     exname:exname, exdemopic:demopic, id:this.cards.length});
+              }
+              //console.log('setcountdown_top',setcountdown);
+            }
+
+            this.start_minor_bottom = this.cards.length;
+            //console.log('start_minor_bottom', this.start_minor_bottom);
+          }
+
+
+          // for bottom minor circuit
+          if (this.card_end == -1) {
+            var setcount = this.minor.bottom.count;
+            var setunit = this.minor.bottom.unit;
+            for (var setcountdown = this.minor.bottom.count; setcountdown > 0; setcountdown--){
+              var setname = this.minor.bottom.name;
+              var exercise_set = this.cached_exercise_sets[setname];
+              for (var ex_id in exercise_set){
+                var excount = exercise_set[ex_id].count;
+                var expoint = exercise_set[ex_id].point;
+                var exunit = exercise_set[ex_id].unit;
+                var exname = this.cached_exercises[ex_id].name;
+                var demopic = this.cached_exercises[ex_id].demopic;
+                //var body = this.cached_exercises[ex_id].body;
+                this.cards.push({setcount:setcountdown, setunit:setunit, excount:excount, exunit:exunit, 
+                                     exname:exname, exdemopic:demopic, id:this.cards.length});
+              }
+              //console.log('setcountdown_bottom',setcountdown);
+            }
+
+            this.card_end = this.cards.length;
+            //console.log('this.card_end', this.card_end);
+            //console.log('cards', this.cards);
+          }
           //this.cards[0].excount = 
           //this.cards[0].exunit = self.cached_exercises[0].
 
@@ -490,9 +714,10 @@ core-drawer-panel:not([narrow]) #navicon {
             for (i = 0; i < len; i++) {
               //console.log(results.rows.item(i));
               //console.log(self.main_today_circuit_point);
-              self.main_today_circuit_point = results.rows.item(i).point
-              self.main_today_circuit_count = results.rows.item(i).count
-              self.main_today_circuit_unit = results.rows.item(i).unit
+              self.main_today_circuit_point = results.rows.item(i).point;
+              self.main_today_circuit_count = results.rows.item(i).count;
+              self.main_today_circuit_unit = results.rows.item(i).unit;
+              self.main_today_circuit_id = results.rows.item(i).id;
 
               var main_exercise_set_name = results.rows.item(i).exercise_set_name;
               self.main_exercise_set_name = main_exercise_set_name;
@@ -501,8 +726,6 @@ core-drawer-panel:not([narrow]) #navicon {
             }            
           });
         });
-
-        
       },
 
       fill_main_exercise_set: function(set_name){
@@ -543,7 +766,6 @@ core-drawer-panel:not([narrow]) #navicon {
 
               cached_exercise_set[exercise_id] = {count: count, unit: unit, point: point};
             }
-            
             render(self);
           });
         });
@@ -590,12 +812,14 @@ core-drawer-panel:not([narrow]) #navicon {
           tx.executeSql('SELECT * FROM today_circuit WHERE main < 1', [], function (tx, results) {
             var len = results.rows.length;
 
+            self.minor.top.id = results.rows.item(0).id;
             self.minor.top.point = results.rows.item(0).point
             self.minor.top.count = results.rows.item(0).count
             self.minor.top.unit = results.rows.item(0).unit
             self.minor.top.name = results.rows.item(0).exercise_set_name;
             self.fill_minor_exercise_set(results.rows.item(0).exercise_set_name);
 
+            self.minor.bottom.id = results.rows.item(1).id;
             self.minor.bottom.point = results.rows.item(1).point
             self.minor.bottom.count = results.rows.item(1).count
             self.minor.bottom.unit = results.rows.item(1).unit
@@ -622,10 +846,6 @@ core-drawer-panel:not([narrow]) #navicon {
             var len = results.rows.length, i;
         
             for (i = 0; i < len; i++) {
-              //self.exercise_ids_needed.push(results.rows.item(i).exercise_id);
-              //console.log(self.exercise_ids_needed);
-
-               //console.log(results.rows.item(i));
               var exercise_id = results.rows.item(i).exercise_id;
               self.exercise_ids_needed.push(exercise_id);
               var count = results.rows.item(i).count;
@@ -633,7 +853,7 @@ core-drawer-panel:not([narrow]) #navicon {
               var point = results.rows.item(i).point;
               cached_exercise_set[exercise_id] = {count: count, unit: unit, point: point};
             }
-            console.log('cached ex set', self.cached_exercise_sets);
+            //console.log('cached ex set', self.cached_exercise_sets);
             self.get_exercises();
           });
           
@@ -647,9 +867,18 @@ core-drawer-panel:not([narrow]) #navicon {
       
       },
 
+      settings: function() {
+        supersonic.ui.views.find("settings").then(function(view){
+          var customAnimation = supersonic.ui.animate("slideFromTop");
+          supersonic.ui.layers.push(view, {animation: customAnimation, navigationBar: false, tabBar:false});
+          supersonic.ui.navigationBar.hide();
+          supersonic.data.channel('index').publish('settings');
+        });
+      },
+
       handleResponseLogout: function(e){
         auth = (e.detail.response.success === 'true');
-        console.log(auth);
+        //console.log(auth);
         
         if (!auth){
           this.firstname = "";
@@ -681,7 +910,7 @@ core-drawer-panel:not([narrow]) #navicon {
       },
 
       handleResponseGetTodayCircuit: function(e){
-        console.log(e);
+        //console.log(e);
       
       },
 
@@ -704,16 +933,22 @@ core-drawer-panel:not([narrow]) #navicon {
           }
         }
 
-        console.log(this.selected);
+        //console.log(this.selected);
         
-        if (chip_name == 'main_chip'){
+        if (chip_name == 'main_chip' && !this.completed_main){
+          this.currentEx = 0;
           this.page = 1;
+          
         }
-        if (chip_name == 'top_chip'){
+        if (chip_name == 'top_chip' && !this.completed_top){
+          this.currentEx = this.start_minor_top;
           this.page = 1;
+          
         }
-        if (chip_name == 'bottom_chip'){
+        if (chip_name == 'bottom_chip' && !this.completed_bottom){
+          this.currentEx = this.start_minor_bottom;
           this.page = 1;
+          
         }
         else if (chip_name == 'arrow-back'){
           this.page = 0;
@@ -722,52 +957,89 @@ core-drawer-panel:not([narrow]) #navicon {
 
 
       nextExercise: function(event, detail, sender) {
-        //console.log(event);
-        //console.log(detail);
-        //console.log(window.testsender = sender);
-        //console.log(sender.getAttribute('current'));
         var nextEx = parseInt(sender.getAttribute('current')) + 1;
-        console.log(nextEx);
-        if (nextEx > this.cards.length){
-          this.currentEx = 0;
+        //console.log(nextEx, this.cards.length-1);
+
+        //send completion of major circuit
+        if (nextEx == this.start_minor_top){
+          var circuit_id = 'circuit_id='+this.main_today_circuit_id;
+          //console.log('circuit_id',circuit_id);
+          // get upload url
+          this.$.completed_main.value = true;
+          $.ajax({
+            url: 'http://dropdown.nguyenshane.com/dropdown/default/api/complete_circuit.json',
+            headers: { 'X-Requested-With': 'XMLHttpRequest',
+                        'Authorization': 'Basic ' + getAuth(), },
+            data: circuit_id,
+            dataType: 'json',
+            cache: false,
+            contentType: false,
+            processData: false,
+            type: 'GET',
+            success: function(response){
+                console.log('complete_main_circuit', response);
+                //localStorage.setItem('completed_main', JSON.stringify(true));
+
+            }
+          })
+        }
+
+        //send completion of top minor circuit
+        if (nextEx == this.start_minor_bottom){
+          var circuit_id = 'circuit_id='+this.minor.top.id;
+          console.log('circuit_id',circuit_id);
+          // get upload url
+          this.$.completed_top.value = true;
+
+          $.ajax({
+            url: 'http://dropdown.nguyenshane.com/dropdown/default/api/complete_circuit.json',
+            headers: { 'X-Requested-With': 'XMLHttpRequest',
+                        'Authorization': 'Basic ' + getAuth(), },
+            data: circuit_id,
+            dataType: 'json',
+            cache: false,
+            contentType: false,
+            processData: false,
+            type: 'GET',
+            success: function(response){
+                console.log('complete_top_circuit', response);
+                //localStorage.setItem('completed_top', JSON.stringify(true));
+            }
+          })
+        }
+
+        //send completion of top minor circuit
+        if (nextEx == this.card_end){
+          var circuit_id = 'circuit_id='+this.minor.bottom.id;
+          console.log('circuit_id',circuit_id);
+          // get upload url
+          this.$.completed_bottom.value = true;
+          $.ajax({
+            url: 'http://dropdown.nguyenshane.com/dropdown/default/api/complete_circuit.json',
+            headers: { 'X-Requested-With': 'XMLHttpRequest',
+                        'Authorization': 'Basic ' + getAuth(), },
+            data: circuit_id,
+            dataType: 'json',
+            cache: false,
+            contentType: false,
+            processData: false,
+            type: 'GET',
+            success: function(response){
+                console.log('complete_bottom_circuit', response);
+                //localStorage.setItem('completed_bottom', JSON.stringify(true));
+            }
+          })
+        }
+
+
+        if (nextEx > this.cards.length-1){
           this.page = 0;
+          console.log('page',this.page);
+          this.currentEx = 0;
         }
         else {
           this.currentEx = nextEx;
         }
-
-        
-
-        /*
-        var chip_name = e.path[1].id;
-
-        
-        for(var i = 0; ;i++){
-          chip_name = e.path[i].id;
-          if (chip_name != undefined && chip_name != "") {
-            if (chip_name == 'start-btn')
-              chip_name = 'main_chip';
-            if (chip_name != 'arrow-back')
-              this.selected = chip_name;
-            break;
-          }
-        }
-
-        console.log(this.selected);
-        
-        if (chip_name == 'main_chip'){
-          this.page = 1;
-        }
-        if (chip_name == 'top_chip'){
-          this.page = 1;
-        }
-        if (chip_name == 'bottom_chip'){
-          this.page = 1;
-        }
-        else if (chip_name == 'arrow-back'){
-          this.page = 0;
-        }
-        */
       },
 
       complete: function(e){
@@ -781,7 +1053,16 @@ core-drawer-panel:not([narrow]) #navicon {
 
 </polymer-element>
 
-<drop-down></drop-down>
+<drop-down id="drop-down-index"></drop-down>
+<script type="text/javascript">
+supersonic.data.channel('all').subscribe(function(message) {
+if (message == 'refresh'){
+  var drop_down_index = document.querySelector('#drop-down-index');
+  console.log(drop_down_index);
+  drop_down_index.refresh();
+}
+});
 
+</script>
 </body>
 </html>

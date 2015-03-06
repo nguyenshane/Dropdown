@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<head>
+  <title>Drop Down Settings</title>
+  <meta charset="utf8">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+
+  <link rel="stylesheet" href="/components/supersonic/css/supersonic.css">
+  <link rel="stylesheet" href="/stylesheets/application.css">
+  <link rel="import" href="/components/supersonic/components/import.html">
+
+  <script src="http://localhost/cordova.js"></script>
+  <script src="/components/steroids-js/steroids.js"></script>
+  <script src="/components/angular/angular.js"></script>
+  <script src="/components/supersonic/supersonic.js"></script>
+
+  <!-- Import Polymer -->
+  <script src="/components/webcomponentsjs/webcomponents.js"></script>
+  <link rel="import" href="/components/core-elements/core-elements.html">
+  <!-- <link rel="import" href="/components/core-toolbar/core-toolbar.html">
+  <link rel="import" href="/components/core-menu/core-menu.html">
+  <link rel="import" href="/components/core-item/core-item.html"> -->
+  <link rel="import" href="/components/core-icons/core-icons.html">
+  <link rel="import" href="/components/core-icons/image-icons.html">
+  <link rel="import" href="/components/core-icons/editor-icons.html">
+  <link rel="import" href="/components/paper-icon-button/paper-icon-button.html">
+  <link rel="import" href="/components/paper-button/paper-button.html">
+  <link rel="import" href="/components/paper-input/paper-input.html">
+  <link rel="import" href="/components/paper-tabs/paper-tabs.html">
+  <link rel="import" href="/components/paper-checkbox/paper-checkbox.html">
+  <link rel="import" href="/components/paper-dialog/paper-action-dialog.html">
+  <link rel="import" href="upload-avatar.html">
+
+  <!-- Import Jquery -->
+  <script src="/components/localforage/dist/localforage.min.js"></script>
+  <script src="/components/jquery/dist/jquery.min.js"></script>
+  <script src="/scripts/jquery.db.0.1.3.min.js"></script>
+
+</head>
+
+<body fullbleed layout vertical style="background: #313d46;">
+<polymer-element name="drop-down-settings">
+<template>
+<style>
+body {
+  margin: 0;
+  padding 0;
+  background: rgba(236, 236, 236, 1);
+  font-family:'Helvetica Neue', Helvetica, Arial;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  -webkit-touch-callout: none;
+}
+
+h1 {
+  width: 300px;
+  text-align: center;
+  display: none;
+  position: absolute;
+  left:50%;
+  top:60%;
+  font-weight: 200;
+  font-size: 3.2em;
+  color: #fff
+}
+
+h2 {
+  color: #555;
+  text-align: center
+}
+
+main {
+  margin: 0;
+  height: 100%;
+  background: rgba(74, 90, 102, 1);
+}
+
+paper-tabs.transparent-blue {
+  background-color: transparent;
+  color: white;
+  box-shadow: none;
+  cursor: pointer
+}
+paper-tabs.transparent-blue::shadow #selectionBar {
+  background-color: #455663;
+  height: 3px
+}
+paper-tabs.transparent-blue paper-tab::shadow #ink {
+  color: #455663;
+}
+
+paper-input {
+  color: rgba(255, 255, 255, 0.72);
+  padding: 0;
+}
+
+paper-input /deep/ .focused-underline {
+  /* line color when the input is focused */
+  background-color: #f26b4f;
+}
+paper-input-decorator {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+paper-input-decorator /deep/ .focused-underline {
+  /* line color when the input is focused */
+  background-color: #f26b4f;
+}
+
+core-toolbar {
+  background-color: rgba(64, 78, 88, 1);
+  color: #fff3ef;
+  padding: 0 5px;
+}
+
+.lgbutton {
+  margin: 20px 0;
+  width: 100%;
+  font-size: 1.2em;
+  text-align: center;
+  background-color: #455663;
+  color: #fff;
+  cursor: pointer;
+}
+
+paper-checkbox {
+  color: #575757
+}
+
+paper-checkbox.blue::shadow #ink[checked] {
+  color: #00b6e3;
+}
+
+paper-checkbox.blue::shadow #checkbox.checked {
+  border-color: #00b6e3;
+}
+
+.container {
+  width: 80%;
+  margin: 0 auto;
+  text-align: center;
+}
+
+#firstname_decorator {
+  width: 40%;
+  display: inline-block;
+}
+
+#lastname_decorator {
+  width: 40%;
+  display: inline-block;
+}
+
+.center_text {
+  text-align: center;
+}
+
+#password {
+  color: rgba(255, 255, 255, 0.72);
+  margin:0;
+  padding: inherit;
+}
+
+.user_photo {
+  margin: 20px auto 0 auto;
+  display: block;
+  width: 40%;
+  border-radius: 50%;
+}
+
+.upload_avatar {
+  position: relative;
+  margin-right: -90px;
+  margin-top: -40px;
+  border-radius: 50%;
+  color: rgba(255, 255, 255, 0.49);
+  background-color: rgba(86, 105, 118, 0.79);
+}
+
+.centerBlock paper-input {
+  margin: 0 auto;
+  display: block;
+  max-width: 400px;
+}
+
+.error {
+  color: red;
+  font-style: bold;
+  text-align: center;
+}
+
+</style>
+
+<main fit>
+  <core-toolbar id="mainheader">
+    <core-icon-button id="arrow-back" on-tap="{{backToMain}}" icon="arrow-back" style="margin: -11px -17px -8px -10px; float: left;"></core-icon-button>
+    <span style="margin:0 auto;">Settings</span>
+  </core-toolbar>
+  <section class="container">
+    <img id="user_photo" class="user_photo" src="{{user_photo}}">
+    <core-icon-button icon="editor:mode-edit" class="upload_avatar" on-tap="{{load_upload_modal}}"></core-icon-button>
+    <div class="centerBlock">
+
+      <paper-input-decorator id="firstname_decorator" label="First Name" error="Please enter your first name">
+      <input id="firstname" class="center_text" is="core-input" value="{{firstname}}" pattern="^[a-zA-Z]+(([\'\,\.\-][a-zA-Z])?[a-zA-Z]*)*$" required>
+      
+      </paper-input-decorator>
+
+      <paper-input-decorator id="lastname_decorator" label="Last Name" error="Please enter your last name">
+      <input id="lastname" class="center_text" is="core-input" value="{{lastname}}" pattern="^[a-zA-Z]+(([\'\,\.\-][a-zA-Z])?[a-zA-Z]*)*$" required>
+      
+      </paper-input-decorator>
+
+      <paper-input-decorator id="email_decorator" disabled label="Email" error="Please enter your valid email address">
+      <input id="email" class="center_text" is="core-input" value="{{email}}" pattern="^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$" required>
+      
+      </paper-input-decorator>
+
+      <paper-input-decorator id="password_decorator" label="Password" error="Password has to be 4 to 15 characters">
+      <input id="password" class="center_text" is="core-input" value="{{password}}" type="password" pattern="^.{4,15}$" required>
+      
+      </paper-input-decorator>
+      
+      <paper-button class="lgbutton" id="signup-btn" on-tap="{{submit_edit}}" raised cross-fade>Confirm</paper-button>
+    </div>
+    
+  </section>
+
+  <section>
+    <paper-action-dialog id="upload_avatar_dialog" backdrop autoCloseDisabled layered="false" transition="core-transition-center">
+        <upload-avatar></upload-avatar>
+        <paper-button affirmative autofocus>Tap me to close</paper-button>
+    </paper-action-dialog>
+  </section>
+
+</main>
+
+<core-localstorage name="firstname" value="{{firstname}}"></core-localstorage>
+<core-localstorage name="lastname" value="{{lastname}}"></core-localstorage>
+<core-localstorage name="email" value="{{email}}"></core-localstorage>
+<core-localstorage name="password" value="{{password}}"></core-localstorage>
+<core-localstorage name="user_photo" value="{{user_photo}}"></core-localstorage>
+<core-localstorage name="today_circuit" value="{{today_circuit}}"></core-localstorage>
+<core-ajax
+    id="signup_ajax"
+    url="{{server}}/dropdown/default/api/create_account.json"
+    method="GET"
+    handleAs="json"
+    on-core-response="{{handleResponseSignup}}"></core-ajax>
+
+<core-ajax
+    id="refresh_ajax"
+    url="{{server}}/dropdown/default/api/signin.json"
+    method="GET"
+    handleAs="json"
+    on-core-response="{{handleResponseRefresh}}"></core-ajax>
+
+<core-ajax
+    id="get"
+    url="{{server}}/dropdown/default/api/signin.json"
+    method="GET"
+    handleAs="json"
+    on-core-response="{{handleResponseSignin}}"></core-ajax>
+
+</template>
+
+
+<script>
+    supersonic.ui.navigationBar.hide();
+    function get_user_photo_url(){
+    var emails = [];
+    emails.push(this.email);
+    // get upload url
+      $.ajax({
+        url: 'http://dropdown.nguyenshane.com/dropdown/default/api/get_user_photo_url',
+        headers: { 'X-Requested-With': 'XMLHttpRequest','Authorization': 'Basic ' + getAuth()},
+        data: '{"email":'+JSON.stringify(emails)+'}',
+        dataType: 'json',
+        cache: false,
+        contentType: false,
+        processData: false,
+        type: 'POST',
+        success: function(response){
+            console.log(response);
+            for (var email in response.result){
+              console.log(email, response.result[email]);
+              localforage.setItem('user_photo_url_'+email, response.result[email]);
+
+              db.insert("user_photo", {
+                  data: {
+                      email: email,
+                      photo_url: response.result[email]
+                  },
+                  done: function () {
+                      console.log("Added a photo to WebSQL");
+                  },
+                  fail: function (e) {
+                      console.log("Something went wrong....",e);
+                  }
+              });
+            }
+          },
+        error: function(exception){
+          console.log('Exeption:', exception);}
+      })
+    }
+
+
+    Polymer('drop-down-settings', {
+      server : 'http://future-aurora-851.appspot.com',
+
+      domReady: function() {
+        this.refresh();
+        supersonic.ui.navigationBar.hide();
+      },
+
+      backToMain: function() {
+        supersonic.ui.layers.pop();
+      },
+
+      load_upload_modal:function() {
+        supersonic.ui.views.find("upload-avatar").then(function(uploadView) {
+          //supersonic.ui.layers.push(indexView, {animation:animation, navigationBar: false});
+          //});
+          supersonic.ui.modal.show(uploadView);
+        });
+      },
+
+      refresh: function(){
+        this.$.email_decorator.isInvalid = !this.$.email.validity.valid;
+        this.$.password_decorator.isInvalid = !this.$.password.validity.valid;
+
+        if(this.$.email.validity.valid && this.$.password.validity.valid) {
+          this.$.refresh_ajax.headers = '{"X-Requested-With": "XMLHttpRequest"' 
+              + ', "Authorization": "Basic ' + btoa(this.email + ":" + this.password) + '"}';
+
+          var params = '{"epas":"' + btoa(this.email + ':' + this.password) + '"';
+          params += '}';
+          //console.log(params);
+          this.$.refresh_ajax.params = params;
+          this.$.refresh_ajax.go();
+          supersonic.ui.navigationBar.hide();
+        }
+      },
+
+      handleResponseRefresh: function(e){
+        auth = e.detail.response.success;
+        if (!auth){
+          this.hide_error_login = false;
+        } 
+        else {
+          this.hide_error_login = true;
+          this.firstname = e.detail.response.firstname;
+          this.lastname = e.detail.response.lastname;
+          this.today_circuit = e.detail.response.today_circuit;
+          this.user_photo = e.detail.response.user_photo;
+
+          console.log("handleResponseSignin", e.detail.response);
+        } 
+      },
+    });
+
+  </script>
+
+
+</polymer-element>
+
+<drop-down-settings id="drop-down-settings"></drop-down-settings>
+
+<script type="text/javascript">
+supersonic.ui.navigationBar.hide();
+supersonic.data.channel('all').subscribe(function(message) {
+  if (message == 'refresh'){
+    var drop_down_settings = document.querySelector('#drop-down-settings');
+    console.log(drop_down_settings);
+    drop_down_settings.refresh();
+  }
+});
+
+supersonic.data.channel('index').subscribe(function(message) {
+  if (message == 'settings'){
+    supersonic.ui.navigationBar.hide();
+  }
+});
+
+</script>
+</body>
+</html>

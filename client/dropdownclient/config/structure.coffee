@@ -15,5 +15,11 @@ module.exports =
     {
       id: "upload-avatar"
       location: "http://localhost/upload_avatar.html"
+      navigationBar: false
+    }
+    {
+      id: "settings"
+      location: "http://localhost/settings.html"
+      navigationBar: false
     }
   ]

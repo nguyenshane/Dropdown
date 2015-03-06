@@ -57,7 +57,7 @@ main {
   background: #313d46;
 }
 
-paper-tabs.transparent-blue {
+paper-tabs.transparent-blue {40% border-radius: 50%
   background-color: transparent;
   color: white;
   box-shadow: none;
@@ -114,6 +114,7 @@ paper-checkbox.blue::shadow #ink[checked] {
 paper-checkbox.blue::shadow #checkbox.checked {
   border-color: #00b6e3;
 }
+
 .container {
   width: 80%;
   margin: 0 auto;
@@ -215,6 +216,7 @@ h2 {
 <core-localstorage name="email" value="{{email}}"></core-localstorage>
 <core-localstorage name="password" value="{{password}}"></core-localstorage>
 <core-localstorage name="today_circuit" value="{{today_circuit}}"></core-localstorage>
+<core-localstorage name="user_photo" value="{{user_photo}}"></core-localstorage>
 <core-ajax
     id="signup_ajax"
     url="{{server}}/dropdown/default/api/create_account.json"
@@ -234,6 +236,12 @@ h2 {
 
 <script>
     supersonic.ui.navigationBar.hide();
+
+    if (localStorage.getItem("password") && localStorage.getItem("password") != '') {
+      var animation = supersonic.ui.animate("slideFromBottom");
+      supersonic.ui.initialView.dismiss(animation);
+    } 
+
     Polymer('drop-down-login', {
       server : 'http://future-aurora-851.appspot.com',
       selected : 0,
@@ -245,7 +253,7 @@ h2 {
       domReady: function() {
         if (localStorage.getItem("password") && localStorage.getItem("password") != '') {
           selected = 1;
-          this.submit_signin();
+          //this.submit_signin();
         } 
          else { 
           this.firstname = this.lastname = this.email = this.password = null;
@@ -359,6 +367,7 @@ h2 {
           this.firstname = e.detail.response.firstname;
           this.lastname = e.detail.response.lastname;
           this.today_circuit = e.detail.response.today_circuit;
+          this.user_photo = e.detail.response.user_photo;
 
           this.insert_today_circuit();
 

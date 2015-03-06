@@ -254,7 +254,21 @@ def show_all_friend(user_id):
 
 #When user want to see all user
 def show_all_user():
-    userlist = db().select(db.auth_user.ALL, orderby=db.auth_user.id)    
+    userlist = db().select(db.auth_user.ALL, db.user_photo.ALL, 
+        left=db.user_photo.on(db.auth_user.id==db.user_photo.user_id),
+        orderby=db.auth_user.id)    
+    return userlist
+
+#See all user
+def show_user(fromnum,tonum):
+    userlist = db().select(
+        db.auth_user.id, 
+        db.auth_user.point,
+        db.auth_user.first_name,
+        db.auth_user.last_name,
+        db.user_photo.cached_url, 
+        left=db.user_photo.on(db.auth_user.id==db.user_photo.user_id),
+        orderby=db.auth_user.id, limitby=(fromnum,tonum))   
     return userlist
 
 #When user want to edit setting
@@ -274,7 +288,6 @@ def user_setting_photo(user_id):
     form2 = SQLFORM(db.user_photo, record=user_photo,showid=False,
                    fields = ['cached_url'])
     return form2
-
 
 
 def user():
@@ -330,10 +343,6 @@ def create_account(first_name, last_name, email, password):
 
 def check_access():
     return True if auth.is_logged_in() else False
-    
-def new_circuit(user):
-
-    return obj
 
 
 @request.restful()
@@ -363,9 +372,9 @@ def api():
             #logger.info(auth.user)
             success=check_access()
             today_circuit = get_today_circuit(auth.user.id)
-
+            user_photo = get_user_photo_url(auth.user.email)
             return dict(success=success,today_circuit=today_circuit,
-                firstname=auth.user.first_name,lastname=auth.user.last_name)
+                firstname=auth.user.first_name,lastname=auth.user.last_name,user_photo=user_photo)
 
         if args[0] == 'logout':
             logger.info('Logging out')
@@ -387,6 +396,55 @@ def api():
             #logger.info(auth.user)
             if auth.user:
                 result = get_today_circuit(auth.user.id)
+                logger.info(result)
+            return dict(result=result)
+
+        if args[0] == 'show_user':
+            logger.info('show_user')
+            #logger.info(request.env.http_authorization)
+            auth.basic()
+            fromnum = int(vars['fromnum'])
+            tonum = int(vars['tonum'])
+            result = None
+            #logger.info(auth.user)
+            if auth.user:
+                result = show_user(fromnum, tonum)
+                logger.info(result)
+            return dict(result=result)
+
+        if args[0] == 'show_user_photo':
+            logger.info('show_user_photo')
+            #logger.info(request.env.http_authorization)
+            auth.basic()
+            result = None
+            #logger.info(auth.user)
+            if auth.user:
+                email = auth.user.email
+                result = show_user(fromnum, tonum)
+                logger.info(result)
+            return dict(result=result)
+
+        if args[0] == 'complete_circuit':
+            logger.info('complete_circuit')
+            #logger.info(request.env.http_authorization)
+            auth.basic()
+            result = None
+            #logger.info(auth.user)
+            if auth.user:
+                circuit_id = int(vars['circuit_id'])
+                result = complete_circuit(auth.user.id, circuit_id)
+                logger.info(result)
+            return dict(result=result)
+
+        if args[0] == 'add_friend':
+            logger.info('add_friend')
+            #logger.info(request.env.http_authorization)
+            auth.basic()
+            result = None
+            #logger.info(auth.user)
+            if auth.user:
+                touser = int(vars['touser'])
+                result = add_friend(auth.user.id, touser)
                 logger.info(result)
             return dict(result=result)
 
@@ -442,6 +500,7 @@ def api():
 
             logger.info(result)
             return dict(result=result)
+
 
         return db[table_name].validate_and_insert(**vars)
     def PUT(table_name,record_id,**vars):
