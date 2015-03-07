@@ -154,10 +154,8 @@ h2 {
   text-align: center;
 }
 
-}
-
 </style>
-<core-overlay backdrop autoCloseDisabled layered opened="{{set_busy_spinner}}" transition="core-transition-center" id="busy_spinner" class="busy_spinner" style="text-align:center;">
+<core-overlay backdrop autoCloseDisabled layered opened="{{set_busy_spinner}}" id="busy_spinner" class="busy_spinner" style="text-align:center;">
   <!-- place all overlay styles inside the overlay target -->
   <style no-shim>
     .busy_spinner {
@@ -256,7 +254,10 @@ h2 {
 <script>
     supersonic.ui.navigationBar.hide();
 
-    if (localStorage.getItem("password") && localStorage.getItem("password") != '') {
+    if (localStorage.getItem("password") 
+        && localStorage.getItem("password") != '' 
+        && localStorage.getItem("password") != "null") {
+      console.log(localStorage.getItem("password"))
       var animation = supersonic.ui.animate("slideFromBottom");
       supersonic.ui.initialView.dismiss(animation);
     } 
@@ -267,11 +268,13 @@ h2 {
       hide_error_login: true,
       hide_error_signup: true,
       indexView : null,
-      set_busy_spinner: true,
+      set_busy_spinner: false,
       
 
       domReady: function() {
-        if (localStorage.getItem("password") && localStorage.getItem("password") != '') {
+        if (localStorage.getItem("password") 
+          && localStorage.getItem("password") != '' 
+          && localStorage.getItem("password") != "null") {
           selected = 1;
           //this.submit_signin();
         } 

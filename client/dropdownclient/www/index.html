@@ -16,22 +16,19 @@
   <!-- Import Polymer -->
   <script src="/components/webcomponentsjs/webcomponents.js"></script>
   <link rel="import" href="/components/core-elements/core-elements.html">
-  <!-- <link rel="import" href="/components/core-toolbar/core-toolbar.html">
-  <link rel="import" href="/components/core-menu/core-menu.html">
-  <link rel="import" href="/components/core-item/core-item.html">
-  <link rel="import" href="/components/core-header-panel/core-header-panel.html">
-  <link rel="import" href="/components/core-drawer-panel/core-drawer-panel.html">
-  <link rel="import" href="/components/core-scroll-header-panel/core-scroll-header-panel.html"> -->
   <link rel="import" href="/components/core-scroll-threshold/core-scroll-threshold.html">
   <link rel="import" href="/components/core-icons/core-icons.html">
   <link rel="import" href="/components/core-icons/image-icons.html">
   <link rel="import" href="/components/core-icons/av-icons.html">
+  <link rel="import" href="/components/core-icons/social-icons.html">
   <link rel="import" href="/components/core-icon-button/core-icon-button.html">
   <link rel="import" href="/components/paper-icon-button/paper-icon-button.html">
   <link rel="import" href="/components/paper-button/paper-button.html">
   <link rel="import" href="/components/paper-fab/paper-fab.html">
+  <link rel="import" href="/components/paper-tabs/paper-tabs.html">
   <link rel="import" href="/components/paper-spinner/paper-spinner.html">
   <link rel="import" href="/components/paper-dialog/paper-action-dialog.html">
+  <link rel="import" href="/components/paper-item/paper-item.html">
   <link rel="import" href="/components/core-animated-pages/core-animated-pages.html">
   <link rel="import" href="/components/core-animated-pages/transitions/slide-up.html">
   <link rel="import" href="/components/core-animated-pages/transitions/slide-down.html">
@@ -77,6 +74,26 @@ core-toolbar#mainheader {
   color: #fff3ef;
 }
 
+paper-tabs {
+  background: rgba(86, 105, 118, 1);
+  color: rgba(255, 255, 255, 0.18);
+}
+
+paper-tab.core-selected {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+paper-tab::shadow #ink {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+paper-tabs::shadow #selectionBar {
+  background-color: rgba(129, 24, 12, 0.79);
+}
+
+core-animated-pages {
+  /*display: initial;*/
+}
 .maincircuit {
   background-color: rgba(86, 105, 118, 1);
   padding: 10px;
@@ -88,7 +105,8 @@ core-toolbar#mainheader {
 }
 
 .navitem {
-  margin: 10px;
+  margin: 0;
+  padding: 10px;
 }
 
 #title {
@@ -181,7 +199,7 @@ core-drawer-panel:not([narrow]) #navicon {
 }
 
 .point {
-  background: rgba(129, 24, 12, 0.79);;
+  background: rgba(129, 24, 12, 0.79);
   padding: 1px 4px;
   border-radius: 3px;
   font-size: 0.7em;
@@ -195,6 +213,7 @@ core-drawer-panel:not([narrow]) #navicon {
 
 .chip-middle {
   padding: 4px;
+  pointer-events: none;
 }
 
 .number {
@@ -205,10 +224,12 @@ core-drawer-panel:not([narrow]) #navicon {
 .chip-bottom {
   padding: 8px;
   font-size: 1em;
+  pointer-events: none;
 }
 
 .chip-title {
   font-weight: bold;
+  pointer-events: none;
 }
 
 #details {
@@ -234,7 +255,6 @@ core-drawer-panel:not([narrow]) #navicon {
   padding: 0;
   margin-top: 2px;
   position: relative;
-  border: rgba(255, 255, 255, 0.52) 2px solid;
   margin-right: -10px !important;
 }
 
@@ -255,6 +275,7 @@ core-drawer-panel:not([narrow]) #navicon {
 .user_name {
   font-size: 1.2em;
   bottom: 20px;
+  margin-left:8px;
   position: relative;
 }
 
@@ -344,36 +365,34 @@ core-drawer-panel:not([narrow]) #navicon {
   <core-drawer-panel id="drawerPanel" rightDrawer>
     
     <core-header-panel drawer>
-      <core-toolbar id="navheader" cross-fade>
+      <!--<core-toolbar id="navheader" cross-fade>
         <span>Menu</span>
-      </core-toolbar>
-        <core-item class="navitem" label="Refresh" icon="refresh" on-click="{{refresh}}"></core-item>
-        <core-item class="navitem" label="Settings" icon="settings" on-click="{{settings}}"></core-item>
-        <core-item class="navitem" label="Log out" icon="exit-to-app" on-click="{{logout}}"></core-item>
+      </core-toolbar>-->
+        <paper-item class="navitem" on-click="{{refresh}}">
+          <core-icon icon="refresh"></core-icon>&nbsp;&nbsp;&nbsp;&nbsp;Refresh
+          </paper-item>
+        <paper-item class="navitem" on-click="{{settings}}">
+          <core-icon icon="settings"></core-icon>&nbsp;&nbsp;&nbsp;&nbsp;Settings
+        </paper-item>
+        <paper-item class="navitem" on-click="{{logout}}">
+          <core-icon icon="exit-to-app"></core-icon>&nbsp;&nbsp;&nbsp;&nbsp;Logout
+        </paper-item>
      </core-header-panel>
 
     <core-header-panel main>
       <core-toolbar id="mainheader">
         <div class="user_photo_container">
-          <img class="user_photo" src="{{user_photo}}" />
+          <img class="user_photo" style="border: rgba(255, 255, 255, 0.52) 2px solid;" src="{{user_photo}}" />
         </div>
         <span flex id="title">Dropdown</span>
         <core-icon-button id="navicon" icon="image:flash-on"></core-icon-button>
-        <!--<paper-icon-button id="navicon" icon="image:flash-on"></paper-icon-button>-->
       </core-toolbar>
 
       <div class="content">
 
           <div id="maincircuit" class="maincircuit">
-            <!-- <core-icon-button icon="arrow-back" id="core_icon_button"></core-icon-button> -
-            <div id="div" flex></div>
-            <core-icon-button icon="search" id="core_icon_button1"></core-icon-button>
-            <core-icon-button icon="more-vert" id="core_icon_button2"></core-icon-button>
-            <div class="top indent">Test</div>  -->
             <div class="greeting">{{firstname}}, your circuits for today</div>
             <div class="middle">
-            
-           
               <div horizontal layout>
               
                 <div class="chip-container-main" hero?="{{selected=='main_chip'}}" on-tap="{{transitionDetail}}" flex one style="position:relative;">
@@ -388,8 +407,8 @@ core-drawer-panel:not([narrow]) #navicon {
                       </div>
                     </div>
                     <div class="chip-top" style=""  ><span class="point"><strong>{{main_today_circuit_point}}</strong> pts</span></div>
-                    <div class="chip-middle" style="margin: auto auto auto 5%; color:rgba(255, 255, 255, 0.79) !important;" hero-id="second-{{selected}}" hero?="{{selected=='main_chip'}}" ><span class="number">{{main_today_circuit_count}}</span> {{main_today_circuit_unit}}</div>
-                    <div class="chip-bottom" style="margin: auto auto auto 5%; color:rgba(255, 255, 255, 0.79) !important;" hero-id="third-{{selected}}" hero?="{{selected=='main_chip'}}" id="main_today_circuit_exercise_sets">&nbsp;</div>
+                    <div class="chip-middle" style="margin: auto auto auto 5%; color:rgba(255, 255, 255, 0.79) !important;"><span class="number">{{main_today_circuit_count}}</span> {{main_today_circuit_unit}}</div>
+                    <div class="chip-bottom" style="margin: auto auto auto 5%; color:rgba(255, 255, 255, 0.79) !important;" id="main_today_circuit_exercise_sets">&nbsp;</div>
                     
                   </div>
                 </div>
@@ -405,8 +424,8 @@ core-drawer-panel:not([narrow]) #navicon {
                         Drag to your friend to throwdown
                       </div>
                       <div class="chip-top" style="" flex one><span class="point"><strong>{{minor.top.point}}</strong> pts</span></div>
-                      <div class="chip-middle" style="text-align:center;" flex two hero-id="second-{{selected}}" hero?="{{selected=='top_chip'}}" ><span class="number">{{minor.top.count}}</span> {{minor.top.unit}}</div>
-                      <div class="chip-bottom" style="text-align:center;" flex one hero-id="third-{{selected}}" hero?="{{selected=='top_chip'}}" id="minor_top_today_circuit_exercise_sets">{{minor.top.name}}</div>
+                      <div class="chip-middle" style="text-align:center;" flex two><span class="number">{{minor.top.count}}</span> {{minor.top.unit}}</div>
+                      <div class="chip-bottom" style="text-align:center;" flex one id="minor_top_today_circuit_exercise_sets">{{minor.top.name}}</div>
                       
                     </div>
                   </div>
@@ -419,8 +438,8 @@ core-drawer-panel:not([narrow]) #navicon {
                         Drag to your friend to throwdown
                       </div>
                       <div class="chip-top" style="" flex one><span class="point"><strong>{{minor.bottom.point}}</strong> pts</span></div>
-                      <div class="chip-middle" style="text-align:center;" flex two hero-id="second-{{selected}}" hero?="{{selected=='bottom_chip'}}" ><span class="number">{{minor.bottom.count}}</span> {{minor.bottom.unit}}</div>
-                      <div class="chip-bottom" style="text-align:center;" flex one hero-id="third-{{selected}}" hero?="{{selected=='bottom_chip'}}" id="minor_bottom_today_circuit_exercise_sets">{{minor.bottom.name}}</div>
+                      <div class="chip-middle" style="text-align:center;" flex two><span class="number">{{minor.bottom.count}}</span> {{minor.bottom.unit}}</div>
+                      <div class="chip-bottom" style="text-align:center;" flex one id="minor_bottom_today_circuit_exercise_sets">{{minor.bottom.name}}</div>
                       
                     </div>
                   </div>
@@ -431,26 +450,43 @@ core-drawer-panel:not([narrow]) #navicon {
                 
               </div>
             </div>
-            <!-- <div style="text-align:center;">
-            <paper-button class="start-btn" id="start-btn" on-tap="{{transitionDetail}}" raised cross-fade>Start Circuit <core-icon icon="chevron-right"></core-icon></paper-button>
-            </div>-->
       </div>
     </div>
+    <paper-tabs selected="{{selectedFriendPage}}" class="transparent-blue">
+      <paper-tab><core-icon icon="social:people"></core-icon></paper-tab>
+      <paper-tab><core-icon icon="social:person-add"></core-icon></paper-tab>
+    </paper-tabs>
 
-    <core-scroll-threshold id="threshold" scrollTarget="{{$.scroller}}" lowerThreshold="100" on-lower-trigger="{{loadMore}}"></core-scroll-threshold>
+    <core-pages selected="{{selectedFriendPage}}">
+      <!--<core-scroll-threshold id="threshold1" scrollTarget="{{$.scroller}}" lowerThreshold="100" on-lower-trigger="{{loadMore}}"></core-scroll-threshold>
+      <div id="scroller">
+        <template repeat="{{i in friend_list}}">
 
-    <div id="scroller">
-      <template repeat="{{i in public_users}}">
+          <div class="user">
+            <img src="{{i.photo_url}}" class="user_photo" />
+            <span class="user_name">{{i.first_name}} {{i.last_name}}</span>
+          </div>
 
-        <div class="user">
-          <img src="{{i.photo_url}}" class="user_photo" />
-          <span class="user_name">{{i.first_name}} {{i.last_name}}</span>
-          <core-icon-button class="add_friend" id="add-friend-{{i.id}}" icon="add" on-tap="{{addFriend}}"></core-icon-button>
-        </div>
+        </template>
+        <div hidden?="{{!$.threshold1.lowerTriggered}}" style="text-align:center;"><paper-spinner active?="{{$.threshold1.lowerTriggered}}" style="margin-top:5px;"></paper-spinner></div>
+      </div> -->
+    </core-pages>
 
-      </template>
-      <div hidden?="{{!$.threshold.lowerTriggered}}" style="text-align:center;"><paper-spinner active?="{{$.threshold.lowerTriggered}}" style="margin-top:5px;"></paper-spinner></div>
-    </div> 
+    <core-pages selected="{{selectedFriendPage}}">
+      <core-scroll-threshold id="threshold" scrollTarget="{{$.scroller}}" lowerThreshold="100" on-lower-trigger="{{loadMore}}"></core-scroll-threshold>
+      <div id="scroller">
+        <template repeat="{{i in public_users}}">
+
+          <div class="user">
+            <img src="{{i.photo_url}}" class="user_photo" />
+            <span class="user_name">{{i.first_name}} {{i.last_name}}</span>
+            <core-icon-button class="add_friend" id="add-friend-{{i.id}}" icon="add" on-tap="{{addFriend}}"></core-icon-button>
+          </div>
+
+        </template>
+        <div hidden?="{{!$.threshold.lowerTriggered}}" style="text-align:center;"><paper-spinner active?="{{$.threshold.lowerTriggered}}" style="margin-top:5px;"></paper-spinner></div>
+      </div> 
+    </core-pages>
 
   </core-header-panel>
   </core-drawer-panel>
@@ -465,9 +501,9 @@ core-drawer-panel:not([narrow]) #navicon {
   <div class="card" layout vertical>
     <div class="card-top">
     <core-icon-button id="arrow-back" on-tap="{{transitionDetail}}" icon="arrow-back" style="margin: -11px -17px -8px -10px; float: left;"></core-icon-button>Remaining: {{card.setcount}} {{card.setunit}}</div>
-    <div class="card-top-sub" hero-id="second-{{selected}}" current="{{card.id}}" slide-from-right>{{card.excount}} {{card.exunit}} {{card.exname}}</div>
+    <div class="card-top-sub" current="{{card.id}}" slide-from-right>{{card.excount}} {{card.exunit}} {{card.exname}}</div>
 
-    <div class="card-bottom" layout vertical hero-id="third-{{selected}}" >
+    <div class="card-bottom" layout vertical>
       <div flex ><img style="margin:50px 0" src="/images/demopic/{{card.exdemopic}}"></div>
 
         <div style="margin:20px;text-align:right;">
@@ -521,6 +557,7 @@ core-drawer-panel:not([narrow]) #navicon {
     Polymer('drop-down', {
       server: 'http://future-aurora-851.appspot.com',
       page: 0,
+      selectedFriendPage:0,
       main_today_circuit_point:0,
       main_today_circuit_count:0,
       main_today_circuit_unit:'loading...',
@@ -530,6 +567,7 @@ core-drawer-panel:not([narrow]) #navicon {
       cached_exercises: {},
       cached_exercise_sets: {},
       set_busy_spinner: true,
+
 
       cards:[],
       currentEx: 0,
@@ -626,7 +664,7 @@ core-drawer-panel:not([narrow]) #navicon {
                 self.insert_today_circuit();
                 self.fill_main_today_circuit();
                 self.fill_minor_today_circuit();
-                
+
                 //localStorage.setItem('completed_main', JSON.stringify(true));
             }
          })

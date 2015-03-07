@@ -605,7 +605,7 @@ def get_user_photo_url(email):
     user_id = db(db.auth_user.email == email).select().first()['id']
     logger.info(user_id)
     cached_url = db(db.user_photo.user_id == user_id).select().first()
-    if (cached_url is None) or (len(cached_url) == 0):
+    if (cached_url is None):
         cached_url = None
     else:
         cached_url = cached_url['cached_url']
