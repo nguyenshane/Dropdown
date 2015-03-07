@@ -38,24 +38,26 @@ function fail(e){
 }
 
 function show_user(userarray, fromnum){
-	var tonum = fromnum+5;
-	var param = 'fromnum='+fromnum+'&tonum='+tonum;
-	var self = this;
-	$.ajax({
-		url: 'http://dropdown.nguyenshane.com/dropdown/default/api/show_user.json',
-		headers: { 'X-Requested-With': 'XMLHttpRequest',
-		          'Authorization': 'Basic ' + getAuth(), },
-		data: param,
-		dataType: 'json',
-		cache: false,
-		contentType: false,
-		processData: false,
-		type: 'GET',
-		success: function(response){
-		  console.log('show_user', response, userarray);
-		  add_user_to_database(userarray, response.result)
-		}
-	});
+	if(userarray.length <= fromnum){
+		var tonum = fromnum+5;
+		var param = 'fromnum='+fromnum+'&tonum='+tonum;
+		var self = this;
+		$.ajax({
+			url: 'http://dropdown.nguyenshane.com/dropdown/default/api/show_user.json',
+			headers: { 'X-Requested-With': 'XMLHttpRequest',
+			          'Authorization': 'Basic ' + getAuth(), },
+			data: param,
+			dataType: 'json',
+			cache: false,
+			contentType: false,
+			processData: false,
+			type: 'GET',
+			success: function(response){
+			  console.log('show_user', response, userarray);
+			  add_user_to_database(userarray, response.result)
+			}
+		});
+	}
 }
 
 function add_user_to_database(userarray, response){

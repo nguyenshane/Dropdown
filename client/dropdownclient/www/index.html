@@ -31,6 +31,7 @@
   <link rel="import" href="/components/paper-button/paper-button.html">
   <link rel="import" href="/components/paper-fab/paper-fab.html">
   <link rel="import" href="/components/paper-spinner/paper-spinner.html">
+  <link rel="import" href="/components/paper-dialog/paper-action-dialog.html">
   <link rel="import" href="/components/core-animated-pages/core-animated-pages.html">
   <link rel="import" href="/components/core-animated-pages/transitions/slide-up.html">
   <link rel="import" href="/components/core-animated-pages/transitions/slide-down.html">
@@ -157,8 +158,8 @@ core-drawer-panel:not([narrow]) #navicon {
 .completed-icon {
   color: rgba(255, 255, 255, 0.95);
   margin: auto;
-  width: 70px;
-  height: 70px;
+  width: 50px;
+  height: 50px;
   display: block;
 }
 
@@ -320,6 +321,24 @@ core-drawer-panel:not([narrow]) #navicon {
 
 
 </style>
+
+<core-overlay backdrop autoCloseDisabled layered opened="{{set_busy_spinner}}" transition="core-transition-center" id="busy_spinner" class="busy_spinner" style="text-align:center;">
+  <!-- place all overlay styles inside the overlay target -->
+  <style no-shim>
+    .busy_spinner {
+      width:110px;
+      height:110px;
+      overflow:hidden;
+    }
+
+    .busy_spinner_icon {
+      width: 100px;
+      height: 100px;
+    }
+  </style>
+  <paper-spinner active class="busy_spinner_icon"></paper-spinner>
+</core-overlay>
+
 <core-animated-pages selected="{{page}}" transitions="hero-transition slide-up slide-down cross-fade list-cascade scale-up" on-core-animated-pages-transition-end="{{complete}}">     
 <section>
   <core-drawer-panel id="drawerPanel" rightDrawer>
@@ -328,6 +347,7 @@ core-drawer-panel:not([narrow]) #navicon {
       <core-toolbar id="navheader" cross-fade>
         <span>Menu</span>
       </core-toolbar>
+        <core-item class="navitem" label="Refresh" icon="refresh" on-click="{{refresh}}"></core-item>
         <core-item class="navitem" label="Settings" icon="settings" on-click="{{settings}}"></core-item>
         <core-item class="navitem" label="Log out" icon="exit-to-app" on-click="{{logout}}"></core-item>
      </core-header-panel>
@@ -414,7 +434,6 @@ core-drawer-panel:not([narrow]) #navicon {
             <!-- <div style="text-align:center;">
             <paper-button class="start-btn" id="start-btn" on-tap="{{transitionDetail}}" raised cross-fade>Start Circuit <core-icon icon="chevron-right"></core-icon></paper-button>
             </div>-->
-         
       </div>
     </div>
 
@@ -430,7 +449,7 @@ core-drawer-panel:not([narrow]) #navicon {
         </div>
 
       </template>
-      <div hidden?="{{!$.threshold.lowerTriggered}}" style="text-align:center;"><paper-spinner active?="{{!$.threshold.lowerTriggered}}"></paper-spinner>Please wait...</div>
+      <div hidden?="{{!$.threshold.lowerTriggered}}" style="text-align:center;"><paper-spinner active?="{{$.threshold.lowerTriggered}}" style="margin-top:5px;"></paper-spinner></div>
     </div> 
 
   </core-header-panel>
@@ -443,7 +462,7 @@ core-drawer-panel:not([narrow]) #navicon {
 <core-animated-pages selected="{{currentEx}}" transitions="hero-transition slide-up slide-down cross-fade slide-from-right list-cascade scale-up" on-core-animated-pages-transition-end="{{complete}}" hero-id="first-{{selected}}" hero> 
 
 <template repeat="{{card in cards}}">
-  <div class="card" layout vertical  >
+  <div class="card" layout vertical>
     <div class="card-top">
     <core-icon-button id="arrow-back" on-tap="{{transitionDetail}}" icon="arrow-back" style="margin: -11px -17px -8px -10px; float: left;"></core-icon-button>Remaining: {{card.setcount}} {{card.setunit}}</div>
     <div class="card-top-sub" hero-id="second-{{selected}}" current="{{card.id}}" slide-from-right>{{card.excount}} {{card.exunit}} {{card.exname}}</div>
@@ -471,6 +490,7 @@ core-drawer-panel:not([narrow]) #navicon {
 <core-localstorage name="email" value="{{email}}"></core-localstorage>
 <core-localstorage name="password" value="{{password}}"></core-localstorage>
 <core-localstorage name="user_photo" value="{{user_photo}}"></core-localstorage>
+<core-localstorage name="today_circuit" value="{{today_circuit}}"></core-localstorage>
 <core-localstorage id="completed_main" name="completed_main" value="{{completed_main}}"></core-localstorage>
 <core-localstorage id="completed_top" name="completed_top" value="{{completed_top}}"></core-localstorage>
 <core-localstorage id="completed_bottom" name="completed_bottom" value="{{completed_bottom}}"></core-localstorage>
@@ -509,6 +529,7 @@ core-drawer-panel:not([narrow]) #navicon {
       exercise_ids_needed : [],
       cached_exercises: {},
       cached_exercise_sets: {},
+      set_busy_spinner: true,
 
       cards:[],
       currentEx: 0,
@@ -527,7 +548,8 @@ core-drawer-panel:not([narrow]) #navicon {
 
         setTimeout(function() {
           self.$.threshold.clearLower();
-        }, 1000);
+          self.set_busy_spinner=false;
+        }, 3000);
       },
 
       addFriend: function(event, detail, sender) {
@@ -550,7 +572,6 @@ core-drawer-panel:not([narrow]) #navicon {
           });
       },
 
-
       transition: function(e) {
         if (this.page === 2) {
           this.page = 0;
@@ -565,30 +586,149 @@ core-drawer-panel:not([narrow]) #navicon {
         navicon.onclick = function() {
           drawerPanel.togglePanel();
         };
+        console.log(busy = this.$.busy_spinner);
+        this.fill_main_today_circuit();
+        this.fill_minor_today_circuit();
+
         this.refresh();
       },
 
       refresh: function() {
+          this.set_busy_spinner=true;
           this.user_photo = JSON.parse(localStorage.getItem("user_photo"));
           if(this.user_photo == null) this.user_photo = "/images/noavatar.png";
-
-          this.fill_main_today_circuit();
-          this.fill_minor_today_circuit();
 
           this.completed_main = JSON.parse(localStorage.getItem("completed_main"));
           this.completed_top = JSON.parse(localStorage.getItem("completed_top"));
           this.completed_bottom = JSON.parse(localStorage.getItem("completed_bottom"));
 
+          this.public_users = [];
           show_user(this.public_users,this.public_users.length);
-          //console.log(this.public_users);
+          this.get_today_circuit();
       },
 
-      get_exercises: function(exercise_id){
-        //console.log('exercise_ids_needed', this.exercise_ids_needed, this.exercise_ids_needed.length);
+      get_today_circuit: function(){
+        var self = this;
+        $.ajax({
+            url: 'http://dropdown.nguyenshane.com/dropdown/default/api/get_today_circuit.json',
+            headers: { 'X-Requested-With': 'XMLHttpRequest',
+                        'Authorization': 'Basic ' + getAuth(), },
+            dataType: 'json',
+            cache: false,
+            contentType: false,
+            processData: false,
+            type: 'GET',
+            success: function(response){
+                console.log('get_today_circuit', response);
+                //self.handleResponseTodayCircuit(response);
 
+                self.today_circuit = response.result;
+                self.insert_today_circuit();
+                self.fill_main_today_circuit();
+                self.fill_minor_today_circuit();
+                
+                //localStorage.setItem('completed_main', JSON.stringify(true));
+            }
+         })
+      },
+
+      insert_today_circuit: function(){
+        var self=this;
+        var exercises = this.today_circuit.exercises;
+        console.log(this.today_circuit);
+
+        var db = $.db("dropdown", "", "Dropdown Database", 1024 * 1024);
+        for (exercise of exercises){
+          console.log(exercise, exercise.id, exercise.name, exercise.demopic);
+          db.insert("exercise", {
+            data: {
+                id: exercise.id,
+                body: exercise.body,
+                name: exercise.name,
+                demopic: exercise.demopic
+            },
+            done: function () {
+                console.log("Created an exercise!");
+                
+            },
+            fail: function () {
+                console.log("Something went wrong....");
+            }
+          });
+        }
+
+        var exercise_sets = this.today_circuit.exercise_sets;
+        for (exercise_set of exercise_sets){
+          db.insert("exercise_sets", {
+            data: {
+                id: exercise_set.id,
+                exercise_id: exercise_set.exercise_id,
+                set_name: exercise_set.set_name,
+                count: exercise_set.count,
+                unit: exercise_set.unit,
+                point: exercise_set.point
+            },
+            done: function () {
+                console.log("Created an exercise_set!");
+            },
+            fail: function () {
+                console.log("Something went wrong....");
+            }
+          });
+        }
+
+        today_circuits = this.today_circuit.today_circuit;
+        db.createTable({
+            name: "today_circuit",
+            columns: [
+                "id INTEGER PRIMARY KEY",
+                "circuit_name TEXT",
+                "exercise_set_name TEXT",
+                "main INTEGER",
+                "count INTEGER",
+                "unit TEXT",
+                "point INTEGER"
+            ],
+            dropOrIgnore: "drop", 
+            done: function () {
+                console.log("Created today_circuit database");
+                add_today_circuit(today_circuits);
+            },
+            fail: function () {
+                console.log("Something went wrong....");
+            }
+        });
+        
+        var add_today_circuit = function(today_circuits){
+        console.log(today_circuits);
+        for (today_circuit of today_circuits){
+          var is_main = 0;
+          if(today_circuit.main) {is_main = 1;}
+          db.insert("today_circuit", {
+            data: {
+                id: today_circuit.id,
+                circuit_name: today_circuit.circuit_name,
+                exercise_set_name: today_circuit.exercise_set_name,
+                count: today_circuit.count,
+                unit: today_circuit.unit,
+                point: today_circuit.point,
+                main: is_main
+            },
+            done: function () {
+                console.log("Created a today_circuit!");
+                self.set_busy_spinner = false;
+            },
+            fail: function () {
+                console.log("Something went wrong....");
+            }
+          });
+        }
+      }
+    },
+        
+    get_exercises: function(exercise_id){
         var db = openDatabase("dropdown", "", "Dropdown Database", 1024 * 1024);
         var _self = this;
-
 
         db.transaction(function (tx) {
           var self = _self;
@@ -601,7 +741,6 @@ core-drawer-panel:not([narrow]) #navicon {
             if (i<size-1) query += ',';
           }
           query += ')';
-          //console.log('query', query);
 
           var cached_exercises = _self.cached_exercises;
 
@@ -613,13 +752,12 @@ core-drawer-panel:not([narrow]) #navicon {
               var id = results.rows.item(i).id; 
               var name = results.rows.item(i).name;
               var body = results.rows.item(i).body;
-              var demopic = results.rows.item(i).demopic;
-              //console.log('inside', id, name, demopic, self.cached_exercises);
-              
+              var demopic = results.rows.item(i).demopic;              
               self.cached_exercises[id] = {name: name, body: body, demopic: demopic}; 
             }
           });
         },null, function(){_self.exercise_ids_needed.length=0; console.log('cached ex', _self.cached_exercises); _self.build_cards()});
+        this.set_busy_spinner=false;
       },
 
       build_cards: function(){
@@ -640,11 +778,9 @@ core-drawer-panel:not([narrow]) #navicon {
                 this.cards.push({setcount:setcountdown, setunit:setunit, excount:excount, exunit:exunit, 
                                      exname:exname, exdemopic:demopic, id:this.cards.length});
               }
-              //console.log('setcountdown_main',setcountdown);
             }
 
             this.start_minor_top = this.cards.length;
-            //console.log('start_minor_top', this.start_minor_top);
           }
 
           // for top minor circuit
@@ -664,11 +800,9 @@ core-drawer-panel:not([narrow]) #navicon {
                 this.cards.push({setcount:setcountdown, setunit:setunit, excount:excount, exunit:exunit, 
                                      exname:exname, exdemopic:demopic, id:this.cards.length});
               }
-              //console.log('setcountdown_top',setcountdown);
             }
 
             this.start_minor_bottom = this.cards.length;
-            //console.log('start_minor_bottom', this.start_minor_bottom);
           }
 
 
@@ -689,16 +823,10 @@ core-drawer-panel:not([narrow]) #navicon {
                 this.cards.push({setcount:setcountdown, setunit:setunit, excount:excount, exunit:exunit, 
                                      exname:exname, exdemopic:demopic, id:this.cards.length});
               }
-              //console.log('setcountdown_bottom',setcountdown);
             }
 
             this.card_end = this.cards.length;
-            //console.log('this.card_end', this.card_end);
-            //console.log('cards', this.cards);
           }
-          //this.cards[0].excount = 
-          //this.cards[0].exunit = self.cached_exercises[0].
-
       },
 
       fill_main_today_circuit: function() {
@@ -909,11 +1037,6 @@ core-drawer-panel:not([narrow]) #navicon {
 
       },
 
-      handleResponseGetTodayCircuit: function(e){
-        //console.log(e);
-      
-      },
-
       toppingsListOrDetails: 0,
       selected: null,
 
@@ -979,9 +1102,8 @@ core-drawer-panel:not([narrow]) #navicon {
             success: function(response){
                 console.log('complete_main_circuit', response);
                 //localStorage.setItem('completed_main', JSON.stringify(true));
-
             }
-          })
+          });
         }
 
         //send completion of top minor circuit
