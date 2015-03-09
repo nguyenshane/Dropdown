@@ -200,13 +200,20 @@ def complete_circuit(user_id,circuit_id):
     if cir is None:
         return False
     if userrev is None:
-        return False    
+        return False
     point = cir.point
-    #newpoint = int(cir.point)
     oldpoint = userrev.point
     newpoint = oldpoint + point
     userrev.update_record(point=newpoint)
-    db.circuit_tag_table.insert(user_id = auth.user_id,circuit_id = cir.id,circuit_count=1,created_on=datetime.utcnow())
+
+    today = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+    db.circuit_tag_table.update_or_insert(
+        (db.circuit_tag_table.user_id==user_id) 
+        & (db.circuit_tag_table.circuit_id==circuit_id)
+        & (db.circuit_tag_table.created_on>=today),
+        user_id = auth.user_id,
+        circuit_id = cir.id,circuit_count=1,
+        created_on=today)
     return True
 
 #When user want to reset point
@@ -266,7 +273,17 @@ def isFriend(from_user_id,to_user_id):
         return False
 #When user want to list all friend    
 def show_all_friend(user_id):
-    friendlist = db(db.friend_table.from_user_id == user_id).select(orderby=~db.friend_table.created_on)
+    #friendlist = db(db.friend_table.from_user_id == user_id).select(orderby=~db.friend_table.created_on)
+    #friendlist = db(db.friend_table.from_user_id == user_id).select(orderby=~db.friend_table.created_on)
+    fromuser=db((db.friend_table.from_user_id==user_id) & (db.auth_user.id==db.friend_table.to_user_id))
+    friendlist = fromuser.select(db.auth_user.id, 
+        db.auth_user.point,
+        db.auth_user.first_name,
+        db.auth_user.last_name,
+        db.user_photo.cached_url, 
+        left=db.user_photo.on(db.auth_user.id==db.user_photo.user_id),
+        orderby=~db.auth_user.point)
+    logger.info(friendlist)
     return friendlist
 
 #When user want to see all user
@@ -491,6 +508,17 @@ def api():
                 logger.info(result)
             return dict(result=result)
 
+        if args[0] == 'show_friends':
+            logger.info('show_friends')
+            #logger.info(request.env.http_authorization)
+            auth.basic()
+            result = None
+            #logger.info(auth.user)
+            if auth.user:
+                result = show_all_friend(auth.user.id)
+                logger.info(result)
+            return dict(result=result)
+
         else:
             patterns = 'auto'
             parser = db.parse_as_rest(patterns,args,vars)
@@ -573,10 +601,14 @@ def get_today_circuit(user_id):
 
         today_circuit += _circuit
         exercise_sets += _exercise_sets
+    today = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+    completed = db((db.circuit_tag_table.user_id == user_id) 
+              & (db.circuit_tag_table.created_on>=today)).select(db.circuit_tag_table.circuit_id)
 
-    logger.info(today_circuit)
-        
-    return dict(today_circuit=today_circuit,exercise_sets=exercise_sets,exercises=exercises)
+    logger.info(completed)
+
+
+    return dict(today_circuit=today_circuit,exercise_sets=exercise_sets,exercises=exercises,completed=completed)
 
 
 def get_upload_url(auth_user):

@@ -99,6 +99,30 @@ function add_user_to_database(userarray, response){
 	}
 }
 
+
+function show_friends(userarray, fromnum){
+	if(userarray.length <= fromnum){
+		var tonum = fromnum+100;
+		var param = 'fromnum='+fromnum+'&tonum='+tonum;
+		var self = this;
+		$.ajax({
+			url: 'http://dropdown.nguyenshane.com/dropdown/default/api/show_friends.json',
+			headers: { 'X-Requested-With': 'XMLHttpRequest',
+			          'Authorization': 'Basic ' + getAuth(), },
+			dataType: 'json',
+			cache: false,
+			contentType: false,
+			processData: false,
+			type: 'GET',
+			success: function(response){
+			  console.log('show_friends', response, userarray);
+			  add_user_to_database(userarray, response.result)
+			}
+		});
+	}
+}
+
+
 function dataURItoBlob(dataURI) {
 	// convert base64/URLEncoded data component to raw binary data held in a string
 	var byteString;
