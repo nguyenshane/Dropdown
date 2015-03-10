@@ -4,7 +4,7 @@
 <ul>
 {{for friend in friendlist:}}
 {{=LI(A(friend.to_user_id.first_name + " " + friend.to_user_id.last_name , _href=URL('default', 'test_show_user', args=[friend.to_user_id])),
-	A('Send dropdown', _class='btn', _href=URL('default', 'test_receive_dropdown',args=[circuit_id,friend.to_user_id])))}}
+	A('Send throwdown', _class='btn', _href=URL('default', 'test_receive_throwdown',args=[circuit_id,friend.to_user_id])))}}
 {{pass}}
 </ul>
 

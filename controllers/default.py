@@ -59,7 +59,7 @@ def index():
 
 def test_show_user():
     user_id = request.args(0)
-    return show_user(user_id)
+    return show_user_infor(user_id)
 
 def test_show_circuit():
     circuit_id = request.args(0)
@@ -80,21 +80,21 @@ def test_complete():
     return dict(cir=cir)
 
 @auth.requires_login()
-def test_send_dropdown():    
+def test_send_throwdown():    
     circuit_id = request.args(0)
     friendlist = show_all_friend(auth.user_id)    
     return dict(circuit_id=circuit_id,friendlist=friendlist)
 
 
-def test_receive_dropdown():    
+def test_receive_throwdown():    
     circuit_id = request.args(0)
     friend_id = request.args(1)
-    add_dropdown(auth.user_id,friend_id,circuit_id)
+    add_throwdown(auth.user_id,friend_id,circuit_id)
     return dict()
 
 @auth.requires_login()
-def test_show_dropdown():    
-    dropdown_list = get_dropdown(auth.user_id)    
+def test_show_throwdown():    
+    dropdown_list = get_throwdown(auth.user_id)    
     return dict(dropdown_list=dropdown_list)
 
 @auth.requires_login()
@@ -170,7 +170,7 @@ def test_user_setting_photo():
 
 #Show user information, 
 #including list of complete circuit
-def show_user(user_id):
+def show_user_infor(user_id):
     userrev = db(db.auth_user.id == user_id).select().first()
     #linktable_ref = db(db.linktable.user_id == auth.user_id).select()
     circuit_tag_table = db(db.circuit_tag_table.user_id == user_id).select()
@@ -206,7 +206,14 @@ def complete_circuit(user_id,circuit_id):
     oldpoint = userrev.point
     newpoint = oldpoint + point
     userrev.update_record(point=newpoint)
-    db.circuit_tag_table.insert(user_id = auth.user_id,circuit_id = cir.id,circuit_count=1,created_on=datetime.utcnow())
+    
+    exist_data = db((db.circuit_tag_table.user_id==userrev) & (db.circuit_tag_table.circuit_id == cir)).select().first()
+    if exist_data is not None:
+        count = exist_data.circuit_count
+        count += 1
+        exist_data.update_record(circuit_count=count)
+    else:
+        db.circuit_tag_table.insert(user_id = auth.user_id,circuit_id = cir.id,circuit_count=1,created_on=datetime.utcnow())
     return True
 
 #When user want to reset point
@@ -307,14 +314,15 @@ def user_setting_photo(user_id):
     return form2
 
 #When user send dropdown to their friend
-def add_dropdown(user_id,friend_id,circuit_id):
+def add_throwdown(user_id,friend_id,circuit_id):
     userrev = db(db.auth_user.id == user_id).select().first()
     friendrev = db(db.auth_user.id == friend_id).select().first()
     circuit = get_circuit(circuit_id)
     
     if userrev is None:
         return False
-    
+    friendtable = db(db.friend_table.to_user_id == friendrev).select().first()
+    friendtable.update_record(has_throwdown=True)
     
     db.dropdown_table.insert(from_user_id=userrev,
                              to_user_id=friendrev,
@@ -326,7 +334,7 @@ def add_dropdown(user_id,friend_id,circuit_id):
 
 
 #When user want to show dropdow list
-def get_dropdown(user_id):
+def get_throwdown(user_id):
     userrev = db(db.auth_user.id == user_id).select().first()
     dropdown_list = db(db.dropdown_table.to_user_id == userrev).select()
     

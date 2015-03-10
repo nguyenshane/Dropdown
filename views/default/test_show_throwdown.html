@@ -1,15 +1,16 @@
 {{extend 'layout.html'}}
 
 
-<h1>List of dropdown you've recieved</h1>
+<h1>List of throwdown you've recieved</h1>
 <p><i>complete button doesn't do anything at the moment</i></p>
 <ul>
 {{for dropdown in dropdown_list:}}
 {{=LI(A(dropdown.from_user_id.first_name + " " + dropdown.from_user_id.last_name , _href=URL('default', 'test_show_user', args=[dropdown.from_user_id])) 
-	+ " sent you a dropdown with circuit name: " +  
+	{{if isUpgrade:}}
+	+ " sent you a throwdown with circuit name: " +  
 	A(dropdown.circuit_id.circuit_name, _href=URL('default', 'test_show_cicuit', args=[dropdown.circuit_id.id])) 
 	+ " " +
-	A('Complete?', _class='btn', _href=URL('default', 'index')))}}
+	A('Complete?', _class='btn', _href=URL('default', 'test_complete', args=[dropdown.circuit_id.id])))}}
 {{pass}}
 </ul>
 

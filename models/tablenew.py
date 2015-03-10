@@ -66,6 +66,7 @@ db.define_table('circuit_tag_table',
                 Field('user_id','reference auth_user', label='User'),
                 Field('circuit_id','reference circuit', label='Circuit'),
                 Field('circuit_count','integer'),
+                Field('from_user_id','reference auth_user'),
                 Field('created_on','datetime', label='Date Created', default=datetime.utcnow()), fake_migrate=True)
 db.circuit_tag_table.circuit_id.requires = IS_IN_DB(db,'circuit.id','%(circuit_name)s',multiple=False)
 db.circuit_tag_table.created_on.represent = lambda value, row: value.strftime("%m/%d/%Y")
@@ -76,6 +77,8 @@ db.circuit_tag_table.created_on.writable = False
 db.define_table('friend_table',
                 Field('from_user_id','reference auth_user', label='From User'),
                 Field('to_user_id','reference auth_user', label='To User'),
+                Field('circuit_id','reference circuit', label='Throwdown'),
+                Field('has_throwdown','boolean', label='Has Throwdown'),
                 Field('created_on','datetime', label='Date Added', default=datetime.utcnow()), fake_migrate=True)
 db.friend_table.created_on.represent = lambda value, row: value.strftime("%m/%d/%Y")
 db.friend_table.created_on.writable = False
