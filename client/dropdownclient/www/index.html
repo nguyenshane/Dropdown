@@ -37,6 +37,8 @@
   <link rel="import" href="/components/core-animated-pages/transitions/list-cascade.html">
   <link rel="import" href="/components/core-animated-pages/transitions/scale-up.html">
 
+  <link rel="import" href="my-core-drag-drop.html">
+
   <!-- Import Jquery -->
   <script src="/components/localforage/dist/localforage.min.js"></script>
   <script src="/components/jquery/dist/jquery.min.js"></script>
@@ -92,7 +94,7 @@ paper-tabs::shadow #selectionBar {
 }
 
 core-animated-pages {
-  /*display: initial;*/
+  display: initial; /*uncomment this for ios*/
 }
 .maincircuit {
   background-color: rgba(86, 105, 118, 1);
@@ -179,6 +181,7 @@ core-drawer-panel:not([narrow]) #navicon {
   width: 50px;
   height: 50px;
   display: block;
+  pointer-events: none;
 }
 
 .chip {
@@ -237,7 +240,7 @@ core-drawer-panel:not([narrow]) #navicon {
   /*background: #15b8a3;*/
 }
 
-#scroller {
+.scroller {
   height: 250px;
   padding: 10px;
   overflow: auto;
@@ -276,6 +279,77 @@ core-drawer-panel:not([narrow]) #navicon {
   font-size: 1.2em;
   bottom: 20px;
   margin-left:8px;
+  position: relative;
+}
+
+.fl_point {
+  background: rgba(129, 24, 12, 0.79);
+  padding: 4px;
+  border-radius: 3px;
+  font-size: 0.7em;
+  text-transform: lowercase;
+  margin: 0px 5px;
+  bottom: 22px;
+  color: rgba(237, 237, 237, 0.79);
+  opacity: 50%;
+  position: relative;
+}
+
+.fl_icon_container {
+  float: right;
+  width: 100%;
+  text-align: right;
+  bottom: 12px;
+  margin-top: -10px;
+  position: relative;
+}
+
+.fl_icon {
+  height: 15px;
+  width: 15px;
+}
+
+.fl_throwdown {
+  background: rgba(236, 97, 12, 0.94);
+  padding: 8px;
+  border-radius: 3px;
+  margin: 0px 5px;
+  text-transform: lowercase;
+  bottom: 20px;
+  color: rgba(237, 237, 237, 0.79);
+  position: relative;
+}
+
+.fl_throwdown_off {
+  background: rgba(174, 164, 158, 0.94);
+  padding: 8px;
+  border-radius: 3px;
+  margin: 0px 5px;
+  text-transform: lowercase;
+  bottom: 20px;
+  color: rgba(237, 237, 237, 0.79);
+  position: relative;
+}
+
+.fl_dropdown {
+  background: rgba(213, 11, 72, 0.94);
+  padding: 8px;
+  border-radius: 3px;
+  margin: 0px 5px;
+  text-transform: lowercase;
+  bottom: 20px;
+  color: rgba(237, 237, 237, 0.79);
+  position: relative;
+}
+
+.fl_dropdown_off {
+  background: rgba(174, 164, 158, 0.94);
+  padding: 8px;
+  border-radius: 3px;
+  margin: 0px 5px;
+  text-transform: lowercase;
+  bottom: 20px;
+  color: rgba(237, 237, 237, 0.79);
   position: relative;
 }
 
@@ -359,10 +433,9 @@ core-drawer-panel:not([narrow]) #navicon {
   </style>
   <paper-spinner active class="busy_spinner_icon"></paper-spinner>
 </core-overlay>
-
-<core-animated-pages selected="{{page}}" transitions="hero-transition slide-up slide-down cross-fade list-cascade scale-up" on-core-animated-pages-transition-end="{{complete}}">     
+<core-animated-pages selected="{{page}}" transitions="hero-transition slide-up slide-down cross-fade list-cascade scale-up" on-core-animated-pages-transition-end="{{complete}}">
 <section>
-  <core-drawer-panel id="drawerPanel" rightDrawer>
+  <core-drawer-panel id="drawerPanel" rightDrawer forceNarrow drawerWidth="190px">
     
     <core-header-panel drawer>
       <!--<core-toolbar id="navheader" cross-fade>
@@ -380,33 +453,33 @@ core-drawer-panel:not([narrow]) #navicon {
      </core-header-panel>
 
     <core-header-panel main>
+      <my-core-drag-drop></my-core-drag-drop>
       <core-toolbar id="mainheader">
         <div class="user_photo_container">
-          <img class="user_photo" style="border: rgba(255, 255, 255, 0.52) 2px solid;" src="{{user_photo}}" />
+          <img class="user_photo" style="border: rgba(255, 255, 255, 0.52) 2px solid;" src="{{user_photo}}" id="user_photo"/>
         </div>
         <span flex id="title">Dropdown</span>
         <core-icon-button id="navicon" icon="image:flash-on"></core-icon-button>
       </core-toolbar>
 
       <div class="content">
-
+          
           <div id="maincircuit" class="maincircuit">
             <div class="greeting">{{firstname}}, your circuits for today</div>
             <div class="middle">
               <div horizontal layout>
-              
                 <div class="chip-container-main" hero?="{{selected=='main_chip'}}" on-tap="{{transitionDetail}}" flex one style="position:relative;">
                  <!-- Main today_circuit -->
                   <div class="chip" id="main_chip" hero-id="first-{{selected}}" hero?="{{selected=='main_chip'}}" style="position:absolute; width:97%; height:97%; background:#313d46; color:rgba(255, 255, 255, 0.79) !important;" vertical layout>
-                    <div class="completed" hidden?="{{!completed_main}}">
-                      <div style="position: relative; height:100%; width:100%;">
-                      <div style="position: absolute; top: 22%;">
+                    <div class="completed" hidden?="{{!completed_main}}" on-trackStart="{{dragstart}}" on-trackEnd="{{drop}}" id="drag_main">
+                      <div style="position: relative; height:100%; width:100%; pointer-events:none;">
+                      <div style="position: absolute; top: 22%; pointer-events:none;">
                        <core-icon class="completed-icon" icon="check"></core-icon>
                         Drag to your friend to throwdown
                        </div>
                       </div>
                     </div>
-                    <div class="chip-top" style=""  ><span class="point"><strong>{{main_today_circuit_point}}</strong> pts</span></div>
+                    <div class="chip-top"><span class="point"><strong>{{main_today_circuit_point}}</strong> pts</span></div>
                     <div class="chip-middle" style="margin: auto auto auto 5%; color:rgba(255, 255, 255, 0.79) !important;"><span class="number">{{main_today_circuit_count}}</span> {{main_today_circuit_unit}}</div>
                     <div class="chip-bottom" style="margin: auto auto auto 5%; color:rgba(255, 255, 255, 0.79) !important;" id="main_today_circuit_exercise_sets">&nbsp;</div>
                     
@@ -419,7 +492,7 @@ core-drawer-panel:not([narrow]) #navicon {
                 <div vertical layout>
                   <div class="chip-container-top" hero?="{{selected=='top_chip'}}"  on-tap="{{transitionDetail}}" flex one>
                     <div class="chip" id="top_chip" hero-id="first-{{selected}}" hero?="{{selected=='top_chip'}}" vertical layout>
-                      <div class="completed" hidden?="{{!completed_top}}">
+                      <div class="completed" hidden?="{{!completed_top}}" on-trackStart="{{dragstart}}" on-trackEnd="{{drop}}" id="drag_top">
                         <core-icon class="completed-icon" icon="check"></core-icon>
                         Drag to your friend to throwdown
                       </div>
@@ -433,7 +506,7 @@ core-drawer-panel:not([narrow]) #navicon {
 
                   <div class="chip-container-bottom" hero?="{{selected=='bottom_chip'}}" on-tap="{{transitionDetail}}" flex one>
                     <div class="chip" id="bottom_chip" hero-id="first-{{selected}}" hero?="{{selected=='bottom_chip'}}" vertical layout>
-                      <div class="completed" hidden?="{{!completed_bottom}}">
+                      <div class="completed" hidden?="{{!completed_bottom}}" on-trackStart="{{dragstart}}" on-trackEnd="{{drop}}" id="drag_bottom">
                         <core-icon class="completed-icon" icon="check"></core-icon>
                         Drag to your friend to throwdown
                       </div>
@@ -458,23 +531,30 @@ core-drawer-panel:not([narrow]) #navicon {
     </paper-tabs>
 
     <core-pages selected="{{selectedFriendPage}}">
-      <!--<core-scroll-threshold id="threshold1" scrollTarget="{{$.scroller}}" lowerThreshold="100" on-lower-trigger="{{loadMore}}"></core-scroll-threshold>
-      <div id="scroller">
-        <template repeat="{{i in friend_list}}">
+      <section>
+      <core-scroll-threshold id="fl_threshold" scrollTarget="{{$.fl_scroller}}" lowerThreshold="100" on-lower-trigger="{{fl_loadMore}}"></core-scroll-threshold>
+      <div id="fl_scroller" class="scroller">
+        <template repeat="{{f in friend_list}}">
 
           <div class="user">
-            <img src="{{i.photo_url}}" class="user_photo" />
-            <span class="user_name">{{i.first_name}} {{i.last_name}}</span>
+            <img src="{{f.photo_url}}" class="user_photo" />
+            <span class="user_name">{{f.first_name}}</span>
+            <span class="fl_point">{{f.point}} pts</span>
+            <div class="fl_icon_container">
+              <span class="fl_throwdown" on-drop="{{drop}}"><core-icon class="fl_icon" icon="image:flash-on" id="throwdown-{{f.id}}"></core-icon> 1</span>
+              <span class="fl_throwdown_off" hidden><core-icon class="fl_icon" icon="image:flash-on" id="throwdown-{{f.id}}"></core-icon> 0</span>
+              <span class="fl_dropdown"><core-icon class="fl_icon" icon="social:whatshot" id="dropdown-{{f.id}}"></core-icon> 3</span>
+              <span class="fl_dropdown_off" hidden><core-icon class="fl_icon" icon="social:whatshot" id="dropdown-{{f.id}}"></core-icon> 0</span>
+            </div>
           </div>
 
         </template>
-        <div hidden?="{{!$.threshold1.lowerTriggered}}" style="text-align:center;"><paper-spinner active?="{{$.threshold1.lowerTriggered}}" style="margin-top:5px;"></paper-spinner></div>
-      </div> -->
-    </core-pages>
-
-    <core-pages selected="{{selectedFriendPage}}">
-      <core-scroll-threshold id="threshold" scrollTarget="{{$.scroller}}" lowerThreshold="100" on-lower-trigger="{{loadMore}}"></core-scroll-threshold>
-      <div id="scroller">
+        <div hidden?="{{!$.fl_threshold.lowerTriggered}}" style="text-align:center;"><paper-spinner active?="{{$.fl_threshold1.lowerTriggered}}" style="margin-top:5px;"></paper-spinner></div>
+      </div>
+      </section>
+      <section>
+      <core-scroll-threshold id="p_threshold" scrollTarget="{{$.p_scroller}}" lowerThreshold="100" on-lower-trigger="{{p_loadMore}}"></core-scroll-threshold>
+      <div id="p_scroller" class="scroller">
         <template repeat="{{i in public_users}}">
 
           <div class="user">
@@ -484,8 +564,9 @@ core-drawer-panel:not([narrow]) #navicon {
           </div>
 
         </template>
-        <div hidden?="{{!$.threshold.lowerTriggered}}" style="text-align:center;"><paper-spinner active?="{{$.threshold.lowerTriggered}}" style="margin-top:5px;"></paper-spinner></div>
+        <div hidden?="{{!$.p_threshold.lowerTriggered}}" style="text-align:center;"><paper-spinner active?="{{$.p_threshold.lowerTriggered}}" style="margin-top:5px;"></paper-spinner></div>
       </div> 
+      </section>
     </core-pages>
 
   </core-header-panel>
@@ -576,16 +657,55 @@ core-drawer-panel:not([narrow]) #navicon {
       start_minor_end: -1,
       card_end:-1,
       public_users: [],
+      friend_list: [],
 
-      loadMore: function() {
-        console.log('called Loadmore');
+      dragstart: function(e,d,s) {
+        console.log('dragstart sender', e, s.getAttribute('id'));
+
+        /*s.addEventListener('drag-start', function(e) {
+          console.log('event', e);
+          var dragInfo = e.detail;
+          // flaw #2: e vs dragInfo.event
+          var color = 'black';
+          dragInfo.avatar.style.cssText = 'border: 3px solid ' + color + '; width: 32px; height: 32px; border-radius: 32px; background-color: whitesmoke';
+          e.detail.avatar.appendChild(document.querySelector('#hello'));
+          dragInfo.drag = function() {};
+          dragInfo.drop = drop;
+        });*/
+
+        //var dragInfo = e.dragInfo;
+        //console.log('dragInfo', dragInfo);
+        //dragInfo.avatar.style.cssText = 'border: 3px solid gray; width: 32px; height: 32px; border-radius: 32px; background-color: whitesmoke';
+        //dragInfo.avatar.appendChild('<div>Text</div>');
+        console.log('event', e);
+      },
+
+      drop: function(e,d,s) {
+        console.log('drop', e.relatedTarget.id);
+      },
+
+      p_loadMore: function() {
+        console.log('called public Loadmore');
         var self=this;
 
         // get new public users 
         show_user(this.public_users, this.public_users.length);
 
         setTimeout(function() {
-          self.$.threshold.clearLower();
+          self.$.p_threshold.clearLower();
+          self.set_busy_spinner=false;
+        }, 3000);
+      },
+
+      fl_loadMore: function() {
+        console.log('called friendlist Loadmore');
+        var self=this;
+
+        // get new friends 
+        show_friends(this.friend_list, this.friend_list.length);
+
+        setTimeout(function() {
+          self.$.fl_threshold.clearLower();
           self.set_busy_spinner=false;
         }, 3000);
       },
@@ -619,6 +739,9 @@ core-drawer-panel:not([narrow]) #navicon {
       },
       
       domReady: function() {
+        /*this.$.user_photo.addEventListener('drag-start', function(e) {
+          console.log('drag-start',e);
+        });*/
         var navicon = this.$.navicon;
         var drawerPanel = this.$.drawerPanel
         navicon.onclick = function() {
@@ -627,22 +750,35 @@ core-drawer-panel:not([narrow]) #navicon {
         console.log(busy = this.$.busy_spinner);
         this.fill_main_today_circuit();
         this.fill_minor_today_circuit();
+        this.update_completed_circuits();
 
         this.refresh();
       },
 
       refresh: function() {
-          this.set_busy_spinner=true;
-          this.user_photo = JSON.parse(localStorage.getItem("user_photo"));
-          if(this.user_photo == null) this.user_photo = "/images/noavatar.png";
+        this.set_busy_spinner=true;
+        this.user_photo = JSON.parse(localStorage.getItem("user_photo"));
+        if(this.user_photo == null) this.user_photo = "/images/noavatar.png";
 
-          this.completed_main = JSON.parse(localStorage.getItem("completed_main"));
-          this.completed_top = JSON.parse(localStorage.getItem("completed_top"));
-          this.completed_bottom = JSON.parse(localStorage.getItem("completed_bottom"));
+        this.completed_main = JSON.parse(localStorage.getItem("completed_main"));
+        this.completed_top = JSON.parse(localStorage.getItem("completed_top"));
+        this.completed_bottom = JSON.parse(localStorage.getItem("completed_bottom"));
 
-          this.public_users = [];
-          show_user(this.public_users,this.public_users.length);
-          this.get_today_circuit();
+        this.public_users = [];
+        show_user(this.public_users,this.public_users.length);
+        show_friends(this.friend_list, this.friend_list.length);
+        this.get_today_circuit();
+      },
+
+      update_completed_circuits: function() {
+        for(var completed of this.today_circuit.completed){
+          if (this.main_today_circuit_id == completed.circuit_id)
+            this.completed_main = true;
+          if (this.minor.top.id == completed.circuit_id)
+            this.completed_top = true;
+          if (this.minor.bottom.id == completed.circuit_id)
+            this.completed_bottom = true;
+        }
       },
 
       get_today_circuit: function(){
@@ -658,13 +794,12 @@ core-drawer-panel:not([narrow]) #navicon {
             type: 'GET',
             success: function(response){
                 console.log('get_today_circuit', response);
-                //self.handleResponseTodayCircuit(response);
 
                 self.today_circuit = response.result;
                 self.insert_today_circuit();
                 self.fill_main_today_circuit();
                 self.fill_minor_today_circuit();
-
+                self.update_completed_circuits();
                 //localStorage.setItem('completed_main', JSON.stringify(true));
             }
          })

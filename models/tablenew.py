@@ -111,13 +111,12 @@ def make_today_circuit(user_id):
     return False
 
 def get_today_circuit(user_id):
-    logger.info('here')
     today_circuit = db(db.daily.user_id==user_id).select()
     return today_circuit
 
 def del_daily_circuit(user_id):
-    daily_circuit = db(db.daily.user_id==user_id).delete()
-    return daily_circuit
+    db(db.daily.user_id==user_id).delete()
+
 
 def get_date_created_circuit(user_id):
     created_on = db(db.daily.user_id==user_id).select(limitby=(0,1))

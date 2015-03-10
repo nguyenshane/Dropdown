@@ -233,6 +233,9 @@ h2 {
 <core-localstorage name="password" value="{{password}}"></core-localstorage>
 <core-localstorage name="today_circuit" value="{{today_circuit}}"></core-localstorage>
 <core-localstorage name="user_photo" value="{{user_photo}}"></core-localstorage>
+<core-localstorage id="completed_main" name="completed_main" value="{{completed_main}}"></core-localstorage>
+<core-localstorage id="completed_top" name="completed_top" value="{{completed_top}}"></core-localstorage>
+<core-localstorage id="completed_bottom" name="completed_bottom" value="{{completed_bottom}}"></core-localstorage>
 
 <core-ajax
     id="signup_ajax"
@@ -270,6 +273,9 @@ h2 {
       indexView : null,
       set_busy_spinner: false,
       
+      stop_spinner: function() {
+        this.set_busy_spinner = true;
+      },
 
       domReady: function() {
         if (localStorage.getItem("password") 
@@ -539,6 +545,7 @@ supersonic.data.channel('index').subscribe(function(message) {
     var drop_down_login = document.querySelector('#drop-down-login');
     console.log(drop_down_login);
     drop_down_login.domReady();
+    drop_down_login.stop_spinner();
   }
 });
 
