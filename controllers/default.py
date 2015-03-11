@@ -337,9 +337,14 @@ def add_throwdown(user_id,friend_id,circuit_id):
     friendrev = db(db.auth_user.id == friend_id).select().first()
     circuit = get_circuit(circuit_id)
     
+    if circuit is None:
+        return False
     if userrev is None:
         return False
     friendtable = db(db.friend_table.to_user_id == friendrev).select().first()
+    
+    if friendtable is None:
+        return False
     friendtable.update_record(has_throwdown=True)
     
     db.dropdown_table.insert(from_user_id=userrev,
@@ -525,6 +530,19 @@ def api():
             #logger.info(auth.user)
             if auth.user:
                 result = show_all_friend(auth.user.id)
+                logger.info(result)
+            return dict(result=result)
+        
+        if args[0] == 'add_throwdown':
+            logger.info('add_throwdown')
+            #logger.info(request.env.http_authorization)
+            auth.basic()
+            result = None
+            #logger.info(auth.user)
+            if auth.user:
+                touser = int(vars['touser'])
+                circuit_id = int(vars['circuit_id'])
+                result = add_throwdown(auth.user.id, touser,circuit_id)
                 logger.info(result)
             return dict(result=result)
 
