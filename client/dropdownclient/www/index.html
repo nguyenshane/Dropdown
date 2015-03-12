@@ -96,6 +96,11 @@ paper-tabs::shadow #selectionBar {
 core-animated-pages {
   display: initial; /*uncomment this for ios*/
 }
+
+#mainContainer {
+  overflow: hidden;
+}
+
 .maincircuit {
   background-color: rgba(86, 105, 118, 1);
   padding: 10px;
@@ -417,26 +422,10 @@ core-drawer-panel:not([narrow]) #navicon {
 
 </style>
 
-<core-overlay backdrop autoCloseDisabled layered opened="{{set_busy_spinner}}" transition="core-transition-center" id="busy_spinner" class="busy_spinner" style="text-align:center;">
-  <!-- place all overlay styles inside the overlay target -->
-  <style no-shim>
-    .busy_spinner {
-      width:110px;
-      height:110px;
-      overflow:hidden;
-    }
-
-    .busy_spinner_icon {
-      width: 100px;
-      height: 100px;
-    }
-  </style>
-  <paper-spinner active class="busy_spinner_icon"></paper-spinner>
-</core-overlay>
 <core-animated-pages selected="{{page}}" transitions="hero-transition slide-up slide-down cross-fade list-cascade scale-up" on-core-animated-pages-transition-end="{{complete}}">
 <section>
+  <my-core-drag-drop></my-core-drag-drop>
   <core-drawer-panel id="drawerPanel" rightDrawer forceNarrow drawerWidth="190px">
-    
     <core-header-panel drawer>
       <!--<core-toolbar id="navheader" cross-fade>
         <span>Menu</span>
@@ -451,9 +440,9 @@ core-drawer-panel:not([narrow]) #navicon {
           <core-icon icon="exit-to-app"></core-icon>&nbsp;&nbsp;&nbsp;&nbsp;Logout
         </paper-item>
      </core-header-panel>
-
+    
     <core-header-panel main>
-      <my-core-drag-drop></my-core-drag-drop>
+
       <core-toolbar id="mainheader">
         <div class="user_photo_container">
           <img class="user_photo" style="border: rgba(255, 255, 255, 0.52) 2px solid;" src="{{user_photo}}" id="user_photo"/>
@@ -631,6 +620,22 @@ core-drawer-panel:not([narrow]) #navicon {
 
 </template>
 
+<core-overlay backdrop autoCloseDisabled layered opened="{{set_busy_spinner}}" transition="core-transition-center" id="busy_spinner" class="busy_spinner" style="text-align:center;">
+  <!-- place all overlay styles inside the overlay target -->
+  <style no-shim>
+    .busy_spinner {
+      width:110px;
+      height:110px;
+      overflow:hidden;
+    }
+
+    .busy_spinner_icon {
+      width: 100px;
+      height: 100px;
+    }
+  </style>
+  <paper-spinner active class="busy_spinner_icon"></paper-spinner>
+</core-overlay>
 
 <script>
     supersonic.ui.navigationBar.hide();
@@ -681,7 +686,7 @@ core-drawer-panel:not([narrow]) #navicon {
       },
 
       drop: function(e,d,s) {
-        console.log('drop', e.relatedTarget.id);
+        console.log('drop', e, e.relatedTarget.id);
       },
 
       p_loadMore: function() {
@@ -693,7 +698,7 @@ core-drawer-panel:not([narrow]) #navicon {
 
         setTimeout(function() {
           self.$.p_threshold.clearLower();
-          self.set_busy_spinner=false;
+          //self.set_busy_spinner=false;
         }, 3000);
       },
 
@@ -706,7 +711,7 @@ core-drawer-panel:not([narrow]) #navicon {
 
         setTimeout(function() {
           self.$.fl_threshold.clearLower();
-          self.set_busy_spinner=false;
+          //self.set_busy_spinner=false;
         }, 3000);
       },
 

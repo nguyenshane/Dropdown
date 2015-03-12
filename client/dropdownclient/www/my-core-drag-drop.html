@@ -65,6 +65,7 @@ This is a mod version to work with Dropdown
     },
 
     trackStart: function(event) {
+      console.log('trackStart',event);
       if(event.path[0].id == 'drag_main' || event.path[0].id == 'drag_top' || event.path[0].id == 'drag_bottom'){
         this.avatar.style.cssText = 'border: 3px solid gray; width: 32px; height: 32px; border-radius: 32px; background-color: whitesmoke';
         this.dragInfo = {
