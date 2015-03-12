@@ -346,12 +346,12 @@ def add_throwdown(user_id,friend_id,circuit_id):
     if friendtable is None:
         return False
     friendtable.update_record(has_throwdown=True)
-    
+    today = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
     db.dropdown_table.insert(from_user_id=userrev,
                              to_user_id=friendrev,
                              circuit_id=circuit,
                              isComplete = False,
-                             created_on=datetime.utcnow())
+                             created_on=today)
     
     return True
 
@@ -362,6 +362,17 @@ def get_throwdown(user_id):
     dropdown_list = db(db.dropdown_table.to_user_id == userrev).select()
     
     return dropdown_list
+
+#When user want to show dropdow list
+def save_facebook_id(user_id,fb_id):
+    userrev = db(db.auth_user.id == user_id).select().first()
+    if userrev is None:
+        return False
+    userrev.update_record(facebook_id=fb_id)
+    return True
+
+
+
 
 
 def user():
@@ -543,6 +554,30 @@ def api():
                 touser = int(vars['touser'])
                 circuit_id = int(vars['circuit_id'])
                 result = add_throwdown(auth.user.id, touser,circuit_id)
+                logger.info(result)
+            return dict(result=result)
+        
+        if args[0] == 'reset_point':
+            logger.info('save_facebook_id')
+            #logger.info(request.env.http_authorization)
+            auth.basic()
+            result = None
+            #logger.info(auth.user)
+            if auth.user:
+                fb_id = int(vars['facebook_id'])
+                result = save_facebook_id(auth.user.id, fb_id)
+                logger.info(result)
+            return dict(result=result)
+        
+        if args[0] == 'save_facebook_id':
+            logger.info('save_facebook_id')
+            #logger.info(request.env.http_authorization)
+            auth.basic()
+            result = None
+            #logger.info(auth.user)
+            if auth.user:
+                fb_id = int(vars['facebook_id'])
+                result = save_facebook_id(auth.user.id, fb_id)
                 logger.info(result)
             return dict(result=result)
 
