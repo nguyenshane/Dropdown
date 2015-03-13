@@ -172,16 +172,16 @@ core-drawer-panel:not([narrow]) #navicon {
 
 .completed {
   position: absolute;
-  background: rgba(71, 71, 71, 0.8);
+  background: rgba(255, 77, 0, 0.66);
   width: 100%;
   height: 100%;
   border-radius: 3px;  
   text-align: center;
   vertical-align: middle;
+  color: rgba(255, 255, 255, 0.95);
 }
 
 .completed-icon {
-  color: rgba(255, 255, 255, 0.95);
   margin: auto;
   width: 50px;
   height: 50px;
@@ -419,6 +419,20 @@ core-drawer-panel:not([narrow]) #navicon {
   font-size: 2em;
 }
 
+.collapse-content{
+  text-align: center;
+  padding: 20px;
+}
+
+.collapse-content h1{
+  text-transform: uppercase;
+  font-size:20px;
+}
+
+.collapse-content #point{
+  font-size: 30px;
+  font-weight: bold;
+}
 
 </style>
 
@@ -444,7 +458,7 @@ core-drawer-panel:not([narrow]) #navicon {
     <core-header-panel main>
 
       <core-toolbar id="mainheader">
-        <div class="user_photo_container">
+        <div class="user_photo_container" on-tap="{{collapse}}">
           <img class="user_photo" style="border: rgba(255, 255, 255, 0.52) 2px solid;" src="{{user_photo}}" id="user_photo"/>
         </div>
         <span flex id="title">Dropdown</span>
@@ -452,7 +466,12 @@ core-drawer-panel:not([narrow]) #navicon {
       </core-toolbar>
 
       <div class="content">
-          
+          <core-collapse id="collapse">
+            <div class="collapse-content">
+              <h1>Here's how you stack up</h1>
+              <span id="point">{{point}}</span> points
+            </div>
+          </core-collapse>
           <div id="maincircuit" class="maincircuit">
             <div class="greeting">{{firstname}}, your circuits for today</div>
             <div class="middle">
@@ -460,7 +479,7 @@ core-drawer-panel:not([narrow]) #navicon {
                 <div class="chip-container-main" hero?="{{selected=='main_chip'}}" on-tap="{{transitionDetail}}" flex one style="position:relative;">
                  <!-- Main today_circuit -->
                   <div class="chip" id="main_chip" hero-id="first-{{selected}}" hero?="{{selected=='main_chip'}}" style="position:absolute; width:97%; height:97%; background:#313d46; color:rgba(255, 255, 255, 0.79) !important;" vertical layout>
-                    <div class="completed" hidden?="{{!completed_main}}" on-trackStart="{{dragstart}}" on-trackEnd="{{drop}}" id="drag_main">
+                    <div class="completed" circuitid="{{main_today_circuit_id}}" hidden?="{{!completed_main}}" on-trackStart="{{dragstart}}" on-trackEnd="{{drop}}" id="drag_main">
                       <div style="position: relative; height:100%; width:100%; pointer-events:none;">
                       <div style="position: absolute; top: 22%; pointer-events:none;">
                        <core-icon class="completed-icon" icon="check"></core-icon>
@@ -481,7 +500,7 @@ core-drawer-panel:not([narrow]) #navicon {
                 <div vertical layout>
                   <div class="chip-container-top" hero?="{{selected=='top_chip'}}"  on-tap="{{transitionDetail}}" flex one>
                     <div class="chip" id="top_chip" hero-id="first-{{selected}}" hero?="{{selected=='top_chip'}}" vertical layout>
-                      <div class="completed" hidden?="{{!completed_top}}" on-trackStart="{{dragstart}}" on-trackEnd="{{drop}}" id="drag_top">
+                      <div class="completed" circuitid="{{minor.top.id}}" hidden?="{{!completed_top}}" on-trackStart="{{dragstart}}" on-trackEnd="{{drop}}" id="drag_top">
                         <core-icon class="completed-icon" icon="check"></core-icon>
                         Drag to your friend to throwdown
                       </div>
@@ -495,7 +514,7 @@ core-drawer-panel:not([narrow]) #navicon {
 
                   <div class="chip-container-bottom" hero?="{{selected=='bottom_chip'}}" on-tap="{{transitionDetail}}" flex one>
                     <div class="chip" id="bottom_chip" hero-id="first-{{selected}}" hero?="{{selected=='bottom_chip'}}" vertical layout>
-                      <div class="completed" hidden?="{{!completed_bottom}}" on-trackStart="{{dragstart}}" on-trackEnd="{{drop}}" id="drag_bottom">
+                      <div class="completed" circuitid="{{minor.bottom.id}}" hidden?="{{!completed_bottom}}" on-trackStart="{{dragstart}}" on-trackEnd="{{drop}}" id="drag_bottom">
                         <core-icon class="completed-icon" icon="check"></core-icon>
                         Drag to your friend to throwdown
                       </div>
@@ -525,15 +544,15 @@ core-drawer-panel:not([narrow]) #navicon {
       <div id="fl_scroller" class="scroller">
         <template repeat="{{f in friend_list}}">
 
-          <div class="user">
-            <img src="{{f.photo_url}}" class="user_photo" />
-            <span class="user_name">{{f.first_name}}</span>
-            <span class="fl_point">{{f.point}} pts</span>
-            <div class="fl_icon_container">
-              <span class="fl_throwdown" on-drop="{{drop}}"><core-icon class="fl_icon" icon="image:flash-on" id="throwdown-{{f.id}}"></core-icon> 1</span>
-              <span class="fl_throwdown_off" hidden><core-icon class="fl_icon" icon="image:flash-on" id="throwdown-{{f.id}}"></core-icon> 0</span>
-              <span class="fl_dropdown"><core-icon class="fl_icon" icon="social:whatshot" id="dropdown-{{f.id}}"></core-icon> 3</span>
-              <span class="fl_dropdown_off" hidden><core-icon class="fl_icon" icon="social:whatshot" id="dropdown-{{f.id}}"></core-icon> 0</span>
+          <div class="user" userid="{{f.id}}">
+            <img userid="{{f.id}}" src="{{f.photo_url}}" class="user_photo" />
+            <span userid="{{f.id}}" class="user_name">{{f.first_name}}</span>
+            <span userid="{{f.id}}" class="fl_point">{{f.point}} pts</span>
+            <div userid="{{f.id}}" class="fl_icon_container">
+              <span userid="{{f.id}}" class="fl_throwdown" hidden?="{{f.throwdown.length==0}}"><core-icon class="fl_icon" icon="image:flash-on" userid="{{f.id}}" ></core-icon> {{f.throwdown.length}}</span>
+              <span userid="{{f.id}}" class="fl_throwdown_off" hidden?="{{f.throwdown.length>0}}"><core-icon class="fl_icon" icon="image:flash-on" userid="{{f.id}}"></core-icon> 0</span>
+              <span userid="{{f.id}}" class="fl_dropdown" hidden?="{{f.dropdown.length==0}}"><core-icon class="fl_icon" icon="social:whatshot" userid="{{f.id}}"></core-icon> {{f.dropdown.length}}</span>
+              <span userid="{{f.id}}" class="fl_dropdown_off" hidden?="{{f.dropdown.length>0}}"><core-icon class="fl_icon" icon="social:whatshot" userid="{{f.id}}"></core-icon> 0</span>
             </div>
           </div>
 
@@ -596,6 +615,7 @@ core-drawer-panel:not([narrow]) #navicon {
 <core-localstorage name="email" value="{{email}}"></core-localstorage>
 <core-localstorage name="password" value="{{password}}"></core-localstorage>
 <core-localstorage name="user_photo" value="{{user_photo}}"></core-localstorage>
+<core-localstorage name="point" value="{{point}}"></core-localstorage>
 <core-localstorage name="today_circuit" value="{{today_circuit}}"></core-localstorage>
 <core-localstorage id="completed_main" name="completed_main" value="{{completed_main}}"></core-localstorage>
 <core-localstorage id="completed_top" name="completed_top" value="{{completed_top}}"></core-localstorage>
@@ -664,6 +684,10 @@ core-drawer-panel:not([narrow]) #navicon {
       public_users: [],
       friend_list: [],
 
+      collapse: function(){
+        this.$.collapse.toggle();
+      },
+
       dragstart: function(e,d,s) {
         console.log('dragstart sender', e, s.getAttribute('id'));
 
@@ -686,7 +710,13 @@ core-drawer-panel:not([narrow]) #navicon {
       },
 
       drop: function(e,d,s) {
-        console.log('drop', e, e.relatedTarget.id);
+        console.log('drop', e);
+        var friend_id = e.relatedTarget.getAttribute('userid');
+        console.log('throwdownid', friend_id);
+        var circuit_id = e.path[0].getAttribute('circuitid');
+        var friend = findById(this.friend_list, friend_id);
+        friend.throwdown.push(+circuit_id);
+        console.log('friend.throwdown', friend.throwdown);
       },
 
       p_loadMore: function() {
@@ -799,7 +829,6 @@ core-drawer-panel:not([narrow]) #navicon {
             type: 'GET',
             success: function(response){
                 console.log('get_today_circuit', response);
-
                 self.today_circuit = response.result;
                 self.insert_today_circuit();
                 self.fill_main_today_circuit();

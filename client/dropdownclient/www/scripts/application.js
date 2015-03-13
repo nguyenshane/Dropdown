@@ -101,7 +101,7 @@ function add_user_to_database(userarray, response){
 
 
 function show_friends(userarray, fromnum){
-	if(userarray.length <= fromnum){
+	if(userarray.length == 0){
 		var tonum = fromnum+100;
 		var param = 'fromnum='+fromnum+'&tonum='+tonum;
 		var self = this;
@@ -116,9 +116,68 @@ function show_friends(userarray, fromnum){
 			type: 'GET',
 			success: function(response){
 			  console.log('show_friends', response, userarray);
-			  add_user_to_database(userarray, response.result)
+			  add_friend_to_database(userarray, response.result)
 			}
 		});
+	}
+}
+
+function fake_random_array(){
+	var total = Math.floor((Math.random() * 3) + 0);
+	var array = [];
+	for (var i=0; i<total; i++){
+		array.push(Math.floor((Math.random() * 10) + 0));
+	}
+	return array;
+}
+
+function findById(source, id) {
+    return source.filter(function(obj) {
+        // for val & type comparison
+        return +obj.id === +id;
+    })[ 0 ];
+}
+
+function add_friend_to_database(userarray, response){
+	console.log('response', response);
+	//var userarray = [];
+	for (var user in response){
+		var id = response[user].auth_user.id;
+		var first_name = response[user].auth_user.first_name;
+		var last_name = response[user].auth_user.last_name;
+		var point = response[user].auth_user.point;
+		var photo_url = response[user].user_photo.cached_url;
+		var throwdown = fake_random_array(); //response[user].throwdown;
+		var dropdown = fake_random_array();//response[user].dropdown;
+
+		if(photo_url == null){
+			photo_url = "/images/noavatar.png";
+		}
+
+		db.insert("users", {
+            data: {
+                id: id,
+                first_name: first_name,
+                last_name: last_name,
+                point: point,
+                photo_url: photo_url
+            },
+            done: function () {
+                console.log("Created a users!");
+            },
+            fail: function () {
+                console.log("Something went wrong....");
+            }
+	    });
+
+		userarray.push({id: id, photo_url:photo_url, last_name:last_name, first_name:first_name, 
+			point:point, throwdown: throwdown, dropdown: dropdown});
+
+		/*
+		if(user == response.length-1){
+			scope.$.threshold.clearLower();
+			//return userarray;
+		}*/
 	}
 }
 

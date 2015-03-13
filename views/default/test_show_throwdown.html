@@ -5,7 +5,7 @@
 <p><i>complete button doesn't do anything at the moment</i></p>
 <ul>
 {{for dropdown in dropdown_list:}}
-{{=LI(A(dropdown.from_user_id.first_name + " " + dropdown.from_user_id.last_name , _href=URL('default', 'test_show_user', args=[dropdown.from_user_id])) 
+{{=LI(A(dropdown.from_user_id.first_name + " " + dropdown.from_user_id.last_name , _href=URL('default', 'test_show_user', args=[dropdown.from_user_id]))}}
 	{{if isUpgrade:}}
 	+ " sent you a throwdown with circuit name: " +  
 	A(dropdown.circuit_id.circuit_name, _href=URL('default', 'test_show_cicuit', args=[dropdown.circuit_id.id])) 

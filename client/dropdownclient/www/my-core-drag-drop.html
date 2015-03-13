@@ -65,9 +65,10 @@ This is a mod version to work with Dropdown
     },
 
     trackStart: function(event) {
-      console.log('trackStart',event);
+      //console.log('trackStart',event);
       if(event.path[0].id == 'drag_main' || event.path[0].id == 'drag_top' || event.path[0].id == 'drag_bottom'){
-        this.avatar.style.cssText = 'border: 3px solid gray; width: 32px; height: 32px; border-radius: 32px; background-color: whitesmoke';
+  
+        this.avatar.style.cssText = 'border: 3px solid rgba(255, 255, 255, 0.95); width: 40px; height: 40px; border-radius: 32px; background-color: rgba(255, 77, 0, 0.66);';
         this.dragInfo = {
           event: event,
           avatar: this.avatar
@@ -81,7 +82,7 @@ This is a mod version to work with Dropdown
     track: function(event) {
       
       if (this.dragging) {
-        console.log('track', event, event.path[0].id);
+        //console.log('track', event, event.path[0].id);
         this.x = event.pageX;
         this.y = event.pageY;
         this.dragInfo.event = event;

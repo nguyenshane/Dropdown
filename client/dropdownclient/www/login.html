@@ -28,6 +28,8 @@
   <link rel="import" href="/components/paper-input/paper-input.html">
   <link rel="import" href="/components/paper-tabs/paper-tabs.html">
   <link rel="import" href="/components/paper-checkbox/paper-checkbox.html">
+  <link rel="import" href="/components/google-signin/google-signin.html">
+  <link rel="import" href="facebook-login.html">
 
   <!-- Import Jquery -->
   <script src="/components/localforage/dist/localforage.min.js"></script>
@@ -182,7 +184,6 @@ h2 {
     <section>
       <img id="logo" class="logo" src="/images/logo300px.png">
       <div class="centerBlock">
-
         <paper-input-decorator id="firstname_decorator" label="First Name" error="Please enter your first name">
         <input id="firstname" is="core-input" value="{{firstname}}" pattern="^[a-zA-Z]+(([\'\,\.\-][a-zA-Z])?[a-zA-Z]*)*$" required>
         
@@ -203,8 +204,12 @@ h2 {
         <input id="password" is="core-input" value="{{password}}" type="password" pattern="^.{4,15}$" required>
         
         </paper-input-decorator>
-        
+
         <paper-button class="lgbutton" id="signup-btn" on-tap="{{submit_signup}}" raised cross-fade>Sign Up</paper-button>
+        <div style="text-align:center; margin-top:10px;">
+          <facebook-login appID="518906588247796" scopes="public_profile email user_friends" graphURL="/me" on-graph-api-response="{{facebook}}" buttonText="Sign up by Facebook"></facebook-login>
+          <google-signin clientId="260233604371-5luknu89eidsobsn2peihiljfr3n8t6r.apps.googleusercontent.com" scopes="profile email" width="standard" height="short" labelSignin="Sign up by Google+" style="top:-8px; margin-left:10px;"></google-signin>
+        </div>
       </div>
       
     </section>
@@ -233,6 +238,7 @@ h2 {
 <core-localstorage name="password" value="{{password}}"></core-localstorage>
 <core-localstorage name="today_circuit" value="{{today_circuit}}"></core-localstorage>
 <core-localstorage name="user_photo" value="{{user_photo}}"></core-localstorage>
+<core-localstorage name="point" value="{{point}}"></core-localstorage>
 <core-localstorage id="completed_main" name="completed_main" value="{{completed_main}}"></core-localstorage>
 <core-localstorage id="completed_top" name="completed_top" value="{{completed_top}}"></core-localstorage>
 <core-localstorage id="completed_bottom" name="completed_bottom" value="{{completed_bottom}}"></core-localstorage>
@@ -250,6 +256,8 @@ h2 {
     method="GET"
     handleAs="json"
     on-core-response="{{handleResponseSignin}}"></core-ajax>
+
+
 
 </template>
 
@@ -273,6 +281,10 @@ h2 {
       indexView : null,
       set_busy_spinner: false,
       
+      facebook: function(e) {
+        console.log('fb',e);
+      },
+
       stop_spinner: function() {
         this.set_busy_spinner = false;
       },
@@ -417,6 +429,7 @@ h2 {
           this.lastname = e.detail.response.lastname;
           this.today_circuit = e.detail.response.today_circuit;
           this.user_photo = e.detail.response.user_photo;
+          this.point = e.detail.response.point;
 
           this.insert_today_circuit();
           console.log("handleResponseSignin", e.detail.response);

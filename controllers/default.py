@@ -281,8 +281,6 @@ def isFriend(from_user_id,to_user_id):
         return False
 #When user want to list all friend    
 def show_all_friend(user_id):
-    #friendlist = db(db.friend_table.from_user_id == user_id).select(orderby=~db.friend_table.created_on)
-    #friendlist = db(db.friend_table.from_user_id == user_id).select(orderby=~db.friend_table.created_on)
     fromuser=db((db.friend_table.from_user_id==user_id) & (db.auth_user.id==db.friend_table.to_user_id))
     friendlist = fromuser.select(db.auth_user.id, 
         db.auth_user.point,
@@ -448,7 +446,7 @@ def api():
             today_circuit = get_today_circuit(auth.user.id)
             user_photo = get_user_photo_url(auth.user.email)
             return dict(success=success,today_circuit=today_circuit,
-                firstname=auth.user.first_name,lastname=auth.user.last_name,user_photo=user_photo)
+                firstname=auth.user.first_name,lastname=auth.user.last_name,user_photo=user_photo,point=auth.user.point)
 
         if args[0] == 'logout':
             logger.info('Logging out')
