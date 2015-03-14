@@ -661,7 +661,7 @@ core-drawer-panel:not([narrow]) #navicon {
     supersonic.ui.navigationBar.hide();
 
     Polymer('drop-down', {
-      server: 'http://future-aurora-851.appspot.com',
+      server: 'https://future-aurora-851.appspot.com',
       page: 0,
       selectedFriendPage:0,
       main_today_circuit_point:0,
@@ -750,7 +750,7 @@ core-drawer-panel:not([narrow]) #navicon {
         var id = parseInt(sender.getAttribute('id').substring(11));
           var param = 'touser=' + id;
           $.ajax({
-            url: 'http://dropdown.nguyenshane.com/dropdown/default/api/add_friend.json',
+            url: this.server+'/dropdown/default/api/add_friend.json',
             headers: { 'X-Requested-With': 'XMLHttpRequest',
                       'Authorization': 'Basic ' + getAuth(), },
             data: param,
@@ -1297,7 +1297,7 @@ core-drawer-panel:not([narrow]) #navicon {
           // get upload url
           this.$.completed_main.value = true;
           $.ajax({
-            url: 'http://dropdown.nguyenshane.com/dropdown/default/api/complete_circuit.json',
+            url: this.server+'/dropdown/default/api/complete_circuit.json',
             headers: { 'X-Requested-With': 'XMLHttpRequest',
                         'Authorization': 'Basic ' + getAuth(), },
             data: circuit_id,
@@ -1321,7 +1321,7 @@ core-drawer-panel:not([narrow]) #navicon {
           this.$.completed_top.value = true;
 
           $.ajax({
-            url: 'http://dropdown.nguyenshane.com/dropdown/default/api/complete_circuit.json',
+            url: this.server+'/dropdown/default/api/complete_circuit.json',
             headers: { 'X-Requested-With': 'XMLHttpRequest',
                         'Authorization': 'Basic ' + getAuth(), },
             data: circuit_id,
@@ -1344,7 +1344,7 @@ core-drawer-panel:not([narrow]) #navicon {
           // get upload url
           this.$.completed_bottom.value = true;
           $.ajax({
-            url: 'http://dropdown.nguyenshane.com/dropdown/default/api/complete_circuit.json',
+            url: this.server+'/dropdown/default/api/complete_circuit.json',
             headers: { 'X-Requested-With': 'XMLHttpRequest',
                         'Authorization': 'Basic ' + getAuth(), },
             data: circuit_id,

@@ -43,7 +43,7 @@ function show_user(userarray, fromnum){
 		var param = 'fromnum='+fromnum+'&tonum='+tonum;
 		var self = this;
 		$.ajax({
-			url: 'http://dropdown.nguyenshane.com/dropdown/default/api/show_user.json',
+			url: 'https://future-aurora-851.appspot.com/dropdown/default/api/show_user.json',
 			headers: { 'X-Requested-With': 'XMLHttpRequest',
 			          'Authorization': 'Basic ' + getAuth(), },
 			data: param,
@@ -106,7 +106,7 @@ function show_friends(userarray, fromnum){
 		var param = 'fromnum='+fromnum+'&tonum='+tonum;
 		var self = this;
 		$.ajax({
-			url: 'http://dropdown.nguyenshane.com/dropdown/default/api/show_friends.json',
+			url: 'https://future-aurora-851.appspot.com/dropdown/default/api/show_friends.json',
 			headers: { 'X-Requested-With': 'XMLHttpRequest',
 			          'Authorization': 'Basic ' + getAuth(), },
 			dataType: 'json',

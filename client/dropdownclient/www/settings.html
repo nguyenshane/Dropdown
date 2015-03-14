@@ -274,7 +274,7 @@ paper-checkbox.blue::shadow #checkbox.checked {
     emails.push(this.email);
     // get upload url
       $.ajax({
-        url: 'http://dropdown.nguyenshane.com/dropdown/default/api/get_user_photo_url',
+        url: 'https://future-aurora-851.appspot.com/dropdown/default/api/get_user_photo_url',
         headers: { 'X-Requested-With': 'XMLHttpRequest','Authorization': 'Basic ' + getAuth()},
         data: '{"email":'+JSON.stringify(emails)+'}',
         dataType: 'json',
@@ -309,7 +309,7 @@ paper-checkbox.blue::shadow #checkbox.checked {
 
 
     Polymer('drop-down-settings', {
-      server : 'http://future-aurora-851.appspot.com',
+      server : 'https://future-aurora-851.appspot.com',
 
       domReady: function() {
         this.refresh();

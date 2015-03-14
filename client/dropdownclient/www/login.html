@@ -208,7 +208,7 @@ h2 {
         <paper-button class="lgbutton" id="signup-btn" on-tap="{{submit_signup}}" raised cross-fade>Sign Up</paper-button>
         <div style="text-align:center; margin-top:10px;">
           <facebook-login appID="518906588247796" scopes="public_profile email user_friends" graphURL="/me" on-graph-api-response="{{facebook}}" buttonText="Sign up by Facebook"></facebook-login>
-          <google-signin clientId="260233604371-5luknu89eidsobsn2peihiljfr3n8t6r.apps.googleusercontent.com" scopes="profile email" width="standard" height="short" labelSignin="Sign up by Google+" style="top:-8px; margin-left:10px;"></google-signin>
+          <!--<google-signin clientId="260233604371-5luknu89eidsobsn2peihiljfr3n8t6r.apps.googleusercontent.com" scopes="profile email" width="standard" height="short" labelSignin="Sign up by Google+" style="top:-8px; margin-left:10px;"></google-signin>-->
         </div>
       </div>
       
@@ -274,7 +274,7 @@ h2 {
     } 
 
     Polymer('drop-down-login', {
-      server : 'http://future-aurora-851.appspot.com',
+      server : 'https://future-aurora-851.appspot.com',
       selected : 0,
       hide_error_login: true,
       hide_error_signup: true,
