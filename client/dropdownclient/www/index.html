@@ -30,11 +30,7 @@
   <link rel="import" href="/components/paper-dialog/paper-action-dialog.html">
   <link rel="import" href="/components/paper-item/paper-item.html">
   <link rel="import" href="/components/core-animated-pages/core-animated-pages.html">
-  <link rel="import" href="/components/core-animated-pages/transitions/slide-up.html">
-  <link rel="import" href="/components/core-animated-pages/transitions/slide-down.html">
   <link rel="import" href="/components/core-animated-pages/transitions/slide-from-right.html">
-  <link rel="import" href="/components/core-animated-pages/transitions/cross-fade.html">
-  <link rel="import" href="/components/core-animated-pages/transitions/list-cascade.html">
   <link rel="import" href="/components/core-animated-pages/transitions/scale-up.html">
 
   <link rel="import" href="my-core-drag-drop.html">
@@ -436,7 +432,7 @@ core-drawer-panel:not([narrow]) #navicon {
 
 </style>
 
-<core-animated-pages selected="{{page}}" transitions="hero-transition slide-up slide-down cross-fade list-cascade scale-up" on-core-animated-pages-transition-end="{{complete}}">
+<core-animated-pages selected="{{page}}" transitions="hero-transition cross-fade scale-up" on-core-animated-pages-transition-end="{{complete}}">
 <section>
   <my-core-drag-drop></my-core-drag-drop>
   <core-drawer-panel id="drawerPanel" rightDrawer forceNarrow drawerWidth="190px">
@@ -584,7 +580,7 @@ core-drawer-panel:not([narrow]) #navicon {
 
 <!-- Detail circuit -->
 <section id="details">
-<core-animated-pages selected="{{currentEx}}" transitions="hero-transition slide-up slide-down cross-fade slide-from-right list-cascade scale-up" on-core-animated-pages-transition-end="{{complete}}" hero-id="first-{{selected}}" hero> 
+<core-animated-pages selected="{{currentEx}}" transitions="hero-transition slide-from-right scale-up" on-core-animated-pages-transition-end="{{complete}}" hero-id="first-{{selected}}" hero> 
 
 <template repeat="{{card in cards}}">
   <div class="card" layout vertical>
